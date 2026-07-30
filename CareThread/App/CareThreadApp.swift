@@ -1,4 +1,5 @@
 import SwiftUI
+import SwiftData
 
 @main
 struct CareThreadApp: App {
@@ -6,6 +7,16 @@ struct CareThreadApp: App {
         WindowGroup {
             RootView()
         }
+        .modelContainer(
+            for: [
+                Patient.self,
+                MedicalRecord.self,
+                Attachment.self,
+                Medication.self,
+                MedicalOrder.self,
+                FollowUp.self,
+                CaptureDraft.self
+            ]
+        )
     }
 }
-
