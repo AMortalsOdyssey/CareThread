@@ -45,7 +45,9 @@ struct VisionOCREngine: OCREngine {
         return try await withCheckedThrowingContinuation { continuation in
             let request = VNRecognizeTextRequest { request, error in
                 if let error {
-                    AppLog.extraction.error("Vision OCR failed: \(error.localizedDescription, privacy: .public)")
+                    AppLog.extraction.error(
+                        "Vision OCR failed: \(error.localizedDescription, privacy: .private(mask: .hash))"
+                    )
                     continuation.resume(
                         throwing: OCREngineError.recognitionFailed(error.localizedDescription)
                     )
@@ -80,7 +82,9 @@ struct VisionOCREngine: OCREngine {
             do {
                 try handler.perform([request])
             } catch {
-                AppLog.extraction.error("Vision request handler failed: \(error.localizedDescription, privacy: .public)")
+                AppLog.extraction.error(
+                    "Vision request handler failed: \(error.localizedDescription, privacy: .private(mask: .hash))"
+                )
                 continuation.resume(
                     throwing: OCREngineError.recognitionFailed(error.localizedDescription)
                 )
@@ -123,4 +127,3 @@ enum TextFixtureRenderer {
         }
     }
 }
-

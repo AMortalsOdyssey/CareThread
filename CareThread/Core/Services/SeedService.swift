@@ -15,6 +15,7 @@ enum SeedService {
         let patient = Patient(
             id: patientID,
             name: "王晓芸",
+            reportName: "王晓芸",
             birthday: CTDate.make(1992, 6, 18),
             gender: "女",
             conditions: ["甲状腺癌术后随访"],

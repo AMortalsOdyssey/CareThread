@@ -5,16 +5,31 @@ import SwiftData
 enum TestSupport {
     @MainActor
     static func container() throws -> ModelContainer {
-        let configuration = ModelConfiguration(isStoredInMemoryOnly: true)
+        let schema = Schema(versionedSchema: CareThreadSchemaV1.self)
+        let configuration = ModelConfiguration(
+            schema: schema,
+            isStoredInMemoryOnly: true,
+            cloudKitDatabase: .none
+        )
         return try ModelContainer(
-            for: Patient.self,
-            MedicalRecord.self,
-            Attachment.self,
-            Medication.self,
-            MedicalOrder.self,
-            FollowUp.self,
-            CaptureDraft.self,
-            configurations: configuration
+            for: schema,
+            migrationPlan: CareThreadMigrationPlan.self,
+            configurations: [configuration]
+        )
+    }
+
+    @MainActor
+    static func persistentContainer(at storeURL: URL) throws -> ModelContainer {
+        let schema = Schema(versionedSchema: CareThreadSchemaV1.self)
+        let configuration = ModelConfiguration(
+            schema: schema,
+            url: storeURL,
+            cloudKitDatabase: .none
+        )
+        return try ModelContainer(
+            for: schema,
+            migrationPlan: CareThreadMigrationPlan.self,
+            configurations: [configuration]
         )
     }
 

@@ -50,7 +50,9 @@ final class VaultStore {
     ) throws -> StoredAttachment {
         let normalized = fileExtension.lowercased().trimmingCharacters(in: CharacterSet(charactersIn: "."))
         guard ["jpg", "jpeg", "png", "heic", "pdf"].contains(normalized) else {
-            AppLog.vault.warning("Rejected unsupported attachment extension: \(normalized, privacy: .public)")
+            AppLog.vault.warning(
+                "Rejected unsupported attachment extension: \(normalized, privacy: .private(mask: .hash))"
+            )
             throw VaultStoreError.unsupportedFileType
         }
 
@@ -63,7 +65,9 @@ final class VaultStore {
 
         try writeOnce(data, relativePath: workingPath)
         try writeOnce(data, relativePath: originalPath)
-        AppLog.vault.info("Stored attachment \(id.uuidString, privacy: .public)")
+        AppLog.vault.info(
+            "Stored attachment \(id.uuidString, privacy: .private(mask: .hash))"
+        )
         return StoredAttachment(
             workingRelativePath: workingPath,
             originalRelativePath: originalPath
@@ -73,7 +77,9 @@ final class VaultStore {
     func data(relativePath: String) throws -> Data {
         let url = try resolvedURL(relativePath)
         guard fileManager.fileExists(atPath: url.path) else {
-            AppLog.vault.warning("Attachment is missing at \(relativePath, privacy: .public)")
+            AppLog.vault.warning(
+                "Attachment is missing at \(relativePath, privacy: .private(mask: .hash))"
+            )
             throw VaultStoreError.fileMissing
         }
         return try Data(contentsOf: url)
@@ -87,7 +93,9 @@ final class VaultStore {
                     try fileManager.removeItem(at: url)
                 }
             } catch {
-                AppLog.vault.error("Failed to remove attachment \(path, privacy: .public): \(error.localizedDescription, privacy: .public)")
+                AppLog.vault.error(
+                    "Failed to remove attachment \(path, privacy: .private(mask: .hash)): \(error.localizedDescription, privacy: .private(mask: .hash))"
+                )
             }
         }
     }
@@ -119,7 +127,9 @@ final class VaultStore {
     private func writeOnce(_ data: Data, relativePath: String) throws {
         let url = try resolvedURL(relativePath)
         guard !fileManager.fileExists(atPath: url.path) else {
-            AppLog.vault.warning("Immutable attachment already exists at \(relativePath, privacy: .public)")
+            AppLog.vault.warning(
+                "Immutable attachment already exists at \(relativePath, privacy: .private(mask: .hash))"
+            )
             return
         }
         try fileManager.createDirectory(
@@ -142,3 +152,15 @@ final class VaultStore {
     }
 }
 
+extension VaultStore: AttachmentFileDeleting {
+    func deleteAttachmentFiles(
+        derivedRelativePaths: Set<String>,
+        unreferencedOriginalRelativePaths: Set<String>
+    ) {
+        delete(
+            relativePaths: Array(
+                derivedRelativePaths.union(unreferencedOriginalRelativePaths)
+            )
+        )
+    }
+}

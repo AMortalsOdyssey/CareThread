@@ -62,13 +62,18 @@ struct ModelTests {
             title: "待删除",
             eventDate: CTDate.make(2026, 1, 1)
         )
+        let attachmentID = UUID()
         let attachment = Attachment(
-            fileName: "attachments/2026/01/a.jpg",
+            id: attachmentID,
+            patientId: record.patientId,
+            fileName: "members/\(record.patientId.uuidString)/records/"
+                + "\(record.id.uuidString)/attachments/"
+                + "\(attachmentID.uuidString)/original.jpg",
             kind: .image,
             pageIndex: 0,
             record: record
         )
-        record.attachments.append(attachment)
+        try record.bindAttachment(attachment)
         context.insert(record)
         try context.save()
         #expect(try context.fetchCount(FetchDescriptor<Attachment>()) == 1)
@@ -82,44 +87,56 @@ struct ModelTests {
     func test_repository_whenDeletingRecord_removesVaultFiles() throws {
         let root = try TestSupport.temporaryDirectory()
         defer { try? FileManager.default.removeItem(at: root) }
-        let vault = try VaultStore(rootURL: root)
-        let stored = try vault.store(
-            data: Data("image".utf8),
-            fileExtension: "jpg",
-            date: CTDate.make(2026, 1, 1)
-        )
+        let vault = try CaptureVaultService(rootURL: root)
         let container = try TestSupport.container()
         let context = container.mainContext
+        let patient = Patient(name: "虚构成员")
+        context.insert(patient)
         let record = MedicalRecord(
-            patientId: UUID(),
+            patientId: patient.id,
             title: "含附件记录",
             eventDate: CTDate.make(2026, 1, 1)
         )
-        record.attachments.append(
+        let attachmentID = UUID()
+        let base = "members/\(patient.id.uuidString)/records/"
+            + "\(record.id.uuidString)/attachments/\(attachmentID.uuidString)"
+        let originalPath = "\(base)/original.jpg"
+        let previewPath = "\(base)/preview.jpg"
+        let originalURL = try vault.url(for: originalPath)
+        let previewURL = try vault.url(for: previewPath)
+        try FileManager.default.createDirectory(
+            at: originalURL.deletingLastPathComponent(),
+            withIntermediateDirectories: true
+        )
+        try Data("image".utf8).write(to: originalURL)
+        try Data("preview".utf8).write(to: previewURL)
+        try record.bindAttachment(
             Attachment(
-                fileName: stored.workingRelativePath,
-                originalFileName: stored.originalRelativePath,
+                id: attachmentID,
+                patientId: record.patientId,
+                fileName: previewPath,
+                originalFileName: originalPath,
                 kind: .image,
                 pageIndex: 0,
                 record: record
             )
         )
-        let repository = RecordRepository(context: context, vaultStore: vault)
+        let repository = RecordRepository(context: context, fileDeletion: vault)
         try repository.insert(record)
         try repository.delete(record)
 
         #expect(try context.fetchCount(FetchDescriptor<MedicalRecord>()) == 0)
-        #expect(throws: VaultStoreError.fileMissing) {
-            try vault.data(relativePath: stored.workingRelativePath)
-        }
+        #expect(!FileManager.default.fileExists(atPath: originalURL.path))
+        #expect(!FileManager.default.fileExists(atPath: previewURL.path))
     }
 
     @Test("剂量调整结束旧记录并创建新版本")
     func test_medication_whenAdjusted_createsVersionChain() throws {
         let container = try TestSupport.container()
         let context = container.mainContext
+        let patient = Patient(name: "虚构成员")
         let old = Medication(
-            patientId: UUID(),
+            patientId: patient.id,
             name: "虚构药物",
             doseValue: 100,
             doseUnit: "µg",
@@ -127,6 +144,7 @@ struct ModelTests {
             reminderEnabled: true,
             reminderTimes: [ReminderTime(hour: 8, minute: 0)]
         )
+        context.insert(patient)
         context.insert(old)
         try context.save()
         let effectiveDate = CTDate.make(2026, 3, 15)
@@ -147,6 +165,8 @@ struct ModelTests {
         let context = container.mainContext
         let draft = CaptureDraft(
             patientId: UUID(),
+            batchId: UUID(),
+            documentIndex: 0,
             sourceType: .photo,
             attachmentPaths: ["attachments/a.jpg"],
             selectedType: .lab,
@@ -162,4 +182,3 @@ struct ModelTests {
         #expect(fetched.ocrText == "虚构 OCR")
     }
 }
-

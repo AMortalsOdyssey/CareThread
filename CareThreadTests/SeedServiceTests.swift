@@ -11,6 +11,7 @@ struct SeedServiceTests {
         let patients = try container.mainContext.fetch(FetchDescriptor<Patient>())
         #expect(patients.count == 1)
         #expect(patients.first?.name == "王晓芸")
+        #expect(patients.first?.reportName == "王晓芸")
     }
 
     @Test("演示种子生成六份故事线记录")
@@ -55,4 +56,3 @@ struct SeedServiceTests {
         #expect(try container.mainContext.fetchCount(FetchDescriptor<MedicalRecord>()) == 0)
     }
 }
-
