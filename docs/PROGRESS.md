@@ -16,6 +16,14 @@
 - 验证：`Scripts/verify.sh` 退出码 0；Swift Testing 31/31、XCUITest 1/1；覆盖年龄 9 项、Vault 9 项、模型/关系 6 项、种子 6 项与免责声明冒烟 1 项。
 - 红线：联网标识扫描、未完成标识扫描均零命中。
 
+## M2 OCR 与提取引擎
+
+- 状态：完成
+- 实现：`OCREngine` / `TextBlock` 协议、Apple Vision 离线引擎、文本样张渲染器、纯函数 `ExtractionEngine`；覆盖日期、医院/科室、类型评分、检验指标、用药线索、复查线索、摘要与标题。
+- 样张：05 §5 的 `f1`–`f6` 与期望 JSON 已原样落入 `CareThreadTests/Fixtures/`；六份文本规则闭环全部通过。
+- 真实 OCR：打印版甲功与 CT 样张经 Core Graphics 渲染 → Vision → 提取引擎闭环通过；纯白图零文本安全通过。
+- 验证：`Scripts/verify.sh` 退出码 0；Swift Testing 85/85、XCUITest 1/1。单测数量已达到最终下限，后续里程碑继续增加而不削减。
+
 ## 真机验收（开发完成后由用户执行）
 
 - [ ] VisionKit 相机扫描、自动裁边与多页连拍

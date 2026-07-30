@@ -24,5 +24,19 @@ enum TestSupport {
         try FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
         return url
     }
+
+    static func fixture(_ name: String) throws -> String {
+        let bundle = Bundle(for: FixtureBundleToken.self)
+        guard let url = bundle.url(forResource: name, withExtension: "txt") ??
+                bundle.url(forResource: name, withExtension: "txt", subdirectory: "Fixtures") else {
+            throw FixtureError.missing(name)
+        }
+        return try String(contentsOf: url, encoding: .utf8)
+    }
 }
 
+private final class FixtureBundleToken: NSObject {}
+
+enum FixtureError: Error {
+    case missing(String)
+}

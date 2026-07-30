@@ -1,0 +1,1 @@
+{"type":"outpatient","eventDate":"2026-03-15","hospital":"四川大学华西医院","department":"甲状腺外科","medHints":[{"name":"左甲状腺素钠片","doseValue":75,"doseUnit":"µg","frequencyPerDay":1,"confidence":"high"}],"followUpHints":[{"offsetDays":90,"itemsContains":["甲状腺功能"]}]}

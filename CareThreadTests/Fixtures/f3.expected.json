@@ -1,0 +1,1 @@
+{"type":"lab","eventDate":"2026-03-15","hospital":"四川大学华西医院","department":"内分泌科","labsCountAtLeast":5,"labs":[{"nameContains":"TSH","value":0.08,"flag":"low"},{"nameContains":"FT4","value":22.8,"flag":"high"},{"nameContains":"FT3","value":5.9,"flag":"none"}],"abnormalsCount":2,"titleContains":"甲状腺功能五项"}

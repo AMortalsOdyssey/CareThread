@@ -1,0 +1,1 @@
+{"type":"discharge","eventDate":"2024-09-02","hospital":"四川大学华西医院","department":"甲状腺外科","structuredContains":{"入院日期":"2024-08-23"},"medHints":[{"name":"左甲状腺素钠片","doseValue":100,"doseUnit":"µg","frequencyPerDay":1,"usageContains":["空腹"],"confidence":"high"}],"followUpHints":[{"offsetDays":30,"itemsContains":["甲状腺功能"]},{"offsetDays":90,"itemsContains":["颈部超声","甲状腺功能"]}]}
