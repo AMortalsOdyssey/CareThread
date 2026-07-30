@@ -1,0 +1,10 @@
+{
+  "engine": "Apple Vision",
+  "engine_identifier": "apple-vision",
+  "iterations_per_page": 3,
+  "mean_latency_ms": 593.6609037222221,
+  "p95_latency_ms": 695.425166,
+  "pages": 30,
+  "platform": "iPhone 16 Simulator iOS 18.6",
+  "source": "OCRBenchTests xcresult keepAlways attachment"
+}

@@ -6,4 +6,5 @@ xcuserdata/
 CareThread.xcodeproj/
 *.xcresult
 .swiftpm/
-
+__pycache__/
+*.pyc

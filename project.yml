@@ -13,6 +13,16 @@ settings:
     DEVELOPMENT_TEAM: ""
     CODE_SIGNING_ALLOWED: NO
     ENABLE_USER_SCRIPT_SANDBOXING: YES
+schemes:
+  OCRBench:
+    build:
+      targets:
+        CareThread: all
+        OCRBenchTests: [test]
+    test:
+      config: Debug
+      targets:
+        - name: OCRBenchTests
 targets:
   CareThread:
     type: application
@@ -59,4 +69,18 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: me.multiego.carethread.uitests
         GENERATE_INFOPLIST_FILE: YES
-
+  OCRBenchTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: Benchmarks/OCRBench/SimulatorTests
+      - path: Benchmarks/OCRBench/testset/manifest.json
+        buildPhase: resources
+      - path: Benchmarks/OCRBench/testset/images
+        buildPhase: resources
+    dependencies:
+      - target: CareThread
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: me.multiego.carethread.ocrbench
+        GENERATE_INFOPLIST_FILE: YES

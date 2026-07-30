@@ -1,0 +1,1372 @@
+{
+  "schema_version": 1,
+  "score_formula": "OCR task §5; min-max for comparative dimensions",
+  "metrics": [
+    {
+      "engine": "Apple Vision",
+      "engine_identifier": "apple-vision",
+      "platform": "macOS Apple Silicon",
+      "print_cer": 0.059790732436472344,
+      "handwriting_cer": 0.03924963924963925,
+      "field_hit_rate": 0.9416666666666667,
+      "field_hits": 113,
+      "field_total": 120,
+      "p95_latency_ms": 228.921416,
+      "mean_latency_ms": 169.90340644444444,
+      "package_increment_bytes": 0,
+      "peak_memory_increment_bytes": 62537728,
+      "page_metrics": [
+        {
+          "id": "p_f1",
+          "group": "P",
+          "subgroup": "print",
+          "scored": true,
+          "reference_characters": 227,
+          "edit_distance": 3,
+          "cer": 0.013215859030837005,
+          "field_hit_count": 4,
+          "field_hits": {
+            "date": true,
+            "hospital": true,
+            "indicator": true,
+            "type": true
+          },
+          "latency_ms": [
+            186.012417,
+            185.646666,
+            184.443875
+          ]
+        },
+        {
+          "id": "p_f2",
+          "group": "P",
+          "subgroup": "print",
+          "scored": true,
+          "reference_characters": 267,
+          "edit_distance": 3,
+          "cer": 0.011235955056179775,
+          "field_hit_count": 4,
+          "field_hits": {
+            "date": true,
+            "hospital": true,
+            "indicator": true,
+            "type": true
+          },
+          "latency_ms": [
+            220.018041,
+            210.869084,
+            207.433416
+          ]
+        },
+        {
+          "id": "p_f3",
+          "group": "P",
+          "subgroup": "print",
+          "scored": true,
+          "reference_characters": 229,
+          "edit_distance": 4,
+          "cer": 0.017467248908296942,
+          "field_hit_count": 4,
+          "field_hits": {
+            "date": true,
+            "hospital": true,
+            "indicator": true,
+            "type": true
+          },
+          "latency_ms": [
+            193.468458,
+            183.3335,
+            176.846375
+          ]
+        },
+        {
+          "id": "p_f4",
+          "group": "P",
+          "subgroup": "print",
+          "scored": true,
+          "reference_characters": 176,
+          "edit_distance": 3,
+          "cer": 0.017045454545454544,
+          "field_hit_count": 4,
+          "field_hits": {
+            "date": true,
+            "hospital": true,
+            "indicator": true,
+            "type": true
+          },
+          "latency_ms": [
+            167.047917,
+            160.841125,
+            150.098291
+          ]
+        },
+        {
+          "id": "p_f5",
+          "group": "P",
+          "subgroup": "print",
+          "scored": true,
+          "reference_characters": 194,
+          "edit_distance": 2,
+          "cer": 0.010309278350515464,
+          "field_hit_count": 4,
+          "field_hits": {
+            "date": true,
+            "hospital": true,
+            "indicator": true,
+            "type": true
+          },
+          "latency_ms": [
+            169.526625,
+            168.429834,
+            168.649791
+          ]
+        },
+        {
+          "id": "p_f6",
+          "group": "P",
+          "subgroup": "print",
+          "scored": true,
+          "reference_characters": 141,
+          "edit_distance": 1,
+          "cer": 0.0070921985815602835,
+          "field_hit_count": 4,
+          "field_hits": {
+            "date": true,
+            "hospital": true,
+            "indicator": true,
+            "type": true
+          },
+          "latency_ms": [
+            138.200041,
+            152.92475,
+            142.332667
+          ]
+        },
+        {
+          "id": "h_f1_hannotate",
+          "group": "H",
+          "subgroup": "handwriting",
+          "scored": true,
+          "reference_characters": 227,
+          "edit_distance": 3,
+          "cer": 0.013215859030837005,
+          "field_hit_count": 4,
+          "field_hits": {
+            "date": true,
+            "hospital": true,
+            "indicator": true,
+            "type": true
+          },
+          "latency_ms": [
+            197.793416,
+            200.817625,
+            198.906833
+          ]
+        },
+        {
+          "id": "h_f1_hanzipen",
+          "group": "H",
+          "subgroup": "handwriting",
+          "scored": true,
+          "reference_characters": 227,
+          "edit_distance": 4,
+          "cer": 0.01762114537444934,
+          "field_hit_count": 4,
+          "field_hits": {
+            "date": true,
+            "hospital": true,
+            "indicator": true,
+            "type": true
+          },
+          "latency_ms": [
+            200.332,
+            198.0195,
+            201.908833
+          ]
+        },
+        {
+          "id": "h_f2_hannotate",
+          "group": "H",
+          "subgroup": "handwriting",
+          "scored": true,
+          "reference_characters": 267,
+          "edit_distance": 3,
+          "cer": 0.011235955056179775,
+          "field_hit_count": 4,
+          "field_hits": {
+            "date": true,
+            "hospital": true,
+            "indicator": true,
+            "type": true
+          },
+          "latency_ms": [
+            230.87875,
+            234.650084,
+            230.159667
+          ]
+        },
+        {
+          "id": "h_f2_hanzipen",
+          "group": "H",
+          "subgroup": "handwriting",
+          "scored": true,
+          "reference_characters": 267,
+          "edit_distance": 9,
+          "cer": 0.033707865168539325,
+          "field_hit_count": 4,
+          "field_hits": {
+            "date": true,
+            "hospital": true,
+            "indicator": true,
+            "type": true
+          },
+          "latency_ms": [
+            228.921416,
+            227.137417,
+            232.625125
+          ]
+        },
+        {
+          "id": "h_f3_hannotate",
+          "group": "H",
+          "subgroup": "handwriting",
+          "scored": true,
+          "reference_characters": 229,
+          "edit_distance": 3,
+          "cer": 0.013100436681222707,
+          "field_hit_count": 4,
+          "field_hits": {
+            "date": true,
+            "hospital": true,
+            "indicator": true,
+            "type": true
+          },
+          "latency_ms": [
+            207.262,
+            202.290542,
+            203.847542
+          ]
+        },
+        {
+          "id": "h_f3_hanzipen",
+          "group": "H",
+          "subgroup": "handwriting",
+          "scored": true,
+          "reference_characters": 229,
+          "edit_distance": 8,
+          "cer": 0.034934497816593885,
+          "field_hit_count": 4,
+          "field_hits": {
+            "date": true,
+            "hospital": true,
+            "indicator": true,
+            "type": true
+          },
+          "latency_ms": [
+            211.952125,
+            202.806125,
+            200.707167
+          ]
+        },
+        {
+          "id": "h_f4_hannotate",
+          "group": "H",
+          "subgroup": "handwriting",
+          "scored": true,
+          "reference_characters": 176,
+          "edit_distance": 3,
+          "cer": 0.017045454545454544,
+          "field_hit_count": 4,
+          "field_hits": {
+            "date": true,
+            "hospital": true,
+            "indicator": true,
+            "type": true
+          },
+          "latency_ms": [
+            184.853917,
+            173.699042,
+            169.176458
+          ]
+        },
+        {
+          "id": "h_f4_hanzipen",
+          "group": "H",
+          "subgroup": "handwriting",
+          "scored": true,
+          "reference_characters": 176,
+          "edit_distance": 10,
+          "cer": 0.056818181818181816,
+          "field_hit_count": 4,
+          "field_hits": {
+            "date": true,
+            "hospital": true,
+            "indicator": true,
+            "type": true
+          },
+          "latency_ms": [
+            163.339333,
+            161.273,
+            161.826791
+          ]
+        },
+        {
+          "id": "h_f5_hannotate",
+          "group": "H",
+          "subgroup": "handwriting",
+          "scored": true,
+          "reference_characters": 194,
+          "edit_distance": 2,
+          "cer": 0.010309278350515464,
+          "field_hit_count": 4,
+          "field_hits": {
+            "date": true,
+            "hospital": true,
+            "indicator": true,
+            "type": true
+          },
+          "latency_ms": [
+            172.571791,
+            182.145708,
+            167.06675
+          ]
+        },
+        {
+          "id": "h_f5_hanzipen",
+          "group": "H",
+          "subgroup": "handwriting",
+          "scored": true,
+          "reference_characters": 194,
+          "edit_distance": 8,
+          "cer": 0.041237113402061855,
+          "field_hit_count": 3,
+          "field_hits": {
+            "date": true,
+            "hospital": true,
+            "indicator": false,
+            "type": true
+          },
+          "latency_ms": [
+            180.311709,
+            176.22025,
+            168.763084
+          ]
+        },
+        {
+          "id": "h_f6_hannotate",
+          "group": "H",
+          "subgroup": "handwriting",
+          "scored": true,
+          "reference_characters": 141,
+          "edit_distance": 0,
+          "cer": 0.0,
+          "field_hit_count": 4,
+          "field_hits": {
+            "date": true,
+            "hospital": true,
+            "indicator": true,
+            "type": true
+          },
+          "latency_ms": [
+            157.895958,
+            164.840167,
+            160.669333
+          ]
+        },
+        {
+          "id": "h_f6_hanzipen",
+          "group": "H",
+          "subgroup": "handwriting",
+          "scored": true,
+          "reference_characters": 141,
+          "edit_distance": 0,
+          "cer": 0.0,
+          "field_hit_count": 4,
+          "field_hits": {
+            "date": true,
+            "hospital": true,
+            "indicator": true,
+            "type": true
+          },
+          "latency_ms": [
+            160.471291,
+            147.2485,
+            166.645375
+          ]
+        },
+        {
+          "id": "h_rx1_hannotate",
+          "group": "H",
+          "subgroup": "handwriting",
+          "scored": true,
+          "reference_characters": 86,
+          "edit_distance": 2,
+          "cer": 0.023255813953488372,
+          "field_hit_count": 3,
+          "field_hits": {
+            "date": true,
+            "hospital": false,
+            "indicator": true,
+            "type": true
+          },
+          "latency_ms": [
+            113.038042,
+            109.691167,
+            105.677708
+          ]
+        },
+        {
+          "id": "h_rx1_hanzipen",
+          "group": "H",
+          "subgroup": "handwriting",
+          "scored": true,
+          "reference_characters": 86,
+          "edit_distance": 3,
+          "cer": 0.03488372093023256,
+          "field_hit_count": 3,
+          "field_hits": {
+            "date": true,
+            "hospital": true,
+            "indicator": false,
+            "type": true
+          },
+          "latency_ms": [
+            106.608209,
+            110.179833,
+            103.639834
+          ]
+        },
+        {
+          "id": "h_rx2_hannotate",
+          "group": "H",
+          "subgroup": "handwriting",
+          "scored": true,
+          "reference_characters": 81,
+          "edit_distance": 2,
+          "cer": 0.024691358024691357,
+          "field_hit_count": 3,
+          "field_hits": {
+            "date": true,
+            "hospital": false,
+            "indicator": true,
+            "type": true
+          },
+          "latency_ms": [
+            106.474125,
+            104.731667,
+            104.983916
+          ]
+        },
+        {
+          "id": "h_rx2_hanzipen",
+          "group": "H",
+          "subgroup": "handwriting",
+          "scored": true,
+          "reference_characters": 81,
+          "edit_distance": 0,
+          "cer": 0.0,
+          "field_hit_count": 4,
+          "field_hits": {
+            "date": true,
+            "hospital": true,
+            "indicator": true,
+            "type": true
+          },
+          "latency_ms": [
+            94.313583,
+            96.732375,
+            100.453833
+          ]
+        },
+        {
+          "id": "d_p_f1",
+          "group": "D",
+          "subgroup": "print",
+          "scored": true,
+          "reference_characters": 227,
+          "edit_distance": 23,
+          "cer": 0.1013215859030837,
+          "field_hit_count": 4,
+          "field_hits": {
+            "date": true,
+            "hospital": true,
+            "indicator": true,
+            "type": true
+          },
+          "latency_ms": [
+            185.587167,
+            180.815125,
+            178.474958
+          ]
+        },
+        {
+          "id": "d_p_f3",
+          "group": "D",
+          "subgroup": "print",
+          "scored": true,
+          "reference_characters": 229,
+          "edit_distance": 57,
+          "cer": 0.24890829694323144,
+          "field_hit_count": 3,
+          "field_hits": {
+            "date": true,
+            "hospital": true,
+            "indicator": false,
+            "type": true
+          },
+          "latency_ms": [
+            194.460875,
+            186.660875,
+            186.199167
+          ]
+        },
+        {
+          "id": "d_p_f4",
+          "group": "D",
+          "subgroup": "print",
+          "scored": true,
+          "reference_characters": 176,
+          "edit_distance": 23,
+          "cer": 0.13068181818181818,
+          "field_hit_count": 4,
+          "field_hits": {
+            "date": true,
+            "hospital": true,
+            "indicator": true,
+            "type": true
+          },
+          "latency_ms": [
+            167.495458,
+            164.537916,
+            156.151709
+          ]
+        },
+        {
+          "id": "d_p_f6",
+          "group": "D",
+          "subgroup": "print",
+          "scored": true,
+          "reference_characters": 141,
+          "edit_distance": 1,
+          "cer": 0.0070921985815602835,
+          "field_hit_count": 4,
+          "field_hits": {
+            "date": true,
+            "hospital": true,
+            "indicator": true,
+            "type": true
+          },
+          "latency_ms": [
+            153.120916,
+            146.497208,
+            146.154875
+          ]
+        },
+        {
+          "id": "d_h_f2_hannotate",
+          "group": "D",
+          "subgroup": "handwriting",
+          "scored": true,
+          "reference_characters": 267,
+          "edit_distance": 20,
+          "cer": 0.0749063670411985,
+          "field_hit_count": 4,
+          "field_hits": {
+            "date": true,
+            "hospital": true,
+            "indicator": true,
+            "type": true
+          },
+          "latency_ms": [
+            219.993459,
+            219.832958,
+            225.334625
+          ]
+        },
+        {
+          "id": "d_h_f3_hanzipen",
+          "group": "D",
+          "subgroup": "handwriting",
+          "scored": true,
+          "reference_characters": 229,
+          "edit_distance": 54,
+          "cer": 0.23580786026200873,
+          "field_hit_count": 3,
+          "field_hits": {
+            "date": true,
+            "hospital": true,
+            "indicator": false,
+            "type": true
+          },
+          "latency_ms": [
+            203.189375,
+            201.575833,
+            198.312875
+          ]
+        },
+        {
+          "id": "d_h_rx1_hannotate",
+          "group": "D",
+          "subgroup": "handwriting",
+          "scored": true,
+          "reference_characters": 86,
+          "edit_distance": 1,
+          "cer": 0.011627906976744186,
+          "field_hit_count": 4,
+          "field_hits": {
+            "date": true,
+            "hospital": true,
+            "indicator": true,
+            "type": true
+          },
+          "latency_ms": [
+            131.193375,
+            116.223292,
+            120.829
+          ]
+        },
+        {
+          "id": "d_h_rx2_hanzipen",
+          "group": "D",
+          "subgroup": "handwriting",
+          "scored": true,
+          "reference_characters": 81,
+          "edit_distance": 1,
+          "cer": 0.012345679012345678,
+          "field_hit_count": 3,
+          "field_hits": {
+            "date": true,
+            "hospital": false,
+            "indicator": true,
+            "type": true
+          },
+          "latency_ms": [
+            118.746875,
+            117.162042,
+            120.074833
+          ]
+        },
+        {
+          "id": "o_invoice",
+          "group": "O",
+          "subgroup": "observation",
+          "scored": false,
+          "reference_characters": 151,
+          "edit_distance": 0,
+          "cer": 0.0,
+          "field_hit_count": 0,
+          "field_hits": {
+            "date": false,
+            "hospital": false,
+            "indicator": false,
+            "type": false
+          },
+          "latency_ms": [
+            160.0995,
+            167.710958,
+            152.402459
+          ]
+        }
+      ],
+      "simulator_p95_latency_ms": 695.425166,
+      "score_components": {
+        "handwriting_cer": 0.0,
+        "print_cer": 0.0,
+        "field_hit_rate": 15.0,
+        "integration_risk": 10.0,
+        "p95_latency": 8.0,
+        "package_increment": 4.0,
+        "maintenance": 3.0
+      },
+      "total_score": 40.0,
+      "integration_label": "Apple official iOS API"
+    },
+    {
+      "engine": "RapidOCR PP-OCRv5 mobile / ONNX Runtime",
+      "engine_identifier": "rapidocr-ppocrv5-mobile",
+      "platform": "macOS Apple Silicon",
+      "print_cer": 0.023418036870951668,
+      "handwriting_cer": 0.023665223665223667,
+      "field_hit_rate": 0.875,
+      "field_hits": 105,
+      "field_total": 120,
+      "p95_latency_ms": 640.4007090022787,
+      "mean_latency_ms": 511.44732038956136,
+      "package_increment_bytes": 51269862,
+      "peak_memory_increment_bytes": 1643397120,
+      "page_metrics": [
+        {
+          "id": "p_f1",
+          "group": "P",
+          "subgroup": "print",
+          "scored": true,
+          "reference_characters": 227,
+          "edit_distance": 1,
+          "cer": 0.004405286343612335,
+          "field_hit_count": 4,
+          "field_hits": {
+            "date": true,
+            "hospital": true,
+            "indicator": true,
+            "type": true
+          },
+          "latency_ms": [
+            746.9717500498518,
+            584.5845000585541,
+            601.4145830413327
+          ]
+        },
+        {
+          "id": "p_f2",
+          "group": "P",
+          "subgroup": "print",
+          "scored": true,
+          "reference_characters": 267,
+          "edit_distance": 2,
+          "cer": 0.00749063670411985,
+          "field_hit_count": 4,
+          "field_hits": {
+            "date": true,
+            "hospital": true,
+            "indicator": true,
+            "type": true
+          },
+          "latency_ms": [
+            677.5661670835689,
+            614.50833408162,
+            589.0198750421405
+          ]
+        },
+        {
+          "id": "p_f3",
+          "group": "P",
+          "subgroup": "print",
+          "scored": true,
+          "reference_characters": 229,
+          "edit_distance": 0,
+          "cer": 0.0,
+          "field_hit_count": 4,
+          "field_hits": {
+            "date": true,
+            "hospital": true,
+            "indicator": true,
+            "type": true
+          },
+          "latency_ms": [
+            570.9661250002682,
+            629.9198749475181,
+            551.3959160307422
+          ]
+        },
+        {
+          "id": "p_f4",
+          "group": "P",
+          "subgroup": "print",
+          "scored": true,
+          "reference_characters": 176,
+          "edit_distance": 1,
+          "cer": 0.005681818181818182,
+          "field_hit_count": 4,
+          "field_hits": {
+            "date": true,
+            "hospital": true,
+            "indicator": true,
+            "type": true
+          },
+          "latency_ms": [
+            672.8300420800224,
+            596.8135829316452,
+            563.7294580228627
+          ]
+        },
+        {
+          "id": "p_f5",
+          "group": "P",
+          "subgroup": "print",
+          "scored": true,
+          "reference_characters": 194,
+          "edit_distance": 1,
+          "cer": 0.005154639175257732,
+          "field_hit_count": 4,
+          "field_hits": {
+            "date": true,
+            "hospital": true,
+            "indicator": true,
+            "type": true
+          },
+          "latency_ms": [
+            559.8037920426577,
+            535.0038330070674,
+            539.3497500335798
+          ]
+        },
+        {
+          "id": "p_f6",
+          "group": "P",
+          "subgroup": "print",
+          "scored": true,
+          "reference_characters": 141,
+          "edit_distance": 1,
+          "cer": 0.0070921985815602835,
+          "field_hit_count": 4,
+          "field_hits": {
+            "date": true,
+            "hospital": true,
+            "indicator": true,
+            "type": true
+          },
+          "latency_ms": [
+            490.0107500143349,
+            473.7609999720007,
+            478.19000005256385
+          ]
+        },
+        {
+          "id": "h_f1_hannotate",
+          "group": "H",
+          "subgroup": "handwriting",
+          "scored": true,
+          "reference_characters": 227,
+          "edit_distance": 2,
+          "cer": 0.00881057268722467,
+          "field_hit_count": 4,
+          "field_hits": {
+            "date": true,
+            "hospital": true,
+            "indicator": true,
+            "type": true
+          },
+          "latency_ms": [
+            547.5682080723345,
+            527.9864580370486,
+            508.7565410649404
+          ]
+        },
+        {
+          "id": "h_f1_hanzipen",
+          "group": "H",
+          "subgroup": "handwriting",
+          "scored": true,
+          "reference_characters": 227,
+          "edit_distance": 6,
+          "cer": 0.02643171806167401,
+          "field_hit_count": 4,
+          "field_hits": {
+            "date": true,
+            "hospital": true,
+            "indicator": true,
+            "type": true
+          },
+          "latency_ms": [
+            514.9027920560911,
+            501.80049997288734,
+            503.3902090508491
+          ]
+        },
+        {
+          "id": "h_f2_hannotate",
+          "group": "H",
+          "subgroup": "handwriting",
+          "scored": true,
+          "reference_characters": 267,
+          "edit_distance": 2,
+          "cer": 0.00749063670411985,
+          "field_hit_count": 3,
+          "field_hits": {
+            "date": true,
+            "hospital": true,
+            "indicator": false,
+            "type": true
+          },
+          "latency_ms": [
+            611.920457915403,
+            638.7697919271886,
+            593.0786250391975
+          ]
+        },
+        {
+          "id": "h_f2_hanzipen",
+          "group": "H",
+          "subgroup": "handwriting",
+          "scored": true,
+          "reference_characters": 267,
+          "edit_distance": 9,
+          "cer": 0.033707865168539325,
+          "field_hit_count": 3,
+          "field_hits": {
+            "date": true,
+            "hospital": true,
+            "indicator": false,
+            "type": true
+          },
+          "latency_ms": [
+            640.4007090022787,
+            607.2916669072583,
+            575.0938339624554
+          ]
+        },
+        {
+          "id": "h_f3_hannotate",
+          "group": "H",
+          "subgroup": "handwriting",
+          "scored": true,
+          "reference_characters": 229,
+          "edit_distance": 4,
+          "cer": 0.017467248908296942,
+          "field_hit_count": 4,
+          "field_hits": {
+            "date": true,
+            "hospital": true,
+            "indicator": true,
+            "type": true
+          },
+          "latency_ms": [
+            575.6485000019893,
+            580.5321249645203,
+            588.174375006929
+          ]
+        },
+        {
+          "id": "h_f3_hanzipen",
+          "group": "H",
+          "subgroup": "handwriting",
+          "scored": true,
+          "reference_characters": 229,
+          "edit_distance": 8,
+          "cer": 0.034934497816593885,
+          "field_hit_count": 3,
+          "field_hits": {
+            "date": false,
+            "hospital": true,
+            "indicator": true,
+            "type": true
+          },
+          "latency_ms": [
+            598.5428750282153,
+            525.7816669763997,
+            548.470166977495
+          ]
+        },
+        {
+          "id": "h_f4_hannotate",
+          "group": "H",
+          "subgroup": "handwriting",
+          "scored": true,
+          "reference_characters": 176,
+          "edit_distance": 2,
+          "cer": 0.011363636363636364,
+          "field_hit_count": 4,
+          "field_hits": {
+            "date": true,
+            "hospital": true,
+            "indicator": true,
+            "type": true
+          },
+          "latency_ms": [
+            498.5118330223486,
+            505.44674997217953,
+            502.190834027715
+          ]
+        },
+        {
+          "id": "h_f4_hanzipen",
+          "group": "H",
+          "subgroup": "handwriting",
+          "scored": true,
+          "reference_characters": 176,
+          "edit_distance": 4,
+          "cer": 0.022727272727272728,
+          "field_hit_count": 4,
+          "field_hits": {
+            "date": true,
+            "hospital": true,
+            "indicator": true,
+            "type": true
+          },
+          "latency_ms": [
+            565.4079170199111,
+            542.5762500381097,
+            544.4385829614475
+          ]
+        },
+        {
+          "id": "h_f5_hannotate",
+          "group": "H",
+          "subgroup": "handwriting",
+          "scored": true,
+          "reference_characters": 194,
+          "edit_distance": 0,
+          "cer": 0.0,
+          "field_hit_count": 3,
+          "field_hits": {
+            "date": true,
+            "hospital": true,
+            "indicator": false,
+            "type": true
+          },
+          "latency_ms": [
+            611.376165994443,
+            544.3349580746144,
+            547.1042089629918
+          ]
+        },
+        {
+          "id": "h_f5_hanzipen",
+          "group": "H",
+          "subgroup": "handwriting",
+          "scored": true,
+          "reference_characters": 194,
+          "edit_distance": 6,
+          "cer": 0.030927835051546393,
+          "field_hit_count": 2,
+          "field_hits": {
+            "date": false,
+            "hospital": true,
+            "indicator": false,
+            "type": true
+          },
+          "latency_ms": [
+            602.3801249684766,
+            572.7675830712542,
+            545.8645829930902
+          ]
+        },
+        {
+          "id": "h_f6_hannotate",
+          "group": "H",
+          "subgroup": "handwriting",
+          "scored": true,
+          "reference_characters": 141,
+          "edit_distance": 1,
+          "cer": 0.0070921985815602835,
+          "field_hit_count": 4,
+          "field_hits": {
+            "date": true,
+            "hospital": true,
+            "indicator": true,
+            "type": true
+          },
+          "latency_ms": [
+            506.1225419631228,
+            506.10791705548763,
+            466.62612503860146
+          ]
+        },
+        {
+          "id": "h_f6_hanzipen",
+          "group": "H",
+          "subgroup": "handwriting",
+          "scored": true,
+          "reference_characters": 141,
+          "edit_distance": 1,
+          "cer": 0.0070921985815602835,
+          "field_hit_count": 3,
+          "field_hits": {
+            "date": false,
+            "hospital": true,
+            "indicator": true,
+            "type": true
+          },
+          "latency_ms": [
+            420.5082079861313,
+            424.1727920016274,
+            422.888416913338
+          ]
+        },
+        {
+          "id": "h_rx1_hannotate",
+          "group": "H",
+          "subgroup": "handwriting",
+          "scored": true,
+          "reference_characters": 86,
+          "edit_distance": 2,
+          "cer": 0.023255813953488372,
+          "field_hit_count": 4,
+          "field_hits": {
+            "date": true,
+            "hospital": true,
+            "indicator": true,
+            "type": true
+          },
+          "latency_ms": [
+            398.19354203063995,
+            442.20645795576274,
+            337.6172499265522
+          ]
+        },
+        {
+          "id": "h_rx1_hanzipen",
+          "group": "H",
+          "subgroup": "handwriting",
+          "scored": true,
+          "reference_characters": 86,
+          "edit_distance": 3,
+          "cer": 0.03488372093023256,
+          "field_hit_count": 2,
+          "field_hits": {
+            "date": false,
+            "hospital": true,
+            "indicator": false,
+            "type": true
+          },
+          "latency_ms": [
+            367.4071249552071,
+            343.8822500174865,
+            327.7405420085415
+          ]
+        },
+        {
+          "id": "h_rx2_hannotate",
+          "group": "H",
+          "subgroup": "handwriting",
+          "scored": true,
+          "reference_characters": 81,
+          "edit_distance": 2,
+          "cer": 0.024691358024691357,
+          "field_hit_count": 4,
+          "field_hits": {
+            "date": true,
+            "hospital": true,
+            "indicator": true,
+            "type": true
+          },
+          "latency_ms": [
+            349.3907079100609,
+            358.84537489619106,
+            348.66191702894866
+          ]
+        },
+        {
+          "id": "h_rx2_hanzipen",
+          "group": "H",
+          "subgroup": "handwriting",
+          "scored": true,
+          "reference_characters": 81,
+          "edit_distance": 3,
+          "cer": 0.037037037037037035,
+          "field_hit_count": 4,
+          "field_hits": {
+            "date": true,
+            "hospital": true,
+            "indicator": true,
+            "type": true
+          },
+          "latency_ms": [
+            344.60845799185336,
+            334.17737495619804,
+            336.9446670403704
+          ]
+        },
+        {
+          "id": "d_p_f1",
+          "group": "D",
+          "subgroup": "print",
+          "scored": true,
+          "reference_characters": 227,
+          "edit_distance": 16,
+          "cer": 0.07048458149779736,
+          "field_hit_count": 4,
+          "field_hits": {
+            "date": true,
+            "hospital": true,
+            "indicator": true,
+            "type": true
+          },
+          "latency_ms": [
+            560.6616250006482,
+            561.517541995272,
+            616.0415000049397
+          ]
+        },
+        {
+          "id": "d_p_f3",
+          "group": "D",
+          "subgroup": "print",
+          "scored": true,
+          "reference_characters": 229,
+          "edit_distance": 5,
+          "cer": 0.021834061135371178,
+          "field_hit_count": 3,
+          "field_hits": {
+            "date": true,
+            "hospital": false,
+            "indicator": true,
+            "type": true
+          },
+          "latency_ms": [
+            710.5939999455586,
+            601.6377500491217,
+            536.3056249916553
+          ]
+        },
+        {
+          "id": "d_p_f4",
+          "group": "D",
+          "subgroup": "print",
+          "scored": true,
+          "reference_characters": 176,
+          "edit_distance": 8,
+          "cer": 0.045454545454545456,
+          "field_hit_count": 3,
+          "field_hits": {
+            "date": true,
+            "hospital": false,
+            "indicator": true,
+            "type": true
+          },
+          "latency_ms": [
+            574.0769170224667,
+            548.0378749780357,
+            531.7190829664469
+          ]
+        },
+        {
+          "id": "d_p_f6",
+          "group": "D",
+          "subgroup": "print",
+          "scored": true,
+          "reference_characters": 141,
+          "edit_distance": 12,
+          "cer": 0.0851063829787234,
+          "field_hit_count": 3,
+          "field_hits": {
+            "date": true,
+            "hospital": true,
+            "indicator": false,
+            "type": true
+          },
+          "latency_ms": [
+            453.386583016254,
+            429.6775839757174,
+            432.0228340802714
+          ]
+        },
+        {
+          "id": "d_h_f2_hannotate",
+          "group": "D",
+          "subgroup": "handwriting",
+          "scored": true,
+          "reference_characters": 267,
+          "edit_distance": 17,
+          "cer": 0.06367041198501873,
+          "field_hit_count": 1,
+          "field_hits": {
+            "date": false,
+            "hospital": false,
+            "indicator": false,
+            "type": true
+          },
+          "latency_ms": [
+            636.5667909849435,
+            570.6846669781953,
+            602.6012080255896
+          ]
+        },
+        {
+          "id": "d_h_f3_hanzipen",
+          "group": "D",
+          "subgroup": "handwriting",
+          "scored": true,
+          "reference_characters": 229,
+          "edit_distance": 7,
+          "cer": 0.03056768558951965,
+          "field_hit_count": 4,
+          "field_hits": {
+            "date": true,
+            "hospital": true,
+            "indicator": true,
+            "type": true
+          },
+          "latency_ms": [
+            523.0134589364752,
+            500.7904999656603,
+            511.895666946657
+          ]
+        },
+        {
+          "id": "d_h_rx1_hannotate",
+          "group": "D",
+          "subgroup": "handwriting",
+          "scored": true,
+          "reference_characters": 86,
+          "edit_distance": 2,
+          "cer": 0.023255813953488372,
+          "field_hit_count": 4,
+          "field_hits": {
+            "date": true,
+            "hospital": true,
+            "indicator": true,
+            "type": true
+          },
+          "latency_ms": [
+            326.35245798155665,
+            299.9901659786701,
+            314.5129580516368
+          ]
+        },
+        {
+          "id": "d_h_rx2_hanzipen",
+          "group": "D",
+          "subgroup": "handwriting",
+          "scored": true,
+          "reference_characters": 81,
+          "edit_distance": 1,
+          "cer": 0.012345679012345678,
+          "field_hit_count": 4,
+          "field_hits": {
+            "date": true,
+            "hospital": true,
+            "indicator": true,
+            "type": true
+          },
+          "latency_ms": [
+            315.4402080690488,
+            292.9226659471169,
+            297.35887493006885
+          ]
+        },
+        {
+          "id": "o_invoice",
+          "group": "O",
+          "subgroup": "observation",
+          "scored": false,
+          "reference_characters": 151,
+          "edit_distance": 1,
+          "cer": 0.006622516556291391,
+          "field_hit_count": 0,
+          "field_hits": {
+            "date": false,
+            "hospital": false,
+            "indicator": false,
+            "type": false
+          },
+          "latency_ms": [
+            506.9523329148069,
+            496.82058300822973,
+            508.65566707216203
+          ]
+        }
+      ],
+      "score_components": {
+        "handwriting_cer": 35.0,
+        "print_cer": 25.0,
+        "field_hit_rate": 0.0,
+        "integration_risk": 7.0,
+        "p95_latency": 8.0,
+        "package_increment": 1.7403499603271486,
+        "maintenance": 3.0
+      },
+      "total_score": 79.74034996032715,
+      "integration_label": "mature ONNX models + official ONNX Runtime iOS path"
+    }
+  ],
+  "decision": {
+    "score_winner": "RapidOCR PP-OCRv5 mobile / ONNX Runtime",
+    "selected_engine": "Apple Vision",
+    "selected_engine_identifier": "apple-vision",
+    "handwriting_improvement_percentage_points": 1.5584415584415583,
+    "print_cer_change_percentage_points": -3.6372695565520674,
+    "switch_thresholds_passed": false,
+    "conclusion": "Maintain Apple Vision as the single shipping OCR engine."
+  }
+}

@@ -1,0 +1,1097 @@
+{
+  "baseline_rss_bytes" : 841777152,
+  "engine" : "RapidOCR PP-OCRv5 mobile / ONNX Runtime",
+  "engine_identifier" : "rapidocr-ppocrv5-mobile",
+  "estimated_arm64_increment_bytes" : 51269862,
+  "extraction_engine_source" : "CareThread/Core/Services/ExtractionEngine/ExtractionEngine.swift",
+  "iterations_per_page" : 3,
+  "model_bytes" : 22469390,
+  "model_sha256" : {
+    "cls" : "54379ae5174d026780215fc748a7f31910dee36818e63d49e17dc598ecc82df7",
+    "det" : "4d97c44a20d30a81aad087d6a396b08f786c4635742afc391f6621f5c6ae78ae",
+    "rec" : "5825fc7ebf84ae7a412be049820b4d86d77620f204a041697b0494669b1742c5"
+  },
+  "network_socket_disabled" : true,
+  "onnxruntime_version" : "1.26.0",
+  "peak_rss_bytes" : 2485174272,
+  "peak_rss_increment_bytes" : 1643397120,
+  "platform" : "macOS Apple Silicon",
+  "rapidocr_version" : "3.8.4",
+  "rows" : [
+    {
+      "average_confidence" : 0.985679090909091,
+      "extraction" : {
+        "date" : "2024-08-22",
+        "department" : "甲状腺外科",
+        "hospital" : "四川大学华西医院",
+        "lab_values" : [
+          24
+        ],
+        "medication_doses" : [
+
+        ],
+        "summary" : "（右叶）甲状腺乳头状癌，肿瘤大小约1.1×0.8cm，未见明确",
+        "title" : "病理报告",
+        "type" : "pathology"
+      },
+      "field_hit_count" : 4,
+      "field_hits" : {
+        "date" : true,
+        "hospital" : true,
+        "indicator" : true,
+        "type" : true
+      },
+      "group" : "P",
+      "id" : "p_f1",
+      "latency_ms" : [
+        746.97175004985183,
+        584.58450005855411,
+        601.41458304133266
+      ],
+      "scored" : true,
+      "subgroup" : "print",
+      "text" : "四川大学华西医院\n病理诊断报告单\n病理号：S2024-45678姓名：王晓芸性别：年龄：32岁\n送检科室：甲状腺外科送检日期：2024-08-22\n临床诊断：甲状腺右叶结节 (TI-RADS 4b)\n肉眼所见：右叶腺体一枚，大小4.5×3.0×2.0cm，切面见灰白结节一枚，\n直径约1.1cm。\n病理诊断：（右叶）甲状腺乳头状癌，肿瘤大小约1.1×0.8cm，未见明确\n脉管内癌栓。\n(右侧中央区）淋巴结2/6枚查见癌转移。\n备注：建议结合临床，必要时行免疫组化进一步检测。"
+    },
+    {
+      "average_confidence" : 0.98882692307692299,
+      "extraction" : {
+        "date" : "2024-09-02",
+        "department" : "甲状腺外科",
+        "hospital" : "四川大学华西医院",
+        "lab_values" : [
+          2024
+        ],
+        "medication_doses" : [
+          100
+        ],
+        "summary" : "甲状腺乳头状癌(右叶，pT1bN1aMO)",
+        "title" : "出院小结",
+        "type" : "discharge"
+      },
+      "field_hit_count" : 4,
+      "field_hits" : {
+        "date" : true,
+        "hospital" : true,
+        "indicator" : true,
+        "type" : true
+      },
+      "group" : "P",
+      "id" : "p_f2",
+      "latency_ms" : [
+        677.56616708356887,
+        614.50833408161998,
+        589.01987504214048
+      ],
+      "scored" : true,
+      "subgroup" : "print",
+      "text" : "四川大学华西医院 出院小结\n姓名：王晓芸性别：女年龄：32岁科室：甲状腺外科\n入院日期：2024-08-23出院日期：2024-09-02\n入院诊断：甲状腺右叶结节(TI-RADS 4b)\n出院诊断：甲状腺乳头状癌(右叶，pT1bN1aMO)\n诊疗经过：完善检查后于2024-08-25行甲状腺全切除术+右侧中央区淋\n巴结清扫术，\n手术顺利，术后恢复良好，切口愈合佳。\n出院医嘱：\n1.左甲状腺素钠片（优甲乐）100ug每日1次晨起空腹口服；\n2.术后1个月复查甲状腺功能；\n3.术后3个月复查颈部超声及甲状腺功能，门诊随访；\n4.如有心慌、手抖等不适及时就诊。"
+    },
+    {
+      "average_confidence" : 0.9837758333333334,
+      "extraction" : {
+        "date" : "2026-03-15",
+        "department" : "内分泌科",
+        "hospital" : "四川大学华西医院",
+        "lab_values" : [
+          8,
+          22.800000000000001,
+          5.9000000000000004,
+          0.059999999999999998,
+          10.199999999999999
+        ],
+        "medication_doses" : [
+
+        ],
+        "summary" : "5 项指标，2 项异常：促甲状腺激素TSH0. 8 ↓、游离甲状腺素FT4 22.8 ↑",
+        "title" : "甲状腺功能五项",
+        "type" : "lab"
+      },
+      "field_hit_count" : 4,
+      "field_hits" : {
+        "date" : true,
+        "hospital" : true,
+        "indicator" : true,
+        "type" : true
+      },
+      "group" : "P",
+      "id" : "p_f3",
+      "latency_ms" : [
+        570.96612500026822,
+        629.91987494751811,
+        551.39591603074223
+      ],
+      "scored" : true,
+      "subgroup" : "print",
+      "text" : "四川大学华西医院 检验报告单\n姓名：王晓芸性别：女年龄：33岁科室：内分泌科\n标本：血清项目：甲状腺功能五项\n采集日期：2026-03-15报告日期：2026-03-15\n检验项目\n结果单位\n参考区间\n促甲状腺激素TSH0.08↓mIU/L0.27-4.20\n游离甲状腺素FT422.8↑ pmol/L12.0-22.0\n游离三碘甲状腺原氨酸 FT35.9pmol/L3.1-6.8\n甲状腺球蛋白 Tg 0.06 μg/L 3.5-77.0\n甲状腺球蛋白抗体TgAb 10.2IU/ml0-115"
+    },
+    {
+      "average_confidence" : 0.98574874999999995,
+      "extraction" : {
+        "date" : "2026-03-15",
+        "department" : "内分泌科",
+        "hospital" : "四川大学华西医院",
+        "lab_values" : [
+
+        ],
+        "medication_doses" : [
+
+        ],
+        "summary" : "甲状腺全切术后，术区及双侧颈部未见明确复发征象。",
+        "title" : "颈部超声(甲状腺术后)",
+        "type" : "imaging"
+      },
+      "field_hit_count" : 4,
+      "field_hits" : {
+        "date" : true,
+        "hospital" : true,
+        "indicator" : true,
+        "type" : true
+      },
+      "group" : "P",
+      "id" : "p_f4",
+      "latency_ms" : [
+        672.83004208002239,
+        596.81358293164521,
+        563.72945802286267
+      ],
+      "scored" : true,
+      "subgroup" : "print",
+      "text" : "四川大学华西医院 超声检查报告单\n姓名：王晓芸性别：女年龄：33岁申请科室：内分泌科\n检查项目：颈部超声(甲状腺术后)\n检查日期：2026-03-15\n超声所见：甲状腺术后缺如，术区未见明确异常回声及异常血流信号。\n双侧颈部ⅡI-IV区探及数枚淋巴结，形态规则，皮髓质分界清晰，较大者\n约0.8×0.4cm。\n检查结论：甲状腺全切术后，术区及双侧颈部未见明确复发征象。"
+    },
+    {
+      "average_confidence" : 0.99107299999999987,
+      "extraction" : {
+        "date" : "2026-03-15",
+        "department" : "甲状腺外科",
+        "hospital" : "四川大学华西医院",
+        "lab_values" : [
+          2024
+        ],
+        "medication_doses" : [
+          75
+        ],
+        "summary" : "四川大学华西医院门诊病历",
+        "title" : "门诊病历",
+        "type" : "outpatient"
+      },
+      "field_hit_count" : 4,
+      "field_hits" : {
+        "date" : true,
+        "hospital" : true,
+        "indicator" : true,
+        "type" : true
+      },
+      "group" : "P",
+      "id" : "p_f5",
+      "latency_ms" : [
+        559.80379204265773,
+        535.00383300706744,
+        539.34975003357977
+      ],
+      "scored" : true,
+      "subgroup" : "print",
+      "text" : "四川大学华西医院门诊病历\n就诊日期：2026-03-15科室：甲状腺外科姓名：王晓芸年龄：33岁\n主诉：甲状腺癌术后1年半，偶感心慌2周。\n现病史：患者2024-08行甲状腺全切术，术后规律服用优甲乐100μg每日\n1次。\n近2周偶感心慌、怕热，无手抖。今日复查甲功示TSH偏低、FT4偏高。\n处理意见：\n1.左甲状腺素钠片调整为75ug每日1次晨起空腹口服；\n2.3个月后复查甲状腺功能；\n3.不适随诊。"
+    },
+    {
+      "average_confidence" : 0.99540999999999991,
+      "extraction" : {
+        "date" : "2025-11-03",
+        "department" : "放射科",
+        "hospital" : "成都市第三人民医院",
+        "lab_values" : [
+
+        ],
+        "medication_doses" : [
+
+        ],
+        "summary" : "胸部CT平扫未见明显异常。",
+        "title" : "胸部CT平扫",
+        "type" : "imaging"
+      },
+      "field_hit_count" : 4,
+      "field_hits" : {
+        "date" : true,
+        "hospital" : true,
+        "indicator" : true,
+        "type" : true
+      },
+      "group" : "P",
+      "id" : "p_f6",
+      "latency_ms" : [
+        490.01075001433492,
+        473.76099997200072,
+        478.19000005256385
+      ],
+      "scored" : true,
+      "subgroup" : "print",
+      "text" : "成都市第三人民医院 放射科 CT检查报告单\n姓名：王晓芸性别：女年龄：33岁\n检查项目：胸部CT平扫\n检查日期：2025-11-03\n影像学表现：两肺纹理清晰，未见实质性病灶。气管及主支气管通畅。\n纵隔居中，其内未见肿大淋巴结。心脏大小形态正常。双侧胸腔未见积液\n印象：胸部CT平扫未见明显异常。"
+    },
+    {
+      "average_confidence" : 0.98245153846153843,
+      "extraction" : {
+        "date" : "2024-08-22",
+        "department" : "甲状腺外科",
+        "hospital" : "四川大学华西医院",
+        "lab_values" : [
+          24
+        ],
+        "medication_doses" : [
+
+        ],
+        "summary" : "(右叶）甲状腺乳头状癌，肿瘤大小约1.1×0.8cm，未",
+        "title" : "病理报告",
+        "type" : "pathology"
+      },
+      "field_hit_count" : 4,
+      "field_hits" : {
+        "date" : true,
+        "hospital" : true,
+        "indicator" : true,
+        "type" : true
+      },
+      "group" : "H",
+      "id" : "h_f1_hannotate",
+      "latency_ms" : [
+        547.56820807233453,
+        527.98645803704858,
+        508.75654106494039
+      ],
+      "scored" : true,
+      "subgroup" : "handwriting",
+      "text" : "四川大学华西医院\n病理诊断报告单\n病理号：S2024-45678姓名：王晓芸\n性別：女年龄：32\n岁\n送检科室：甲状腺外科送检日期：2024-08-22\n临床诊断：甲状腺右叶结节(TI-RADS4b)\n肉眼所见：右叶腺体一枚，大小4.5×3.0×2.0cm，切面见灰白结节\n一枚，直径约1.1cm。\n病理诊断：(右叶）甲状腺乳头状癌，肿瘤大小约1.1×0.8cm，未\n见明确脈管内癌栓。\n(右侧中央区）淋巴结2/6枚查见癌转移。\n备注：建议结合临床，必要时行免疫组化进一步检测。"
+    },
+    {
+      "average_confidence" : 0.98125846153846163,
+      "extraction" : {
+        "date" : "2024-08-22",
+        "department" : "甲状腺外科",
+        "hospital" : "四川大学华西医院",
+        "lab_values" : [
+          24
+        ],
+        "medication_doses" : [
+
+        ],
+        "summary" : "（右叶）甲状腺乳头状癌，肿瘤大小约7.7x0.8cm，",
+        "title" : "病理报告",
+        "type" : "pathology"
+      },
+      "field_hit_count" : 4,
+      "field_hits" : {
+        "date" : true,
+        "hospital" : true,
+        "indicator" : true,
+        "type" : true
+      },
+      "group" : "H",
+      "id" : "h_f1_hanzipen",
+      "latency_ms" : [
+        514.90279205609113,
+        501.80049997288734,
+        503.39020905084908
+      ],
+      "scored" : true,
+      "subgroup" : "handwriting",
+      "text" : "四川大学华西医院\n病理诊断报告单\n病理号：S2024-45678姓名：王晓芸\n性别：女年龄：3\n2岁\n送检科室：甲状腺外科送检日期：2024-08-22\n临床诊断：甲状腺右叶结节(T1-RADS4b)\n肉眼所见：右叶腺体一枚，大小4.5×3.0×2.0cm，切面见灰白结\n节一枚，直径约7.7cm。\n病理诊断：（右叶）甲状腺乳头状癌，肿瘤大小约7.7x0.8cm，\n未见明确脉管内癌栓。\n（右侧中央区）淋巴结2/6枚查见癌转移。\n备注：建议结合临床，必要时行免疫组化进一步检测。"
+    },
+    {
+      "average_confidence" : 0.98857384615384614,
+      "extraction" : {
+        "date" : "2024-09-02",
+        "department" : "甲状腺外科",
+        "hospital" : "四川大学华西医院",
+        "lab_values" : [
+          2024
+        ],
+        "medication_doses" : [
+
+        ],
+        "summary" : "甲状腺乳头状癌(右叶，pT1bN1aMO)",
+        "title" : "出院小结",
+        "type" : "discharge"
+      },
+      "field_hit_count" : 3,
+      "field_hits" : {
+        "date" : true,
+        "hospital" : true,
+        "indicator" : false,
+        "type" : true
+      },
+      "group" : "H",
+      "id" : "h_f2_hannotate",
+      "latency_ms" : [
+        611.92045791540295,
+        638.76979192718863,
+        593.0786250391975
+      ],
+      "scored" : true,
+      "subgroup" : "handwriting",
+      "text" : "四川大学华西医院 出院小结\n姓名：王晓芸性別：女年龄：32岁科室：甲状腺外科\n入院日期：2024-08-23出院日期：2024-09-02\n入院诊断：甲状腺右叶结节 (TI-RADS 4b)\n出院诊断：甲状腺乳头状癌(右叶，pT1bN1aMO)\n诊疗经过：完善检查后于2024-08-25行甲状腺全切除术+右侧中\n央区淋巴结清扫术，\n手术顺利，术后恢复良好，切口愈合佳。\n出院医嘱：\n1.左甲状腺素钠片（优甲乐）100μg每日1次晨起空腹口服；\n2.术后1个月复查甲状腺功能；\n3.术后3个月复查颈部超声及甲状腺功能，门诊随访；\n4.如有心慌、手抖等不适及时就诊。"
+    },
+    {
+      "average_confidence" : 0.9744346153846154,
+      "extraction" : {
+        "date" : "2024-09-02",
+        "department" : "甲状腺外科",
+        "hospital" : "四川大学华西医院",
+        "lab_values" : [
+          2024
+        ],
+        "medication_doses" : [
+
+        ],
+        "summary" : "甲状腺乳头状癌(右叶，PT1bN7aMO)",
+        "title" : "出院小结",
+        "type" : "discharge"
+      },
+      "field_hit_count" : 3,
+      "field_hits" : {
+        "date" : true,
+        "hospital" : true,
+        "indicator" : false,
+        "type" : true
+      },
+      "group" : "H",
+      "id" : "h_f2_hanzipen",
+      "latency_ms" : [
+        640.40070900227875,
+        607.29166690725833,
+        575.09383396245539
+      ],
+      "scored" : true,
+      "subgroup" : "handwriting",
+      "text" : "四川大学华西医院 出院小结\n姓名：王晓芸性别：女年龄：32岁科室：甲状腺外科\n入院日期：2024-08-23出院日期：2024-09-02\n入院诊断：甲状腺右叶结节(T1-RADS4b)\n出院诊断：甲状腺乳头状癌(右叶，PT1bN7aMO)\n诊疗经过：完善检查后于2024-08-25行甲状腺全切除术+右侧中\n央区淋巴结清扫术，\n手术顺利，术后恢复良好，切口愈合佳。\n出院医嘱：\n7.左甲状腺素钠片（优甲乐）700μmg每日7次晨起空腹口服；\n2.术后7个月复查甲状腺功能；\n3.术后3个月复查颈部超声及甲状腺功能，门诊随访；\n4.如有心慌、手抖等不适及时就诊。"
+    },
+    {
+      "average_confidence" : 0.98457857142857141,
+      "extraction" : {
+        "date" : "2026-03-15",
+        "department" : "内分泌科",
+        "hospital" : "四川大学华西医院",
+        "lab_values" : [
+          8,
+          22.800000000000001,
+          5.9000000000000004,
+          0.20000000000000001
+        ],
+        "medication_doses" : [
+
+        ],
+        "summary" : "4 项指标，2 项异常：促甲状腺激素 TSH0. 8 ↓、游离甲状腺素 FT4 22.8 ↑",
+        "title" : "甲状腺功能五项",
+        "type" : "lab"
+      },
+      "field_hit_count" : 4,
+      "field_hits" : {
+        "date" : true,
+        "hospital" : true,
+        "indicator" : true,
+        "type" : true
+      },
+      "group" : "H",
+      "id" : "h_f3_hannotate",
+      "latency_ms" : [
+        575.64850000198931,
+        580.53212496452034,
+        588.17437500692904
+      ],
+      "scored" : true,
+      "subgroup" : "handwriting",
+      "text" : "四川大学华西医院 检验报告单\n姓名：王晓芸性別：女年龄：33岁科室：内分泌科\n标本：血清项目：甲状腺功能五项\n採集日期：2026-03-15报告日期：2026-03-15\n检验项目\n结果\n单位\n参考区间\n促甲状腺激素 TSH0.08↓mIU/L0.27-4.20\n游离甲状腺素 FT422.8↑pmol/L12.0-22.0\n游离三碘甲状腺原氨酸 FT35.9pmol/L3.1-6.8\n甲状腺球蛋白 Tg0.06\n6 μg/ 3.5-77.0\n甲状腺球蛋白抗体TgAb10.2IU/ml0-115"
+    },
+    {
+      "average_confidence" : 0.97381416666666665,
+      "extraction" : {
+        "date" : null,
+        "department" : "内分泌科",
+        "hospital" : "四川大学华西医院",
+        "lab_values" : [
+          8,
+          22.800000000000001,
+          5.9000000000000004,
+          6,
+          0.20999999999999999
+        ],
+        "medication_doses" : [
+
+        ],
+        "summary" : "5 项指标，2 项异常：促甲状腺激素TSH0. 8 ↓、游离甲状腺素FT4 22.8 ↑",
+        "title" : "甲状腺功能五项",
+        "type" : "lab"
+      },
+      "field_hit_count" : 3,
+      "field_hits" : {
+        "date" : false,
+        "hospital" : true,
+        "indicator" : true,
+        "type" : true
+      },
+      "group" : "H",
+      "id" : "h_f3_hanzipen",
+      "latency_ms" : [
+        598.54287502821535,
+        525.78166697639972,
+        548.47016697749496
+      ],
+      "scored" : true,
+      "subgroup" : "handwriting",
+      "text" : "四川大学华西医院 检验报告单\n姓名：王晓芸性别：女年龄：33岁科室：内分泌科\n标本：血清项目：甲状腺功能五项\n采集日期：2026-03-75报告日期：2026-03-75\n检验项目\n结果单位\n参考区间\n促甲状腺激素TSH0.08↓m1U/L0.27-4.20\n游离甲状腺素FT422.8↑pmol/L72.0-22.0\n游离三碘甲状腺原氨酸FT35.9pmol/L3.7-6.8\n甲状腺球蛋白 Tg0.06μg/L3.5-77.0\n甲状腺球蛋白抗体TgAb10.21U/ml0-775"
+    },
+    {
+      "average_confidence" : 0.98231777777777773,
+      "extraction" : {
+        "date" : "2026-03-15",
+        "department" : "内分泌科",
+        "hospital" : "四川大学华西医院",
+        "lab_values" : [
+
+        ],
+        "medication_doses" : [
+
+        ],
+        "summary" : "甲状腺全切术后，术区及双侧颈部未见明确复发征象",
+        "title" : "颈部超声",
+        "type" : "imaging"
+      },
+      "field_hit_count" : 4,
+      "field_hits" : {
+        "date" : true,
+        "hospital" : true,
+        "indicator" : true,
+        "type" : true
+      },
+      "group" : "H",
+      "id" : "h_f4_hannotate",
+      "latency_ms" : [
+        498.51183302234858,
+        505.44674997217953,
+        502.19083402771503
+      ],
+      "scored" : true,
+      "subgroup" : "handwriting",
+      "text" : "四川大学华西医院 超声检查报告单\n姓名：王晓芸性别：女年龄：33岁申请科室：内分泌科\n检查项目：颈部超声 (甲状腺术后)\n检查日期：2026-03-15\n超声所见：甲状腺术后缺如，术区未见明确异常回声及异常血流\n信号。\n双侧颈部ⅡI-IV区探及数枚淋巴结，形态规则，皮髓质分界清晰，\n较大者约0.8×0.4cm。\n检查结论：甲状腺全切术后，术区及双侧颈部未见明确复发征象"
+    },
+    {
+      "average_confidence" : 0.98298444444444444,
+      "extraction" : {
+        "date" : "2026-03-15",
+        "department" : "内分泌科",
+        "hospital" : "四川大学华西医院",
+        "lab_values" : [
+          11
+        ],
+        "medication_doses" : [
+
+        ],
+        "summary" : "甲状腺全切术后，术区及双侧颈部未见明确复发征象",
+        "title" : "颈部超声(甲状腺术后)",
+        "type" : "imaging"
+      },
+      "field_hit_count" : 4,
+      "field_hits" : {
+        "date" : true,
+        "hospital" : true,
+        "indicator" : true,
+        "type" : true
+      },
+      "group" : "H",
+      "id" : "h_f4_hanzipen",
+      "latency_ms" : [
+        565.40791701991111,
+        542.57625003810972,
+        544.43858296144754
+      ],
+      "scored" : true,
+      "subgroup" : "handwriting",
+      "text" : "四川大学华西医院超声检查报告单\n姓名：王晓芸性别：女年龄：33岁申请科室：内分泌科\n检查项目：颈部超声(甲状腺术后)\n检查日期：2026-03-15\n超声所见：甲状腺术后缺如，术区未见明确异常回声及异常血流\n信号。\n双侧颈部11-1V区探及数枚淋巴结，形态规则，皮髓质分界清晰\n，较大者约0.8×0.4cm。\n检查结论：甲状腺全切术后，术区及双侧颈部未见明确复发征象"
+    },
+    {
+      "average_confidence" : 0.99025916666666669,
+      "extraction" : {
+        "date" : "2026-03-15",
+        "department" : "甲状腺外科",
+        "hospital" : "四川大学华西医院",
+        "lab_values" : [
+          2024
+        ],
+        "medication_doses" : [
+
+        ],
+        "summary" : "四川大学华西医院门诊病历",
+        "title" : "门诊病历",
+        "type" : "outpatient"
+      },
+      "field_hit_count" : 3,
+      "field_hits" : {
+        "date" : true,
+        "hospital" : true,
+        "indicator" : false,
+        "type" : true
+      },
+      "group" : "H",
+      "id" : "h_f5_hannotate",
+      "latency_ms" : [
+        611.376165994443,
+        544.33495807461441,
+        547.10420896299183
+      ],
+      "scored" : true,
+      "subgroup" : "handwriting",
+      "text" : "四川大学华西医院门诊病历\n就诊日期：2026-03-15科室：甲状腺外科姓名：王晓芸年龄\n：33岁\n主诉：甲状腺癌术后1年半，偶感心慌2周。\n现病史：患者2024-08行甲状腺全切术，术后规律服用优甲乐100\nμg每日1次。\n近2周偶感心慌、怕热，无手抖。今日复查甲功示TSH偏低、FT4\n偏高。\n处理意见：\n1.左甲状腺素钠片调整为75μg每日1次晨起空腹口服；\n2.3个月后复查甲状腺功能；\n3.不适随诊。"
+    },
+    {
+      "average_confidence" : 0.97828083333333338,
+      "extraction" : {
+        "date" : null,
+        "department" : "甲状腺外科",
+        "hospital" : "四川大学华西医院",
+        "lab_values" : [
+          2024
+        ],
+        "medication_doses" : [
+
+        ],
+        "summary" : "四川大学华西医院门诊病历",
+        "title" : "门诊病历",
+        "type" : "outpatient"
+      },
+      "field_hit_count" : 2,
+      "field_hits" : {
+        "date" : false,
+        "hospital" : true,
+        "indicator" : false,
+        "type" : true
+      },
+      "group" : "H",
+      "id" : "h_f5_hanzipen",
+      "latency_ms" : [
+        602.38012496847659,
+        572.76758307125419,
+        545.86458299309015
+      ],
+      "scored" : true,
+      "subgroup" : "handwriting",
+      "text" : "四川大学华西医院门诊病历\n就诊日期：2026-03-75科室：甲状腺外科姓名：王晓芸年\n龄：33岁\n主诉：甲状腺癌术后7年半，偶感心慌2周。\n现病史：患者2024-08行甲状腺全切术，术后规律服用优甲乐70\nOμg每日1次。\n近2周偶感心慌、怕热，无手抖。今日复查甲功示TSH偏低、FT4\n偏高。\n处理意见：\n7.左甲状腺素钠片调整为75μg每日7次晨起空腹口服；\n2.3个月后复查甲状腺功能；\n3.不适随诊。"
+    },
+    {
+      "average_confidence" : 0.99635000000000007,
+      "extraction" : {
+        "date" : "2025-11-03",
+        "department" : "放射科",
+        "hospital" : "成都市第三人民医院",
+        "lab_values" : [
+
+        ],
+        "medication_doses" : [
+
+        ],
+        "summary" : "胸部CT平扫未见明显异常。",
+        "title" : "胸部CT平扫",
+        "type" : "imaging"
+      },
+      "field_hit_count" : 4,
+      "field_hits" : {
+        "date" : true,
+        "hospital" : true,
+        "indicator" : true,
+        "type" : true
+      },
+      "group" : "H",
+      "id" : "h_f6_hannotate",
+      "latency_ms" : [
+        506.12254196312279,
+        506.10791705548763,
+        466.62612503860146
+      ],
+      "scored" : true,
+      "subgroup" : "handwriting",
+      "text" : "成都市第三人民医院 放射科CT检查报告单\n姓名：王晓芸性別：女年龄：33岁\n检查项目：胸部CT平扫\n检查日期：2025-11-03\n影像学表现：两肺纹理清晰，未见实质性病灶。气管及主支气管\n通畅。\n纵隔居中，其内未见肿大淋巴结。心脏大小形态正常。双侧胸腔\n未见积液。\n印象：胸部CT平扫未见明显异常。"
+    },
+    {
+      "average_confidence" : 0.99018555555555565,
+      "extraction" : {
+        "date" : null,
+        "department" : "放射科",
+        "hospital" : "成都市第三人民医院",
+        "lab_values" : [
+
+        ],
+        "medication_doses" : [
+
+        ],
+        "summary" : "胸部CT平扫未见明显异常。",
+        "title" : "胸部CT平扫",
+        "type" : "imaging"
+      },
+      "field_hit_count" : 3,
+      "field_hits" : {
+        "date" : false,
+        "hospital" : true,
+        "indicator" : true,
+        "type" : true
+      },
+      "group" : "H",
+      "id" : "h_f6_hanzipen",
+      "latency_ms" : [
+        420.50820798613131,
+        424.17279200162739,
+        422.88841691333801
+      ],
+      "scored" : true,
+      "subgroup" : "handwriting",
+      "text" : "成都市第三人民医院 放射科CT检查报告单\n姓名：王晓芸性别：女年龄：33岁\n检查项目：胸部CT平扫\n检查日期：2025-17-03\n影像学表现：两肺纹理清晰，未见实质性病灶。气管及主支气管\n通畅。\n纵隔居中，其内未见肿大淋巴结。心脏大小形态正常。双侧胸腔\n未见积液。\n印象：胸部CT平扫未见明显异常。"
+    },
+    {
+      "average_confidence" : 0.97540399999999994,
+      "extraction" : {
+        "date" : "2026-04-18",
+        "department" : "内分泌科",
+        "hospital" : "虚构市中心医院",
+        "lab_values" : [
+
+        ],
+        "medication_doses" : [
+          75
+        ],
+        "summary" : "虚构市中心医院处方笺",
+        "title" : "处方/医嘱单",
+        "type" : "prescription"
+      },
+      "field_hit_count" : 4,
+      "field_hits" : {
+        "date" : true,
+        "hospital" : true,
+        "indicator" : true,
+        "type" : true
+      },
+      "group" : "H",
+      "id" : "h_rx1_hannotate",
+      "latency_ms" : [
+        398.19354203063995,
+        442.20645795576274,
+        337.61724992655218
+      ],
+      "scored" : true,
+      "subgroup" : "handwriting",
+      "text" : "虚构市中心医院处方笺\n姓名：李青禾性別：女年龄：41岁\n开具日期：2026-04-18科室：内分泌科\nRx左甲状腺素钠片75ug 每日1次晨起空腹口服\n医嘱：三个月后复查甲状腺功能。"
+    },
+    {
+      "average_confidence" : 0.96524800000000011,
+      "extraction" : {
+        "date" : null,
+        "department" : null,
+        "hospital" : "虚构市中心医院",
+        "lab_values" : [
+
+        ],
+        "medication_doses" : [
+
+        ],
+        "summary" : "虚构市中心医院处方笺",
+        "title" : "处方/医嘱单",
+        "type" : "prescription"
+      },
+      "field_hit_count" : 2,
+      "field_hits" : {
+        "date" : false,
+        "hospital" : true,
+        "indicator" : false,
+        "type" : true
+      },
+      "group" : "H",
+      "id" : "h_rx1_hanzipen",
+      "latency_ms" : [
+        367.40712495520711,
+        343.88225001748651,
+        327.74054200854152
+      ],
+      "scored" : true,
+      "subgroup" : "handwriting",
+      "text" : "虚构市中心医院处方笺\n姓名：李青禾性别：女年龄：47岁\n开具日期：2026-04-78 科室：內分泌科\nRx左甲状腺素钠片75μg每日1次晨起空腹口服\n医嘱：三个月后复查甲状腺功能。"
+    },
+    {
+      "average_confidence" : 0.98451599999999995,
+      "extraction" : {
+        "date" : "2026-05-06",
+        "department" : null,
+        "hospital" : "虚构市康宁医院",
+        "lab_values" : [
+
+        ],
+        "medication_doses" : [
+          100
+        ],
+        "summary" : "虚构市康宁医院处方笺",
+        "title" : "处方/医嘱单",
+        "type" : "prescription"
+      },
+      "field_hit_count" : 4,
+      "field_hits" : {
+        "date" : true,
+        "hospital" : true,
+        "indicator" : true,
+        "type" : true
+      },
+      "group" : "H",
+      "id" : "h_rx2_hannotate",
+      "latency_ms" : [
+        349.39070791006088,
+        358.84537489619106,
+        348.66191702894866
+      ],
+      "scored" : true,
+      "subgroup" : "handwriting",
+      "text" : "虚构市康宁医院处方笺\n姓名：陈明川性別：男年龄：58岁\n开具日期：2026-05-06科室：心內科\nRx阿司匹林肠溶片100mg每日1次餐后口服\n医嘱：如有不适及时就诊。"
+    },
+    {
+      "average_confidence" : 0.97409999999999997,
+      "extraction" : {
+        "date" : "2026-05-06",
+        "department" : null,
+        "hospital" : "虚构市康宁医院",
+        "lab_values" : [
+
+        ],
+        "medication_doses" : [
+          100
+        ],
+        "summary" : "虚构市康宁医院处方笺",
+        "title" : "处方/医嘱单",
+        "type" : "prescription"
+      },
+      "field_hit_count" : 4,
+      "field_hits" : {
+        "date" : true,
+        "hospital" : true,
+        "indicator" : true,
+        "type" : true
+      },
+      "group" : "H",
+      "id" : "h_rx2_hanzipen",
+      "latency_ms" : [
+        344.60845799185336,
+        334.17737495619804,
+        336.9446670403704
+      ],
+      "scored" : true,
+      "subgroup" : "handwriting",
+      "text" : "虚构市康宁医院处方笺\n姓名：陈明川性别：男年龄：58岁\n开具日期：2026-05-06 科室：1心內科\nRx阿司匹林肠溶片100mg每日7次餐后口服\n医嘱：如有不适及时就诊。"
+    },
+    {
+      "average_confidence" : 0.98267727272727268,
+      "extraction" : {
+        "date" : "2024-08-22",
+        "department" : "甲状腺外科",
+        "hospital" : "四川大学华西医院",
+        "lab_values" : [
+          24,
+          2024
+        ],
+        "medication_doses" : [
+
+        ],
+        "summary" : "(右叶）甲状腺乳头状癌，肿瘤约1.1x0.8cm，未明确",
+        "title" : "病理报告",
+        "type" : "pathology"
+      },
+      "field_hit_count" : 4,
+      "field_hits" : {
+        "date" : true,
+        "hospital" : true,
+        "indicator" : true,
+        "type" : true
+      },
+      "group" : "D",
+      "id" : "d_p_f1",
+      "latency_ms" : [
+        560.6616250006482,
+        561.51754199527204,
+        616.04150000493973
+      ],
+      "scored" : true,
+      "subgroup" : "print",
+      "text" : "四川大学华西医院\n病理诊断报告单\n病理号：S2024-45678 姓名：王晓芸 性别： 年龄：32岁\n送检科室：甲状腺外科送检期：2024-08-22\n临床诊断：甲状腺右叶结节 (TI-RADS4b)\n眼所见：右叶腺体枚，4.5×3.0×2.0cm，切见灰结节枚，\n直径约1.1cm。\n病理诊断：(右叶）甲状腺乳头状癌，肿瘤约1.1x0.8cm，未明确\n脉管内癌栓。\n(右侧中央区）淋巴结2/6枚查癌转移。\n备注：建议结合临床，必要时免疫组化进步检测。"
+    },
+    {
+      "average_confidence" : 0.96948071428571425,
+      "extraction" : {
+        "date" : "2026-03-15",
+        "department" : "内分泌科",
+        "hospital" : "四川学华西医院",
+        "lab_values" : [
+          27,
+          22.800000000000001,
+          5.9000000000000004,
+          0.059999999999999998,
+          10.199999999999999
+        ],
+        "medication_doses" : [
+
+        ],
+        "summary" : "5 项指标，1 项异常：游离甲状腺素FT4 22.8 ↑",
+        "title" : "甲状腺功能五项",
+        "type" : "lab"
+      },
+      "field_hit_count" : 3,
+      "field_hits" : {
+        "date" : true,
+        "hospital" : false,
+        "indicator" : true,
+        "type" : true
+      },
+      "group" : "D",
+      "id" : "d_p_f3",
+      "latency_ms" : [
+        710.59399994555861,
+        601.63775004912168,
+        536.30562499165535
+      ],
+      "scored" : true,
+      "subgroup" : "print",
+      "text" : "四川学华西医院检验报告单\n姓名：王晓芸 性别：年龄：33岁 科室：内分泌科\n标本：血清项目：甲状腺功能五项\n采集日期：2026-03-15报告期：2026-03-15\n检验项目\n结果\n单位\n参考区间\n促甲状腺激素TSH 0.08↓\nmlU/L0.27-4.20\n游离甲状腺素FT4 22.8 ↑ pmol/L 12.0-22.0\n游离三碘甲状腺原氨酸FT3 5.9 pmol/L 3.1-6.8\n甲状腺球蛋白Tg 0.06 μg/L 3.5-77.0\n甲状腺球蛋抗体TgAb 10.2 IU/ml 0-115"
+    },
+    {
+      "average_confidence" : 0.97599000000000002,
+      "extraction" : {
+        "date" : "2026-03-15",
+        "department" : "内分泌科",
+        "hospital" : "四川学华医院",
+        "lab_values" : [
+
+        ],
+        "medication_doses" : [
+
+        ],
+        "summary" : "甲状腺全切术后，术区及双侧颈部未见明确复发征象。",
+        "title" : "颈部超声(甲状腺术后)",
+        "type" : "imaging"
+      },
+      "field_hit_count" : 3,
+      "field_hits" : {
+        "date" : true,
+        "hospital" : false,
+        "indicator" : true,
+        "type" : true
+      },
+      "group" : "D",
+      "id" : "d_p_f4",
+      "latency_ms" : [
+        574.07691702246666,
+        548.03787497803569,
+        531.71908296644688
+      ],
+      "scored" : true,
+      "subgroup" : "print",
+      "text" : "四川学华医院超声检查报告单\n姓名：王晓芸 性别：年龄：33岁 申请科室：内分泌科\n检查项目：颈部超声(甲状腺术后)\n检查日期：2026-03-15\n超声所：甲状腺术后缺如，术区未见明确异常回声及异常流信号。\n双侧颈部Ⅱl-IV区探及数枚淋巴结，形态规则，髓质分界清晰，较者\n约0.8×0.4cm。\n检查结论：甲状腺全切术后，术区及双侧颈部未见明确复发征象。"
+    },
+    {
+      "average_confidence" : 0.98688428571428577,
+      "extraction" : {
+        "date" : "2025-11-03",
+        "department" : "放射科",
+        "hospital" : "成都市第三人民医院",
+        "lab_values" : [
+
+        ],
+        "medication_doses" : [
+
+        ],
+        "summary" : "胸部CT平扫未明显异常。",
+        "title" : "胸部CT平扫",
+        "type" : "imaging"
+      },
+      "field_hit_count" : 3,
+      "field_hits" : {
+        "date" : true,
+        "hospital" : true,
+        "indicator" : false,
+        "type" : true
+      },
+      "group" : "D",
+      "id" : "d_p_f6",
+      "latency_ms" : [
+        453.38658301625401,
+        429.67758397571743,
+        432.02283408027142
+      ],
+      "scored" : true,
+      "subgroup" : "print",
+      "text" : "成都市第三人民医院放射科CT检查报告单\n姓名：王晓芸性别：年龄：33岁\n检查项目：胸部CT平扫\n检查日期：2025-11-03\n影像学表现：两肺纹理清晰，未实质性病灶。管及主管通畅。\n纵隔居中，其内未肿淋巴结。脏形态正常。双侧胸腔未见积液\n印象：胸部CT平扫未明显异常。"
+    },
+    {
+      "average_confidence" : 0.98120769230769234,
+      "extraction" : {
+        "date" : "2024-08-23",
+        "department" : "甲状腺外科",
+        "hospital" : "四川学华西医院",
+        "lab_values" : [
+          2024,
+          2024
+        ],
+        "medication_doses" : [
+
+        ],
+        "summary" : "甲状腺乳头状癌 (右叶，pT1bN1aM0)",
+        "title" : "出院小结",
+        "type" : "discharge"
+      },
+      "field_hit_count" : 1,
+      "field_hits" : {
+        "date" : false,
+        "hospital" : false,
+        "indicator" : false,
+        "type" : true
+      },
+      "group" : "D",
+      "id" : "d_h_f2_hannotate",
+      "latency_ms" : [
+        636.56679098494351,
+        570.68466697819531,
+        602.60120802558959
+      ],
+      "scored" : true,
+      "subgroup" : "handwriting",
+      "text" : "四川学华西医院出院结\n姓名：王晓芸 性别： 年龄：32岁 科室：甲状腺外科\n入院期：2024-08-23出院期：2024-09-02\n院诊断：甲状腺右叶结节 (TI-RADS4b)\n出院诊断：甲状腺乳头状癌 (右叶，pT1bN1aM0)\n诊疗经过：完善检查后于2024-08-25甲状腺全切除术+右侧中\n央区淋巴结清扫术，\n术顺利，术后恢复好，切愈合佳。\n出院医嘱：\n1.左甲状腺素钠（优甲乐）100μg每1次晨起空腹服；\n2.术后1个复查甲状腺功能；\n3.术后3个复查颈部超声及甲状腺功能，门诊随访；\n4.如有慌、抖等不适及时就诊。"
+    },
+    {
+      "average_confidence" : 0.96996461538461531,
+      "extraction" : {
+        "date" : "2026-03-15",
+        "department" : "内分泌科",
+        "hospital" : "四川大学华西医院",
+        "lab_values" : [
+          0.080000000000000002,
+          22.800000000000001,
+          5.9000000000000004,
+          0.059999999999999998
+        ],
+        "medication_doses" : [
+
+        ],
+        "summary" : "4 项指标，2 项异常：促甲状腺激素TSH 0.08 ↓、游离甲状腺素FT4 22.8 ↑",
+        "title" : "甲状腺功能五项",
+        "type" : "lab"
+      },
+      "field_hit_count" : 4,
+      "field_hits" : {
+        "date" : true,
+        "hospital" : true,
+        "indicator" : true,
+        "type" : true
+      },
+      "group" : "D",
+      "id" : "d_h_f3_hanzipen",
+      "latency_ms" : [
+        523.01345893647522,
+        500.79049996566027,
+        511.895666946657
+      ],
+      "scored" : true,
+      "subgroup" : "handwriting",
+      "text" : "四川大学华西医院 检验报告单\n姓名：王晓芸 性别：女 年龄：33岁 科室：内分泌科\n标本：血清 项目：甲状腺功能五项\n采集日期：2026-03-15 报告日期：2026-03-15\n检验项目\n结果\n单位\n参考区间\n促甲状腺激素TSH 0.08 ↓ m1U/L 0.27-4.20\n游离甲状腺素FT4 22.8 ↑ pmol/L 72.0-22.0\n游离三碘甲状腺原氨酸 FT3 5.9 pmol/L 3.1-6.8\n甲状腺球蛋白Tg 0.06 μg/L 3.5-77.0\n甲状腺球蛋白抗体TgAb 70.2 1U/ml O-775"
+    },
+    {
+      "average_confidence" : 0.97943800000000003,
+      "extraction" : {
+        "date" : "2026-04-18",
+        "department" : "内分泌科",
+        "hospital" : "虚构市中心医院",
+        "lab_values" : [
+
+        ],
+        "medication_doses" : [
+          75
+        ],
+        "summary" : "虚构市中心医院 处方笺",
+        "title" : "处方/医嘱单",
+        "type" : "prescription"
+      },
+      "field_hit_count" : 4,
+      "field_hits" : {
+        "date" : true,
+        "hospital" : true,
+        "indicator" : true,
+        "type" : true
+      },
+      "group" : "D",
+      "id" : "d_h_rx1_hannotate",
+      "latency_ms" : [
+        326.35245798155665,
+        299.99016597867012,
+        314.51295805163682
+      ],
+      "scored" : true,
+      "subgroup" : "handwriting",
+      "text" : "虚构市中心医院 处方笺\n姓名：李青禾性别：年龄：41岁\n开具日期：2026-04-18科室：内分泌科\nRx左甲状腺素钠片75ug 每日1次晨起空腹口服\n医嘱：三个月后复查甲状腺功能。"
+    },
+    {
+      "average_confidence" : 0.97708200000000001,
+      "extraction" : {
+        "date" : "2026-05-06",
+        "department" : "心内科",
+        "hospital" : "虚构市康宁医院",
+        "lab_values" : [
+
+        ],
+        "medication_doses" : [
+          100
+        ],
+        "summary" : "虚构市康宁医院处方笺",
+        "title" : "处方/医嘱单",
+        "type" : "prescription"
+      },
+      "field_hit_count" : 4,
+      "field_hits" : {
+        "date" : true,
+        "hospital" : true,
+        "indicator" : true,
+        "type" : true
+      },
+      "group" : "D",
+      "id" : "d_h_rx2_hanzipen",
+      "latency_ms" : [
+        315.44020806904882,
+        292.92266594711691,
+        297.35887493006885
+      ],
+      "scored" : true,
+      "subgroup" : "handwriting",
+      "text" : "虚构市康宁医院处方笺\n姓名：陈明川性别：男年龄：58岁\n开具日期：2026-05-06 科室：1心内科\nRx阿司匹林肠溶片100mg 每日1次餐后口服\n医嘱：如有不适及时就诊。"
+    },
+    {
+      "average_confidence" : 0.98998631578947371,
+      "extraction" : {
+        "date" : "2026-04-18",
+        "department" : null,
+        "hospital" : "虚构市中心医院",
+        "lab_values" : [
+          20260418
+        ],
+        "medication_doses" : [
+
+        ],
+        "summary" : "虚构市中心医院门诊收费票据",
+        "title" : "其他",
+        "type" : "other"
+      },
+      "field_hit_count" : 0,
+      "field_hits" : {
+        "date" : false,
+        "hospital" : false,
+        "indicator" : false,
+        "type" : false
+      },
+      "group" : "O",
+      "id" : "o_invoice",
+      "latency_ms" : [
+        506.9523329148069,
+        496.82058300822973,
+        508.65566707216203
+      ],
+      "scored" : false,
+      "subgroup" : "observation",
+      "text" : "虚构市中心医院门诊收费票据\n票据号码：TEST-20260418-0007\n患者姓名：李青禾天\n开票日期：2026-04-18\n项目名称\n数量\n单价\n金额\n甲状腺功能五项\n1\n168.00\n168.00\n静脉采血费\n1\n6.00\n6.00\n合计金额（人民币）：壹佰柒拾肆元整\n￥174.00\n说明：本票据为OCR 测试虚构样张，不可用于报销。"
+    }
+  ],
+  "runtime_arm64_dylib_bytes" : 28800472
+}
