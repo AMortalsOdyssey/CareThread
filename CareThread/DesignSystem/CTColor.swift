@@ -12,6 +12,9 @@ enum CT {
         static let inkTertiary = SwiftUI.Color("CTInkTertiary")
         static let inkDisabled = SwiftUI.Color("CTInkDisabled")
         static let inkOnPrimary = SwiftUI.Color("CTInkOnPrimary")
+        /// Fixed dark chrome for the full-screen original viewer in both
+        /// appearances. Unlike semantic text ink, this must not invert.
+        static let viewerChrome = SwiftUI.Color("CTViewerChrome")
         static let primary = SwiftUI.Color("CTPrimary")
         static let primaryPressed = SwiftUI.Color("CTPrimaryPressed")
         static let primaryContainer = SwiftUI.Color("CTPrimaryContainer")
@@ -35,4 +38,3 @@ enum CT {
         static let other = SwiftUI.Color("CTTypeOther")
     }
 }
-
