@@ -114,10 +114,27 @@ struct OriginalViewer: View {
     }
 
     private var missingOriginal: some View {
-        ContentUnavailableView(
-            Copy.Records.missingOriginal,
-            systemImage: "doc.questionmark"
-        )
+        VStack(spacing: CT.Space.s4) {
+            ContentUnavailableView(
+                Copy.Records.missingOriginal,
+                systemImage: "doc.questionmark",
+                description: Text(Copy.Records.missingOriginalGuidance)
+            )
+            NavigationLink {
+                BackupRestoreView(patientID: record.patientId)
+            } label: {
+                Label(
+                    Copy.Records.recoverOriginal,
+                    systemImage: "externaldrive.badge.timemachine"
+                )
+                .font(CT.Font.headline)
+                .frame(minHeight: CT.Size.primaryButtonHeight)
+            }
+            .buttonStyle(.borderedProminent)
+            .tint(CT.Color.primary)
+            .accessibilityIdentifier("m3.viewer.recoverOriginal")
+        }
+        .padding(CT.Space.s5)
         .foregroundStyle(CT.Color.inkOnPrimary)
     }
 

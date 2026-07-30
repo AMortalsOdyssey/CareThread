@@ -240,10 +240,29 @@ struct ElderOriginalViewer: View {
                     QuickLookURLView(url: url)
                         .background(CT.Color.bgBase)
                 } else {
-                    ContentUnavailableView(
-                        Copy.Records.missingOriginal,
-                        systemImage: "doc.questionmark"
-                    )
+                    VStack(spacing: CT.Space.s5) {
+                        ContentUnavailableView(
+                            Copy.Records.missingOriginal,
+                            systemImage: "doc.questionmark",
+                            description: Text(
+                                Copy.Records.missingOriginalGuidance
+                            )
+                        )
+                        NavigationLink {
+                            BackupRestoreView(patientID: record.patientId)
+                        } label: {
+                            Label(
+                                Copy.Records.recoverOriginal,
+                                systemImage:
+                                    "externaldrive.badge.timemachine"
+                            )
+                        }
+                        .buttonStyle(ElderPrimaryButtonStyle())
+                        .accessibilityIdentifier(
+                            "elder.original.recoverOriginal"
+                        )
+                    }
+                    .padding(CT.Space.elderScreen)
                 }
                 if attachments.count > 1 {
                     ScrollView(.horizontal) {

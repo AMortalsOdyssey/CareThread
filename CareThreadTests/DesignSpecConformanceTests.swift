@@ -75,9 +75,12 @@ struct DesignSpecConformanceTests {
     @Test("字体 token 使用 Dynamic Type 相对曲线")
     func fontTokensUseDynamicTypeCurves() throws {
         let source = try sourceText("CareThread/DesignSystem/CTFont.swift")
-        #expect(source.contains("relativeTo textStyle"))
-        #expect(source.contains("relativeTo: .largeTitle"))
-        #expect(source.contains("relativeTo: .body"))
+        #expect(source.contains("UIFontMetrics("))
+        #expect(source.contains("scaledFont(for: baseFont)"))
+        #expect(source.contains("UIFont.systemFont("))
+        #expect(source.contains("return SwiftUI.Font(scaledFont)"))
+        #expect(!source.contains("baseFont.fontName"))
+        #expect(!source.contains("SwiftUI.Font.custom("))
         #expect(!source.contains("SwiftUI.Font.system(size:"))
     }
 
@@ -119,6 +122,23 @@ struct DesignSpecConformanceTests {
         #expect(detail.contains("selectedAttachment = record.attachments"))
         #expect(detail.contains("Copy.viewOriginal"))
         #expect(confirmation.contains("selectedOriginalPage = page"))
+    }
+
+    @Test("原件缺失时标准版与老人版均提供备份恢复入口")
+    func missingOriginalProvidesBackupRecoveryEntry() throws {
+        let standard = try sourceText(
+            "CareThread/Features/Records/OriginalViewer.swift"
+        )
+        let elder = try sourceText(
+            "CareThread/Features/Elder/ElderRecordsView.swift"
+        )
+
+        #expect(!Copy.Records.missingOriginalGuidance.isEmpty)
+        #expect(Copy.Records.recoverOriginal == "从备份恢复原件")
+        #expect(standard.contains("m3.viewer.recoverOriginal"))
+        #expect(standard.contains("BackupRestoreView(patientID:"))
+        #expect(elder.contains("elder.original.recoverOriginal"))
+        #expect(elder.contains("BackupRestoreView(patientID:"))
     }
 
     private func sourceText(_ relativePath: String) throws -> String {

@@ -3,112 +3,112 @@ import UIKit
 
 extension CT {
     enum Font {
-        static let display = scaledSystem(
+        static var display: SwiftUI.Font { scaledSystem(
             size: 34,
             weight: .bold,
             relativeTo: .largeTitle
-        )
-        static let title1 = scaledSystem(
+        ) }
+        static var title1: SwiftUI.Font { scaledSystem(
             size: 28,
             weight: .bold,
-            relativeTo: .title
-        )
-        static let title2 = scaledSystem(
+            relativeTo: .title1
+        ) }
+        static var title2: SwiftUI.Font { scaledSystem(
             size: 22,
             weight: .semibold,
             relativeTo: .title2
-        )
-        static let title3 = scaledSystem(
+        ) }
+        static var title3: SwiftUI.Font { scaledSystem(
             size: 20,
             weight: .semibold,
             relativeTo: .title3
-        )
-        static let headline = scaledSystem(
+        ) }
+        static var headline: SwiftUI.Font { scaledSystem(
             size: 17,
             weight: .semibold,
             relativeTo: .headline
-        )
-        static let body = scaledSystem(
+        ) }
+        static var body: SwiftUI.Font { scaledSystem(
             size: 17,
             weight: .regular,
             relativeTo: .body
-        )
-        static let bodyReading = scaledSystem(
+        ) }
+        static var bodyReading: SwiftUI.Font { scaledSystem(
             size: 17,
             weight: .regular,
             relativeTo: .body
-        )
-        static let callout = scaledSystem(
+        ) }
+        static var callout: SwiftUI.Font { scaledSystem(
             size: 16,
             weight: .regular,
             relativeTo: .callout
-        )
-        static let subhead = scaledSystem(
+        ) }
+        static var subhead: SwiftUI.Font { scaledSystem(
             size: 15,
             weight: .regular,
             relativeTo: .subheadline
-        )
-        static let footnote = scaledSystem(
+        ) }
+        static var footnote: SwiftUI.Font { scaledSystem(
             size: 13,
             weight: .regular,
             relativeTo: .footnote
-        )
-        static let caption = scaledSystem(
+        ) }
+        static var caption: SwiftUI.Font { scaledSystem(
             size: 12,
             weight: .medium,
-            relativeTo: .caption
-        )
-        static let label = scaledSystem(
+            relativeTo: .caption1
+        ) }
+        static var label: SwiftUI.Font { scaledSystem(
             size: 11,
             weight: .medium,
             relativeTo: .caption2
-        )
-        static let valueMono = scaledSystem(
+        ) }
+        static var valueMono: SwiftUI.Font { scaledSystem(
             size: 17,
             weight: .semibold,
             relativeTo: .body
-        ).monospacedDigit()
-        static let valueBig = scaledSystem(
+        ).monospacedDigit() }
+        static var valueBig: SwiftUI.Font { scaledSystem(
             size: 22,
             weight: .semibold,
             relativeTo: .title2
-        ).monospacedDigit()
+        ).monospacedDigit() }
 
-        static let elderDisplay = scaledSystem(
+        static var elderDisplay: SwiftUI.Font { scaledSystem(
             size: 40,
             weight: .bold,
             relativeTo: .largeTitle
-        )
-        static let elderTitle2 = scaledSystem(
+        ) }
+        static var elderTitle2: SwiftUI.Font { scaledSystem(
             size: 28,
             weight: .semibold,
-            relativeTo: .title
-        )
-        static let elderHeadline = scaledSystem(
+            relativeTo: .title1
+        ) }
+        static var elderHeadline: SwiftUI.Font { scaledSystem(
             size: 22,
             weight: .semibold,
             relativeTo: .title2
-        )
-        static let elderBody = scaledSystem(
+        ) }
+        static var elderBody: SwiftUI.Font { scaledSystem(
             size: 20,
             weight: .regular,
             relativeTo: .title3
-        )
-        static let elderSubhead = scaledSystem(
+        ) }
+        static var elderSubhead: SwiftUI.Font { scaledSystem(
             size: 18,
             weight: .regular,
             relativeTo: .body
-        )
-        static let elderFootnote = scaledSystem(
+        ) }
+        static var elderFootnote: SwiftUI.Font { scaledSystem(
             size: 16,
             weight: .regular,
             relativeTo: .callout
-        )
-        static let elderValueBig = scaledSystem(
+        ) }
+        static var elderValueBig: SwiftUI.Font { scaledSystem(
             size: 34,
             weight: .semibold,
             relativeTo: .largeTitle
-        ).monospacedDigit()
+        ).monospacedDigit() }
 
         static func headline(for mode: DisplayMode) -> SwiftUI.Font {
             mode == .elder ? elderHeadline : headline
@@ -123,17 +123,16 @@ extension CT {
         private static func scaledSystem(
             size: CGFloat,
             weight: UIKit.UIFont.Weight,
-            relativeTo textStyle: SwiftUI.Font.TextStyle
+            relativeTo textStyle: UIKit.UIFont.TextStyle
         ) -> SwiftUI.Font {
             let baseFont = UIKit.UIFont.systemFont(
                 ofSize: size,
                 weight: weight
             )
-            return SwiftUI.Font.custom(
-                baseFont.fontName,
-                size: size,
-                relativeTo: textStyle
-            )
+            let scaledFont = UIKit.UIFontMetrics(
+                forTextStyle: textStyle
+            ).scaledFont(for: baseFont)
+            return SwiftUI.Font(scaledFont)
         }
     }
 }

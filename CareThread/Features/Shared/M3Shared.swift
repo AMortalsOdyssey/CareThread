@@ -243,6 +243,9 @@ extension Copy {
         static let ocr = "识别文字"
         static let shareCopy = "发送或保存副本"
         static let missingOriginal = "原件暂时无法读取"
+        static let missingOriginalGuidance =
+            "本地记录没有被覆盖。可从经过验证的加密备份恢复，或重新导入原报告。"
+        static let recoverOriginal = "从备份恢复原件"
         static let currentMember = "当前成员"
         static let readFailureTitle = "无法读取记录"
         static let readFailureBody = "本地资料没有被修改，请稍后重试。"
