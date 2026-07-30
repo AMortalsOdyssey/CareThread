@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 1,
+  "sourceCommit": "替换为40位Git提交SHA",
+  "reviewedAtUTC": "替换为ISO-8601 UTC时间",
+  "reviewer": "替换为走查人",
+  "simulator": {
+    "deviceName": "iPhone 16",
+    "osVersion": "18.6"
+  },
+  "checks": [
+    {
+      "id": "DESIGN-01",
+      "status": "pending",
+      "notes": "抽样10处颜色，逐项记录对应设计token。",
+      "evidence": []
+    },
+    {
+      "id": "DESIGN-02",
+      "status": "pending",
+      "notes": "抽样10处间距，逐项核对4pt网格及设计规范§5。",
+      "evidence": []
+    },
+    {
+      "id": "DESIGN-03",
+      "status": "pending",
+      "notes": "18个页面逐一核对Light和Dark两种外观，共36屏。",
+      "evidence": []
+    },
+    {
+      "id": "DESIGN-04",
+      "status": "pending",
+      "notes": "从卡片、详情和确认页验证一步到达“查看原文”。",
+      "evidence": []
+    },
+    {
+      "id": "DESIGN-05",
+      "status": "pending",
+      "notes": "核对设计规范§12与§15.8全部关键文案。",
+      "evidence": []
+    },
+    {
+      "id": "DESIGN-06",
+      "status": "pending",
+      "notes": "标准版AX3核对首页、确认页、详情页；老人版AX2核对无截断和不可点击项。",
+      "evidence": []
+    },
+    {
+      "id": "DESIGN-07",
+      "status": "pending",
+      "notes": "开启Reduce Motion，确认无缩放动画与循环动画。",
+      "evidence": []
+    },
+    {
+      "id": "DESIGN-08",
+      "status": "pending",
+      "notes": "老人版核对无隐藏滑动、无chip堆叠、主操作唯一且按钮高度不少于60pt。",
+      "evidence": []
+    },
+    {
+      "id": "B9",
+      "status": "pending",
+      "notes": "删除原文件后打开详情，核对明确错误与可恢复入口。",
+      "evidence": []
+    },
+    {
+      "id": "B16",
+      "status": "pending",
+      "notes": "导入超大文件，核对软限制告知、显式确认与无崩溃。",
+      "evidence": []
+    },
+    {
+      "id": "B17",
+      "status": "pending",
+      "notes": "导入超大图片，核对预览降采样且原文件哈希不变。",
+      "evidence": []
+    },
+    {
+      "id": "B18",
+      "status": "pending",
+      "notes": "拒绝通知权限，核对设置恢复引导且流程不崩溃。",
+      "evidence": []
+    },
+    {
+      "id": "B23",
+      "status": "pending",
+      "notes": "中断导入后重启，核对标准版草稿恢复与老人版不显示复杂草稿入口。",
+      "evidence": []
+    }
+  ]
+}

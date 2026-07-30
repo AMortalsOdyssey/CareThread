@@ -4,6 +4,7 @@ enum Copy {
     static let ocrEmpty = "没认出文字。可以换张更清晰的照片，或直接手动填写。"
     static let futureDate = "这个日期晚于今天，请核对一下。"
     static let exportNotice = "备份包里是你的全部记录和原件，请保管好：拿到这个文件的人可以看到其中内容。"
+    static let viewOriginal = "查看原文"
 
     enum Tab {
         static let home = "首页"
@@ -25,6 +26,20 @@ enum Copy {
         static let ocrEmpty = "照片存好了，字没认出来，家人可以补。"
         static let recordPending = "等家人核对"
         static let doctorHeader = "把这一页拿给医生看"
+        static let switchToElderTitle = "切换到老人版？"
+        static let switchToElderBody = "字更大、操作更简单，资料完全一样，随时可以换回来。"
+        static let switchToElderAction = "切换"
+        static let switchToStandardTitle = "换回标准版？"
+        static let switchToStandardBody = "功能更全，适合帮忙整理资料的家人。"
+        static let switchToStandardAction = "换回"
+        static let notNow = "先不用"
+    }
+
+    enum Recovery {
+        static let progress = "正在安全恢复本地资料…"
+        static let title = "资料库保护模式"
+        static let referenceCode = "诊断编号"
+        static let vaultFailure =
+            "原件事务尚未安全完成。CareThread 没有删除资料，请重新打开应用重试；若仍失败，请保留此编号联系支持。"
     }
 }
-

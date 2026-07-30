@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>CFBundleDisplayName</key>
+	<string>CareThread</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>$(PRODUCT_NAME)</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.0</string>
+	<key>CFBundleVersion</key>
+	<string>1</string>
+	<key>NSBonjourServices</key>
+	<array>
+		<string>_carethread._tcp</string>
+	</array>
+	<key>NSCalendarsFullAccessUsageDescription</key>
+	<string>只有在你主动选择“加入系统日历”时，CareThread 才会把复查安排写入日历。</string>
+	<key>NSCameraUsageDescription</key>
+	<string>拍摄纸质报告需要使用相机。照片只会保存在这台手机上。</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>用面容 ID 保护你的健康资料。</string>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>在你主动发起换机时，通过本地网络把所选家人的资料加密传到另一台 iPhone。</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>从相册导入报告截图需要访问照片。所选照片只会保存在这台手机上。</string>
+	<key>UIApplicationSceneManifest</key>
+	<dict>
+		<key>UIApplicationSupportsMultipleScenes</key>
+		<false/>
+	</dict>
+	<key>UILaunchScreen</key>
+	<dict/>
+</dict>
+</plist>
