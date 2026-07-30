@@ -1,11 +1,61 @@
 import XCTest
 
 final class M3CaptureRecordsUITests: XCTestCase {
-    private func launch(_ arguments: [String]) -> XCUIApplication {
+    private func launch(
+        _ arguments: [String],
+        accessibilitySize: Bool = false
+    ) -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = ["-uiTestMode", "-displayMode", "standard"] + arguments
+        if accessibilitySize {
+            app.launchArguments += [
+                "-UIPreferredContentSizeCategoryName",
+                "UICTContentSizeCategoryAccessibilityXL"
+            ]
+        }
         app.launch()
         return app
+    }
+
+    func testDesignStandardAX3KeepsPrimaryFlowsReachable() {
+        let home = launch(["-M45OpenHome"], accessibilitySize: true)
+        XCTAssertTrue(
+            element("m45.home", in: home).waitForExistence(timeout: 8)
+        )
+        let homeCapture = home.buttons["m45.home.quick.capture"]
+        scrollUntilHittable(homeCapture, in: home)
+        XCTAssertTrue(homeCapture.isHittable)
+        home.terminate()
+
+        let confirmation = launch(
+            ["-M3OpenCapture"],
+            accessibilitySize: true
+        )
+        let manual = confirmation.buttons["m3.source.manual"]
+        XCTAssertTrue(manual.waitForExistence(timeout: 8))
+        scrollUntilHittable(manual, in: confirmation)
+        XCTAssertTrue(manual.isHittable)
+        manual.tap()
+        XCTAssertTrue(
+            confirmation.textFields["m3.confirm.title"]
+                .waitForExistence(timeout: 5)
+        )
+        let save = confirmation.buttons["m3.confirm.save"]
+        scrollUntilHittable(save, in: confirmation)
+        XCTAssertTrue(save.isHittable)
+        confirmation.terminate()
+
+        let records = launch(["-M3OpenRecords"], accessibilitySize: true)
+        let record = records.staticTexts["甲状腺功能五项"]
+        XCTAssertTrue(record.waitForExistence(timeout: 10))
+        record.tap()
+        XCTAssertTrue(
+            element("m3.detail", in: records)
+                .waitForExistence(timeout: 5)
+        )
+        let edit = records.buttons["m3.detail.edit"]
+        scrollUntilHittable(edit, in: records)
+        XCTAssertTrue(edit.isHittable)
     }
 
     func testM3SourceSheetShowsOfflineImportChoicesAndManualEntry() {
