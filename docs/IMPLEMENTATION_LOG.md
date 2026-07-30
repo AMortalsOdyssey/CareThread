@@ -120,6 +120,18 @@
 
 - Vision：打印 CER 5.98%、手写 CER 3.92%、字段 113/120、Mac P95 229 ms。
 - RapidOCR：打印 CER 2.34%、手写 CER 2.37%、字段 105/120、Mac P95 640 ms、arm64 增量上界 48.9 MB。
+- 加权分：RapidOCR 79.74，Vision 40.00；Rapid 是分数胜者。
+- 换引擎门槛：手写只改善 1.56 个百分点，低于必需的 10 个百分点；打印改善 3.64 个百分点。两条未同时通过，按 §5 唯一决定维持 Vision。
+- ML Kit 因官方条款允许联系 Google 服务器并发送性能/使用指标而触发零联网红线；Tesseract iOS 包装因归档/旧上游出局；chineseocr_lite 因 GPL-2.0 出局。
+
+### 交付证据
+
+- 原始逐页输出、评分 JSON 与 Markdown 均在 `Benchmarks/OCRBench/results/`。
+- 仓库报告 `docs/调研报告_OCR选型.md` 与交付包指定报告 SHA-256 相同：
+  `db560fdce34cf212ee14c9b8b38c2975977eee42d34e5b102f27806f414f6e06`。
+- 发布实现无第三方 OCR 依赖、无模型包、无运行时下载和遥测；`OCREngine` 协议保留未来替换位。
+- 配置加入独立基准 target 后重跑主回归：`Scripts/verify.sh` 退出码 0，
+  Swift Testing 85/85、XCUITest 1/1；`Scripts/acceptance.sh` 当前阶段五项均 PASS。
 
 ## 2026-07-31 / 主架构合同与需求追踪
 
@@ -181,22 +193,12 @@
 - 将仓库报告复制到任务书指定的 iCloud 交付目录；`cmp` 返回 0。
 - 两份文件 SHA-256 均为 `aeec732ae4eb329c697ff9e13eb6a2f07032356baab135a77da025e3fa49b835`。
 
-## 2026-07-31 / 开源与可持续发展调研排期
+## 2026-07-31 / 开源、商业化与出售路线落地
 
 - 用户要求在主开发完成后评估非盈利 App 的开源价值、社区信任、Android 扩展、套壳/版权风险与未来商业化。
 - 总清单新增 Q01–Q11，要求覆盖四种源码路线、iOS/App Store 许可兼容、商标/软件著作权、同类产品、买断/一次性内购/订阅、未来 AI 三种部署模式，以及开源推广后出售项目的退出路线。
-- 调研将输出唯一发展路线、12/24/36 月阶段、切换触发条件和不可做事项。
-- 用户随后明确指定当前仓库使用 MIT License，已加入标准许可文本并在 README 说明。后续报告需强调 MIT 允许商业复用，防套壳应依靠品牌/商标/素材和持续发行能力，而不是误读许可证。
-- 出售路线需单独审查贡献者 IP 链、CLA/DCO、App Store App 转移、域名/商标/发布账号和隐私数据不可随意作为资产交易。
-- 加权分：RapidOCR 79.74，Vision 40.00；Rapid 是分数胜者。
-- 换引擎门槛：手写只改善 1.56 个百分点，低于必需的 10 个百分点；打印改善 3.64 个百分点。两条未同时通过，按 §5 唯一决定维持 Vision。
-- ML Kit 因官方条款允许联系 Google 服务器并发送性能/使用指标而触发零联网红线；Tesseract iOS 包装因归档/旧上游出局；chineseocr_lite 因 GPL-2.0 出局。
-
-### 交付证据
-
-- 原始逐页输出、评分 JSON 与 Markdown 均在 `Benchmarks/OCRBench/results/`。
-- 仓库报告 `docs/调研报告_OCR选型.md` 与交付包指定报告 SHA-256 相同：
-  `db560fdce34cf212ee14c9b8b38c2975977eee42d34e5b102f27806f414f6e06`。
-- 发布实现无第三方 OCR 依赖、无模型包、无运行时下载和遥测；`OCREngine` 协议保留未来替换位。
-- 配置加入独立基准 target 后重跑主回归：`Scripts/verify.sh` 退出码 0，
-  Swift Testing 85/85、XCUITest 1/1；`Scripts/acceptance.sh` 当前阶段五项均 PASS。
+- 已输出 `OPEN_SOURCE_AND_SUSTAINABILITY_STRATEGY.md`，形成唯一发展路线：MIT 本地核心先免费开源建立信任，达到 12 个月指标后官方 App Store 版采用一次性买断，24 个月达到权利/安全/经营门槛后建立数据室，36 个月达到成交门槛后出售产品资产；未达标进入低成本维护。
+- 当前仓库继续使用 MIT License；报告明确 MIT 允许商业复用，不能追加“禁止商用/套壳”限制，历史版本按既有授权不可收回处理。防混淆依赖品牌、商标、官方发行身份、稳定质量和可核验隐私记录。
+- 已加入 `CONTRIBUTING.md` 与 `TRADEMARKS.md`。ICLA/CCLA 未就绪前只收 issue/虚构复现；未来实质贡献必须同时经过 DCO 和 CLA，确保持续开源、再许可与出售的 IP 权利链。
+- 出售资产固定为代码/设计权利、品牌/商标/域名、GitHub 社区、App Store App/Bundle ID/评价、聚合经营指标和质量体系；用户设备健康资料、个人 Apple 开发者账号、证书和凭据永不进入交易包。
+- 报告逐项比较 MIT、Apache-2.0、MPL-2.0、GPL/AGPL、双许可和 source-available，也比较免费、买断、IAP、版本收费、订阅及未来 AI 扩展；本地核心唯一收费方式为门槛后的 App Store 一次性买断。
