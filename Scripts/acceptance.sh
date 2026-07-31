@@ -484,7 +484,7 @@ plist_equals NSCameraUsageDescription \
   '拍摄纸质报告需要使用相机。照片只会保存在这台手机上。' ||
   permission_failures=$((permission_failures + 1))
 plist_equals NSPhotoLibraryUsageDescription \
-  '从相册导入报告截图需要访问照片。所选照片只会保存在这台手机上。' ||
+  '通过系统照片选择器读取你明确选中的报告截图。所选照片只会保存在这台手机上。' ||
   permission_failures=$((permission_failures + 1))
 plist_equals NSFaceIDUsageDescription \
   '用面容 ID 保护你的健康资料。' ||
