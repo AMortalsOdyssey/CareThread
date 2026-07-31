@@ -2,7 +2,7 @@
 
 CareThread 是一款纯原生 iOS 本地病程资料整理工具。它把病历、处方、化验单、发票、用药和复查事项整理成按成员隔离的时间线，提供标准版与大字版两种完整交互模式。
 
-> 一期 M0–M9 已完成并通过模拟器总验收。App 不提供诊断或治疗建议；当前代码不连接服务器、不上传病历，也不包含真实医疗测试数据。
+> 一期 M0–M9 与 Review 整改已完成；提交 `1c14406` 的上一轮模拟器总验收为全绿历史基线。第二轮新增能力的最新验证与残留以本文“本地构建与验证”和 `docs/PROGRESS.md` 为准。App 不提供诊断或治疗建议；当前代码不连接服务器、不上传病历，也不包含真实医疗测试数据。
 
 ## 一期功能地图
 
@@ -10,6 +10,7 @@ CareThread 是一款纯原生 iOS 本地病程资料整理工具。它把病历�
 |---|---|---|
 | 多成员管理 | 最多 20 位家人，数据、原件、提醒、导出和对比严格隔离 | 完成 |
 | 本地 OCR | Apple Vision 离线识别病历、手写处方、化验单和发票 | 引擎完成 |
+| 问我的资料 | 结构化事实查询 + BM25 本地检索；标准版可输入，大字版提供 4 个大按钮 | 完成 |
 | 姓名归属闸门 | OCR 姓名错配时阻止直接入库；仅经明确二次确认可覆盖并留审计 | 完成 |
 | 病程时间线 | 日期、病种/类型、医院、医生、事件年龄组合筛选与稳定分页 | 完成 |
 | 多报告/多页导入 | 一次导入多份报告和多页/多截图，用户分组为权威、OCR 辅助建议 | 完成 |
@@ -17,7 +18,7 @@ CareThread 是一款纯原生 iOS 本地病程资料整理工具。它把病历�
 | 原件 Vault | 不可变原件、高清查看、完整性校验、安全副本与恢复 | 完成 |
 | 提醒 | 用药/复查本地通知；可选、独立授权的系统日历写入 | 完成 |
 | 导出与分享 | 单成员按 1/6 月、1/2/5/10 年或全部生成 PDF，经系统分享面板发送 | 完成 |
-| PDF 品牌钩子 | 页首横线/Logo/产品名，末段介绍与可扫描产品页二维码，URL 单点可替换 | 完成 |
+| PDF 品牌钩子 | 页首横线/Logo/产品名，末段介绍与指向正式官网的可扫描二维码 | 完成 |
 | 本地对比 | 同成员两个阶段的指标和事实对比，不做诊断推断 | 完成 |
 | 附近同步/换机 | 两台 iPhone 近场加密传输，支持单成员或全部成员 | 完成；无线发现真机待验 |
 | 手动编辑与修订 | 所有业务内容可更正、查看修订并撤销；原件/OCR 证据不被覆盖 | 完成 |
@@ -60,6 +61,7 @@ CareThreadUITests/       # UI、无障碍与截图测试
 Benchmarks/OCRBench/     # 完全虚构的离线 OCR 基准
 Scripts/                 # 工程生成、验证与验收脚本
 docs/                    # 架构、进度、验收和调研证据
+website/                 # carethread.8xd.io 的纯静态站点，无构建步骤
 ```
 
 ## 环境要求
@@ -77,6 +79,10 @@ docs/                    # 架构、进度、验收和调研证据
 xcodegen generate
 Scripts/verify.sh
 Scripts/acceptance.sh
+# 需要显式指定两台已启动的 iPhone Simulator
+CARETHREAD_SIMULATOR_UDID=主设备UDID \
+CARETHREAD_SECOND_SIMULATOR_UDID=第二设备UDID \
+Scripts/device-sim-acceptance.sh
 ```
 
 OCR 复现实验：
@@ -85,7 +91,9 @@ OCR 复现实验：
 Benchmarks/OCRBench/run.sh
 ```
 
-`verify.sh` 负责构建与全部单元/UI 测试；最新完整复跑为 651/651 单元与集成测试、50/50 XCUITest，0 失败、0 跳过。`acceptance.sh` 还会校验提交轨迹、23 项边界映射、46 张生产导航截图、走查证据、依赖/联网/隐私红线和干净工作树。OCR 基准只使用程序生成的虚构资料，详细证据见 [实施进度](docs/PROGRESS.md)。
+`verify.sh` 负责构建与全部单元/UI 测试；`acceptance.sh` 还会校验提交轨迹、23 项边界映射、46 张生产导航截图、走查证据、依赖/联网/隐私红线和干净工作树。OCR 选型基准只使用程序生成的虚构资料；仓库外的用户照片只用于本机回归，仓库仅保留不可还原的聚合统计。最新计数与设备环境残留见 [实施进度](docs/PROGRESS.md)。
+
+功能提交 `5cd790f` 的最新全量基线为 Xcode 26.6、iPhone 17 / iOS 26.5：719/719 单元与集成测试、60/60 XCUITest，合计 779/779，失败 0、跳过 0。`acceptance.sh` 仍会因锁定法律正文与官网正文存在真实语义差异而失败关闭，详见[阻塞清单](docs/BLOCKERS.md)。
 
 ## 里程碑
 
@@ -95,9 +103,11 @@ Benchmarks/OCRBench/run.sh
 | M1 | 数据层、Vault 基线、种子与压测数据 | 完成 |
 | M2 | Apple Vision 离线 OCR 与规则提取 | 完成 |
 | OCR 选型 | 31 张虚构样张、双引擎基准、唯一决策 | 完成 |
+| 第二轮 OCR 回归 | 40 页仓库外真实照片的离线性能与匿名字段聚合 | 完成；无手写主体样本与 CER 真值 |
 | M3–M7 | 多成员、录入、时间线、用药、提醒、导出、对比 | 完成 |
 | Nearby | 单人/全员近场加密换机 | 完成；双真机无线待验 |
 | M8–M9 | 备份、应用锁、完整大字版、无障碍、截图与总验收 | 完成 |
+| Local Ask | 四类意图、时间解析、事实卡片、BM25 索引与成员隔离 | 完成 |
 
 当前证据见 [实施进度](docs/PROGRESS.md)、[实施日志](docs/IMPLEMENTATION_LOG.md)、[截图清单](docs/SCREENSHOT_MANIFEST.json)和[人工走查证据](docs/MANUAL_WALKTHROUGH_EVIDENCE.json)。
 
@@ -114,7 +124,7 @@ Benchmarks/OCRBench/run.sh
 - [贡献规则](CONTRIBUTING.md)：当前 issue-only 阶段与未来 DCO/CLA 要求
 - [品牌使用说明](TRADEMARKS.md)：MIT 代码许可与官方品牌身份的边界
 - [Privacy Manifest 复核](docs/PRIVACY_MANIFEST.md)：零收集声明与 required-reason API 对照
-- [隐私政策](docs/legal/PRIVACY_POLICY.md)与[用户协议](docs/legal/TERMS_OF_SERVICE.md)：App 离线内置且与公开站点共用的锁定正文
+- [隐私政策](docs/legal/PRIVACY_POLICY.md)与[用户协议](docs/legal/TERMS_OF_SERVICE.md)：App 离线内置正文源；公开站点副本的待同步事实差异见阻塞清单
 - [App Store 提交说明](docs/APP_STORE_SUBMISSION.md)：隐私 URL、问卷、权限用途、审核备注与发布阻断项
 - [实施进度](docs/PROGRESS.md)：里程碑状态与真机待验项
 - [实施日志](docs/IMPLEMENTATION_LOG.md)：阶段过程、验证命令和查漏记录

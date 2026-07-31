@@ -8,4 +8,6 @@
 
 本轮按任务书要求以代码和最终产品决定为准，不擅改锁定正文、官网正文，也不回退已经验收的产品行为。正式上架前必须由产品/法务形成新版本正文，同步更新最后更新日期、`LegalAgreement.currentTermsVersion`、App 本地资源与 Cloudflare 官网，再完整复跑法律版本变更、协议锁定和权限测试。详细操作见 [`APP_STORE_SUBMISSION.md`](APP_STORE_SUBMISSION.md)。
 
-最终模拟器验收已完成；仍需用户在真实设备环境完成相机、FaceID、通知与日历、系统分享、双机近场迁移、低存储/锁屏数据保护以及长辈真人试用。Codex 的 Computer Use 走查因 Mac 处于锁定状态无法启动，已改用 XCUITest、`simctl`、`xcresult` 与逐张视觉复核闭环模拟器证据。上述事项属于真实设备/当前桌面环境的验收边界，不阻塞代码、自动化测试或 App Store 提交前准备，完整清单见 [`PROGRESS.md`](PROGRESS.md)。
+`Scripts/acceptance.sh` 当前由一个法律语义同源门禁同时覆盖上述三项差异，并因此以非零状态退出。这是有意的发布失败关闭，不是测试基础设施故障；在两份锁定正文与官网正文的“不得改写”红线解除前，不得通过删除检查、改成警告或只比较日期/标题来换绿。
+
+设备模拟器验收脚本已以 `FAIL=0 / RESIDUAL=4` 收口：107/107 聚焦测试、通知 4/4 到达、EventKit 写入/删除、系统分享、备份 ZIP、5 页 PDF、应用锁与双模拟器入口已经覆盖。四项残留分别是完整照片库授权的模拟器 TCC 差异、3/4 通知点击未把 App 置前、冷启动通知点击未唤起 App、48MP 图片未从系统 `PhotosPicker` 返回添加状态/RSS；双机 AWDL、微信、锁屏视觉、Jetsam/热压力和大字版真人试用继续作为真机证据边界。完整清单见 [`PROGRESS.md`](PROGRESS.md)。
