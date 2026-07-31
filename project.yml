@@ -28,6 +28,15 @@ schemes:
       config: Debug
       targets:
         - name: OCRBenchTests
+  DeviceSimAcceptance:
+    build:
+      targets:
+        CareThread: all
+        CareThreadDeviceSimUITests: [test]
+    test:
+      config: Debug
+      targets:
+        - name: CareThreadDeviceSimUITests
 targets:
   CareThread:
     type: application
@@ -82,11 +91,25 @@ targets:
     platform: iOS
     sources:
       - path: CareThreadUITests
+        excludes:
+          - DeviceSimulatorAcceptanceUITests.swift
     dependencies:
       - target: CareThread
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: me.multiego.carethread.uitests
+        GENERATE_INFOPLIST_FILE: YES
+  CareThreadDeviceSimUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: CareThreadUITests/DeviceSimulatorAcceptanceUITests.swift
+      - path: CareThreadUITests/UITestTyping.swift
+    dependencies:
+      - target: CareThread
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: me.multiego.carethread.device-sim-ui-tests
         GENERATE_INFOPLIST_FILE: YES
   OCRBenchTests:
     type: bundle.unit-test

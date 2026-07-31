@@ -3,6 +3,8 @@ import SwiftData
 
 @main
 struct CareThreadApp: App {
+    @UIApplicationDelegateAdaptor(CareThreadAppDelegate.self)
+    private var appDelegate
     private let databaseState: DatabaseBootstrapState
     private let skipsStartupRecovery: Bool
 
@@ -28,7 +30,9 @@ struct CareThreadApp: App {
                     skipsRecovery: skipsStartupRecovery
                 ) {
                     AppLockGate {
-                        RootView()
+                        CareThreadNotificationRoutingHost {
+                            RootView()
+                        }
                     }
                 }
                 .modelContainer(container)

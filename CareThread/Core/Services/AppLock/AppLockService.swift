@@ -1,6 +1,9 @@
 import Combine
 import Foundation
 import LocalAuthentication
+#if DEBUG && targetEnvironment(simulator)
+import notify
+#endif
 
 protocol LocalAuthenticationAdapting {
     var isDeviceOwnerAuthenticationAvailable: Bool { get }
@@ -217,6 +220,67 @@ final class AppLockController: ObservableObject {
 }
 
 #if DEBUG
+/// Device-simulator acceptance adapter that still evaluates the real system
+/// biometric policy. Production keeps `SystemLocalAuthenticationAdapter`,
+/// including its device-passcode fallback; this narrower adapter exists only
+/// so simulator Face ID enrollment/match/nomatch events exercise Face ID
+/// itself instead of being satisfied by the simulator passcode.
+struct DeviceSimulatorBiometricAuthenticationAdapter:
+    LocalAuthenticationAdapting {
+    var isDeviceOwnerAuthenticationAvailable: Bool {
+        canEvaluateBiometrics
+    }
+
+    var isBiometricAuthenticationAvailable: Bool {
+        canEvaluateBiometrics
+    }
+
+    func authenticate(reason: String) async throws -> Bool {
+        let context = LAContext()
+        context.localizedCancelTitle = AppLockCopy.cancel
+        context.localizedFallbackTitle = ""
+        return try await context.evaluatePolicy(
+            .deviceOwnerAuthenticationWithBiometrics,
+            localizedReason: reason
+        )
+    }
+
+    private var canEvaluateBiometrics: Bool {
+        #if targetEnvironment(simulator)
+        guard simulatorEnrollmentState == true else { return false }
+        #endif
+        let context = LAContext()
+        var error: NSError?
+        return context.canEvaluatePolicy(
+            .deviceOwnerAuthenticationWithBiometrics,
+            error: &error
+        )
+    }
+
+    #if targetEnvironment(simulator)
+    /// Xcode 26.6's simulator updates this Darwin notification state for
+    /// enrollment, while `LAContext.canEvaluatePolicy` continues to report
+    /// passcode-backed availability. Read the simulator's own state only for
+    /// this DEBUG acceptance adapter; authentication still uses LAContext.
+    private var simulatorEnrollmentState: Bool? {
+        let name = "com.apple.BiometricKit.enrollmentChanged"
+        var token: Int32 = 0
+        let registrationStatus = name.withCString {
+            notify_register_check($0, &token)
+        }
+        guard registrationStatus == 0 else {
+            return nil
+        }
+        defer { notify_cancel(token) }
+        var state: UInt64 = 0
+        guard notify_get_state(token, &state) == 0 else {
+            return nil
+        }
+        return state == 1
+    }
+    #endif
+}
+
 final class DebugLocalAuthenticationAdapter: LocalAuthenticationAdapting {
     enum Result {
         case success
@@ -268,6 +332,14 @@ enum AppLockRuntime {
             )
         }
         let enabled = arguments.contains("-M8LockEnabled") ? true : nil
+        if arguments.contains("-DeviceSimRealFaceID") {
+            return AppLockController(
+                authenticator:
+                    DeviceSimulatorBiometricAuthenticationAdapter(),
+                preferences: AppLockPreferenceStore(),
+                enabledOverride: enabled
+            )
+        }
         if let index = arguments.firstIndex(of: "-M8LockResult"),
            arguments.indices.contains(index + 1) {
             let raw = arguments[index + 1]
