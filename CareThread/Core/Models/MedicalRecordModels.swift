@@ -49,6 +49,12 @@ final class MedicalRecord {
     private(set) var machineExtractionPayload: Data
     private(set) var abnormalFlagsPayload: Data
     private(set) var structuredFieldsPayload: Data
+    /// Rebuildable local-search index. It is bound to the record's current
+    /// content revision so manual records (which have no Attachment) and OCR
+    /// imports share the same derived-data lifecycle.
+    private(set) var derivedTextIndexPayload: Data?
+    private(set) var derivedTextIndexAlgorithmVersion: String?
+    private(set) var derivedTextIndexSourceRevision: Int?
     private(set) var reviewStatusRawValue: String
     private(set) var isKeyRecord: Bool
     private(set) var inBrief: Bool
@@ -89,6 +95,9 @@ final class MedicalRecord {
         labItems: [LabItem] = [],
         abnormalFlags: [String] = [],
         structuredFields: [KeyValueItem] = [],
+        derivedTextIndexPayload: Data? = nil,
+        derivedTextIndexAlgorithmVersion: String? = nil,
+        derivedTextIndexSourceRevision: Int? = nil,
         reviewStatus: ReviewStatus = .pending,
         isKeyRecord: Bool = false,
         inBrief: Bool = false,
@@ -124,6 +133,9 @@ final class MedicalRecord {
         self.machineExtractionPayload = ModelPayload.requiredEncodeOptional(machineExtraction)
         self.abnormalFlagsPayload = ModelPayload.requiredEncode(abnormalFlags)
         self.structuredFieldsPayload = ModelPayload.requiredEncode(structuredFields)
+        self.derivedTextIndexPayload = derivedTextIndexPayload
+        self.derivedTextIndexAlgorithmVersion = derivedTextIndexAlgorithmVersion
+        self.derivedTextIndexSourceRevision = derivedTextIndexSourceRevision
         self.reviewStatusRawValue = reviewStatus.rawValue
         self.isKeyRecord = isKeyRecord
         self.inBrief = inBrief
@@ -186,6 +198,16 @@ final class MedicalRecord {
     private(set) var structuredFields: [KeyValueItem] {
         get { ModelPayload.decode([KeyValueItem].self, from: structuredFieldsPayload, fallback: []) }
         set { structuredFieldsPayload = ModelPayload.requiredEncode(newValue); updatedAt = Date() }
+    }
+
+    func replaceDerivedTextIndex(
+        payload: Data?,
+        algorithmVersion: String?,
+        sourceRevision: Int?
+    ) {
+        derivedTextIndexPayload = payload
+        derivedTextIndexAlgorithmVersion = algorithmVersion
+        derivedTextIndexSourceRevision = sourceRevision
     }
 
     private(set) var reviewStatus: ReviewStatus {
@@ -319,6 +341,13 @@ final class Attachment {
     var pageCount: Int?
     private(set) var integrityStateRawValue: String
     private(set) var kindRawValue: String
+    /// Rebuildable fingerprints for duplicate detection. Their algorithm
+    /// versions make upgrades explicit and prevent cold-start recomputation.
+    private(set) var derivedArtifactSourceSHA256: String?
+    private(set) var derivedPerceptualHashPayload: Data?
+    private(set) var derivedPerceptualHashAlgorithmVersion: String?
+    private(set) var derivedVisionFeaturePrintPayload: Data?
+    private(set) var derivedVisionFeaturePrintAlgorithmVersion: String?
     var pageIndex: Int
     private(set) var record: MedicalRecord?
 
@@ -340,7 +369,8 @@ final class Attachment {
         pixelWidth: Int? = nil,
         pixelHeight: Int? = nil,
         pageCount: Int? = nil,
-        integrityState: AttachmentIntegrityState = .pending
+        integrityState: AttachmentIntegrityState = .pending,
+        derivedArtifacts: CaptureAttachmentDerivedArtifactSet = .legacyMissing
     ) {
         self.id = id
         self.patientId = patientId
@@ -358,6 +388,14 @@ final class Attachment {
         self.pageCount = pageCount
         self.integrityStateRawValue = integrityState.rawValue
         self.kindRawValue = kind.rawValue
+        self.derivedArtifactSourceSHA256 = derivedArtifacts.sourceSHA256
+        self.derivedPerceptualHashPayload = derivedArtifacts.perceptualHashPayload
+        self.derivedPerceptualHashAlgorithmVersion =
+            derivedArtifacts.perceptualHashAlgorithmVersion
+        self.derivedVisionFeaturePrintPayload =
+            derivedArtifacts.visionFeaturePrintPayload
+        self.derivedVisionFeaturePrintAlgorithmVersion =
+            derivedArtifacts.visionFeaturePrintAlgorithmVersion
         self.pageIndex = pageIndex
         self.record = record
     }
@@ -383,6 +421,30 @@ final class Attachment {
         AttachmentIntegrityState(rawValue: integrityStateRawValue) ?? .pending
     }
 
+    var derivedArtifacts: CaptureAttachmentDerivedArtifactSet {
+        CaptureAttachmentDerivedArtifactSet(
+            sourceSHA256: derivedArtifactSourceSHA256,
+            perceptualHashPayload: derivedPerceptualHashPayload,
+            perceptualHashAlgorithmVersion:
+                derivedPerceptualHashAlgorithmVersion,
+            visionFeaturePrintPayload: derivedVisionFeaturePrintPayload,
+            visionFeaturePrintAlgorithmVersion:
+                derivedVisionFeaturePrintAlgorithmVersion
+        )
+    }
+
+    func replaceDerivedArtifacts(
+        _ value: CaptureAttachmentDerivedArtifactSet
+    ) {
+        derivedArtifactSourceSHA256 = value.sourceSHA256
+        derivedPerceptualHashPayload = value.perceptualHashPayload
+        derivedPerceptualHashAlgorithmVersion =
+            value.perceptualHashAlgorithmVersion
+        derivedVisionFeaturePrintPayload = value.visionFeaturePrintPayload
+        derivedVisionFeaturePrintAlgorithmVersion =
+            value.visionFeaturePrintAlgorithmVersion
+    }
+
     static func verified(
         id: UUID = UUID(),
         patientId: UUID,
@@ -399,7 +461,8 @@ final class Attachment {
         importSource: ImportSource,
         pixelWidth: Int? = nil,
         pixelHeight: Int? = nil,
-        pageCount: Int? = nil
+        pageCount: Int? = nil,
+        derivedArtifacts: CaptureAttachmentDerivedArtifactSet = .legacyMissing
     ) throws -> Attachment {
         try validateRelativePath(originalRelativePath)
         if let derivedRelativePath {
@@ -455,7 +518,8 @@ final class Attachment {
             pixelWidth: pixelWidth,
             pixelHeight: pixelHeight,
             pageCount: pageCount,
-            integrityState: .verified
+            integrityState: .verified,
+            derivedArtifacts: derivedArtifacts
         )
     }
 

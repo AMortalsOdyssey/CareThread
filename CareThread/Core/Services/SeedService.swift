@@ -287,7 +287,8 @@ enum SeedService {
                     importSource: .fixture,
                     pixelWidth: staged.pixelWidth,
                     pixelHeight: staged.pixelHeight,
-                    pageCount: 1
+                    pageCount: 1,
+                    derivedArtifacts: staged.derivedArtifacts ?? .legacyMissing
                 )
                 try record.bindAttachment(attachment)
             }

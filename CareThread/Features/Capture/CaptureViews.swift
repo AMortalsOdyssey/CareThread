@@ -174,7 +174,8 @@ struct CaptureFlowHost: View {
             allowedContentTypes: [.image, .pdf],
             allowsMultipleSelection: true
         ) { result in
-            importFiles(result)
+            importTask?.cancel()
+            importTask = Task { await importFiles(result) }
         }
         .photosPicker(
             isPresented: $showPhotoPicker,
@@ -383,18 +384,21 @@ struct CaptureFlowHost: View {
         }
     }
 
-    private func importFiles(_ result: Result<[URL], Error>) {
+    private func importFiles(_ result: Result<[URL], Error>) async {
         let source = importedSourceForAppend ?? .files
         var importedAssets: [M3CapturePageAsset] = []
         do {
             let urls = try result.get()
             let batchID = try ensureImportBatch(source: source)
+            let vaultRootURL = try CaptureVaultService().rootURL
             for url in urls {
+                try Task.checkCancellation()
                 importedAssets.append(
-                    contentsOf: try M3CaptureFileStore.assets(
+                    contentsOf: try await M3CaptureFileStore.assets(
                         fromFile: url,
                         batchID: batchID,
-                        startingAt: controller.pageCount + importedAssets.count
+                        startingAt: controller.pageCount + importedAssets.count,
+                        vaultRootURL: vaultRootURL
                     )
                 )
             }
@@ -407,6 +411,7 @@ struct CaptureFlowHost: View {
             controller.errorMessage = Copy.Capture.importFailure
         }
         importedSourceForAppend = nil
+        importTask = nil
     }
 
     private func acceptImportedAssets(

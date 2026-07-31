@@ -843,14 +843,12 @@ enum M3CaptureFileStore {
     static func assets(
         fromFile url: URL,
         batchID: UUID,
-        startingAt sourceOrder: Int
-    ) throws -> [M3CapturePageAsset] {
-        let accessed = url.startAccessingSecurityScopedResource()
-        defer {
-            if accessed { url.stopAccessingSecurityScopedResource() }
-        }
-        let staged = try CaptureVaultService().stageFile(
+        startingAt sourceOrder: Int,
+        vaultRootURL: URL
+    ) async throws -> [M3CapturePageAsset] {
+        let staged = try await CaptureAssetStagingWorker.stageFile(
             at: url,
+            vaultRootURL: vaultRootURL,
             batchID: batchID
         )
         if staged.kind == .pdf {

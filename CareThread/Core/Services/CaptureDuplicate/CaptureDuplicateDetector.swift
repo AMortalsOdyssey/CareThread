@@ -44,6 +44,36 @@ struct CaptureDuplicateCandidateSnapshot: Sendable {
     let pixelWidth: Int?
     let pixelHeight: Int?
     let ocrText: String
+    let derivedArtifacts: CaptureAttachmentDerivedArtifactSet
+
+    init(
+        id: UUID,
+        displayName: String,
+        sha256: String,
+        visualURL: URL?,
+        pixelWidth: Int?,
+        pixelHeight: Int?,
+        ocrText: String,
+        derivedArtifacts: CaptureAttachmentDerivedArtifactSet? = nil
+    ) {
+        self.id = id
+        self.displayName = displayName
+        self.sha256 = sha256
+        self.visualURL = visualURL
+        self.pixelWidth = pixelWidth
+        self.pixelHeight = pixelHeight
+        self.ocrText = ocrText
+        // Fixture convenience only. Production always supplies the staged
+        // persisted value explicitly, including the legacy-missing marker.
+        self.derivedArtifacts = derivedArtifacts
+            ?? visualURL.map {
+                CaptureAttachmentDerivedArtifactComputer.live.makeAll(
+                    url: $0,
+                    sourceSHA256: sha256
+                )
+            }
+            ?? .legacyMissing
+    }
 }
 
 struct CaptureDuplicateAttachmentSnapshot: Sendable {
@@ -52,6 +82,33 @@ struct CaptureDuplicateAttachmentSnapshot: Sendable {
     let visualURL: URL?
     let pixelWidth: Int?
     let pixelHeight: Int?
+    let derivedArtifacts: CaptureAttachmentDerivedArtifactSet
+    let isVisionEligible: Bool
+
+    init(
+        id: UUID,
+        sha256: String,
+        visualURL: URL?,
+        pixelWidth: Int?,
+        pixelHeight: Int?,
+        derivedArtifacts: CaptureAttachmentDerivedArtifactSet? = nil,
+        isVisionEligible: Bool = true
+    ) {
+        self.id = id
+        self.sha256 = sha256
+        self.visualURL = visualURL
+        self.pixelWidth = pixelWidth
+        self.pixelHeight = pixelHeight
+        self.derivedArtifacts = derivedArtifacts
+            ?? visualURL.map {
+                CaptureAttachmentDerivedArtifactComputer.live.makeAll(
+                    url: $0,
+                    sourceSHA256: sha256
+                )
+            }
+            ?? .legacyMissing
+        self.isVisionEligible = isVisionEligible
+    }
 }
 
 struct CaptureDuplicateRecordSnapshot: Sendable {
@@ -76,6 +133,72 @@ private struct CaptureDuplicateRecordRevision: Equatable, Sendable {
 
 private struct CaptureDuplicateLibraryRevision: Equatable, Sendable {
     let records: [CaptureDuplicateRecordRevision]
+}
+
+enum CaptureDuplicatePerformancePolicy {
+    /// Vision is the most expensive fallback. Above this member-scoped size,
+    /// portable hashes and OCR still cover the full library while Vision is
+    /// bounded to clinically recent records.
+    static let visionFullLibraryAttachmentLimit = 200
+    static let visionRecentMonths = 24
+
+    static func usesRecentVisionWindow(imageAttachmentCount: Int) -> Bool {
+        imageAttachmentCount > visionFullLibraryAttachmentLimit
+    }
+
+    static func recentVisionCutoff(
+        now: Date,
+        calendar: Calendar = Calendar(identifier: .gregorian)
+    ) -> Date? {
+        calendar.date(
+            byAdding: .month,
+            value: -visionRecentMonths,
+            to: now
+        )
+    }
+
+    static func isVisionEventEligible(
+        _ eventDate: Date,
+        cutoff: Date
+    ) -> Bool {
+        eventDate >= cutoff
+    }
+
+    static func visionEligibleAttachmentIDs(
+        records: [MedicalRecord],
+        now: Date = Date(),
+        calendar: Calendar = Calendar(identifier: .gregorian)
+    ) -> Set<UUID> {
+        let imageCount = records.reduce(into: 0) { count, record in
+            count += record.attachments.filter { $0.kind == .image }.count
+        }
+        guard usesRecentVisionWindow(imageAttachmentCount: imageCount),
+              let cutoff = recentVisionCutoff(
+                  now: now,
+                  calendar: calendar
+              ) else {
+            return Set(records.flatMap(\.attachments).map(\.id))
+        }
+        return Set(
+            records
+                .filter { isVisionEventEligible($0.eventDate, cutoff: cutoff) }
+                .flatMap(\.attachments)
+                .map(\.id)
+        )
+    }
+}
+
+private struct CaptureDerivedArtifactRefreshJob: Sendable {
+    let attachmentID: UUID
+    let url: URL
+    let sourceSHA256: String
+    let stored: CaptureAttachmentDerivedArtifactSet
+    let includeVision: Bool
+}
+
+private struct CaptureDerivedArtifactRefreshResult: Sendable {
+    let attachmentID: UUID
+    let artifacts: CaptureAttachmentDerivedArtifactSet
 }
 
 enum CaptureDuplicateTextFingerprint {
@@ -187,7 +310,7 @@ enum CaptureDuplicateTextFingerprint {
     }
 }
 
-struct CapturePerceptualHashValue: Sendable {
+struct CapturePerceptualHashValue: Codable, Equatable, Hashable, Sendable {
     let dctHashes: [UInt64]
     let blockHashes: [UInt64]
     let differenceHashes: [UInt64]
@@ -198,7 +321,8 @@ enum CapturePerceptualImageHash {
     static let maximumBlockHammingDistance = 9
     static let maximumDifferenceHammingDistance = 10
     static let algorithmIdentifier =
-        "carethread-phash-dct64-block64-dhash64-rot4-multicrop-v3"
+        "carethread-phash-dct64-block64-dhash64-rot4-multicrop-v3-"
+        + "visual-input-preferred-preview-fallback-original-v1"
     private static let cropScales: [CGFloat] = [1, 0.94, 0.90, 0.86]
     private static let cosineTable: [[Double]] = (0..<8).map { frequency in
         (0..<32).map { position in
@@ -394,42 +518,6 @@ enum CapturePerceptualImageHash {
     }
 }
 
-private final class CapturePHashBox: NSObject {
-    let value: CapturePerceptualHashValue
-
-    init(_ value: CapturePerceptualHashValue) {
-        self.value = value
-    }
-}
-
-/// A rebuildable, process-local acceleration only. Keys contain the algorithm
-/// version plus immutable file SHA; no patient, OCR, path, or medical metadata
-/// is retained. NSCache releases values under memory pressure.
-private final class CapturePHashMemoryCache: @unchecked Sendable {
-    static let shared = CapturePHashMemoryCache()
-
-    private let storage = NSCache<NSString, CapturePHashBox>()
-
-    private init() {
-        storage.countLimit = 2_048
-    }
-
-    func value(
-        sha256: String,
-        url: URL
-    ) -> CapturePerceptualHashValue? {
-        let key = "\(CapturePerceptualImageHash.algorithmIdentifier):\(sha256.lowercased())"
-        if let hit = storage.object(forKey: key as NSString) {
-            return hit.value
-        }
-        guard let value = CapturePerceptualImageHash.make(url: url) else {
-            return nil
-        }
-        storage.setObject(CapturePHashBox(value), forKey: key as NSString)
-        return value
-    }
-}
-
 enum CaptureVisionImageFingerprint {
     /// Apple does not publish a universal semantic cutoff. This conservative
     /// value is covered by fictional re-photograph and unrelated-document
@@ -437,7 +525,15 @@ enum CaptureVisionImageFingerprint {
     /// fallback; the portable DCT pHash remains the stable algorithm.
     static let maximumDistance: Float = 0.30
 
-    static func make(url: URL) -> VNFeaturePrintObservation? {
+    /// Includes both Vision's request revision and our numeric vector envelope. A
+    /// revision change makes persisted payloads stale and triggers one lazy
+    /// rebuild from the immutable original.
+    static let requestRevision = VNGenerateImageFeaturePrintRequestRevision2
+    static let algorithmIdentifier =
+        "apple-vision-feature-print-r2-thumb512-exif-transform-"
+        + "preferred-preview-fallback-original-v1-float-vector-v1"
+
+    static func make(url: URL) -> CaptureVisionFeatureVector? {
         guard let source = CGImageSourceCreateWithURL(url as CFURL, nil),
               let image = CGImageSourceCreateThumbnailAtIndex(
                   source,
@@ -452,14 +548,16 @@ enum CaptureVisionImageFingerprint {
             return nil
         }
         let request = VNGenerateImageFeaturePrintRequest()
+        request.revision = requestRevision
         let handler = VNImageRequestHandler(cgImage: image, options: [:])
         guard (try? handler.perform([request])) != nil else { return nil }
-        return request.results?.first
+        guard let observation = request.results?.first else { return nil }
+        return CaptureVisionFeatureVector(observation: observation)
     }
 
     static func similarity(
-        _ lhs: VNFeaturePrintObservation,
-        _ rhs: VNFeaturePrintObservation
+        _ lhs: CaptureVisionFeatureVector,
+        _ rhs: CaptureVisionFeatureVector
     ) -> Double? {
         guard let distance = distance(lhs, rhs),
               distance <= maximumDistance else {
@@ -469,14 +567,10 @@ enum CaptureVisionImageFingerprint {
     }
 
     static func distance(
-        _ lhs: VNFeaturePrintObservation,
-        _ rhs: VNFeaturePrintObservation
+        _ lhs: CaptureVisionFeatureVector,
+        _ rhs: CaptureVisionFeatureVector
     ) -> Float? {
-        var distance: Float = 0
-        guard (try? lhs.computeDistance(&distance, to: rhs)) != nil else {
-            return nil
-        }
-        return distance
+        lhs.euclideanDistance(to: rhs)
     }
 }
 
@@ -561,12 +655,13 @@ enum CaptureDuplicateDetector {
             candidateHashes.append(
                 (
                     candidate,
-                    candidate.visualURL.flatMap {
-                        CapturePHashMemoryCache.shared.value(
-                            sha256: candidate.sha256,
-                            url: $0
+                    CaptureAttachmentDerivedArtifactCodec.decodePerceptualHash(
+                        candidate.derivedArtifacts.hasCurrentPerceptualHash(
+                            sourceSHA256: candidate.sha256
                         )
-                    }
+                            ? candidate.derivedArtifacts.perceptualHashPayload
+                            : nil
+                    )
                 )
             )
         }
@@ -604,47 +699,44 @@ enum CaptureDuplicateDetector {
             }
         }
 
-        var historicalHashCache: [URL: CapturePerceptualHashValue] = [:]
+        let historicalHashes: [
+            (CaptureDuplicateRecordSnapshot, CapturePerceptualHashValue)
+        ] = records.flatMap { record in
+            record.attachments.compactMap { attachment in
+                guard attachment.derivedArtifacts.hasCurrentPerceptualHash(
+                    sourceSHA256: attachment.sha256
+                ), let value = CaptureAttachmentDerivedArtifactCodec
+                    .decodePerceptualHash(
+                        attachment.derivedArtifacts.perceptualHashPayload
+                    ) else {
+                    return nil
+                }
+                return (record, value)
+            }
+        }
         for (candidate, candidateHash) in candidateHashes {
             guard !Task.isCancelled else { return nil }
             guard let candidateHash else { continue }
-            for record in records {
-                for attachment in record.attachments {
-                    guard !Task.isCancelled else { return nil }
-                    guard !CaptureDuplicateTextFingerprint.hasHardDiscriminatorConflict(
-                        candidate.ocrText,
-                        record.ocrText
-                    ), let url = attachment.visualURL else {
-                        continue
-                    }
-                    let historicalHash: CapturePerceptualHashValue?
-                    if let cached = historicalHashCache[url] {
-                        historicalHash = cached
-                    } else {
-                        let value = CapturePHashMemoryCache.shared.value(
-                            sha256: attachment.sha256,
-                            url: url
-                        )
-                        historicalHashCache[url] = value
-                        historicalHash = value
-                    }
-                    guard let historicalHash,
-                          let similarity = CapturePerceptualImageHash.similarity(
-                              candidateHash,
-                              historicalHash
-                          ) else {
-                        continue
-                    }
-                    best = stronger(
-                        best,
-                        savedRecordMatch(
-                            evidence: .visualContentHash,
-                            similarity: similarity,
-                            candidate: candidate,
-                            record: record
-                        )
-                    )
+            for (record, historicalHash) in historicalHashes {
+                guard !Task.isCancelled else { return nil }
+                guard !CaptureDuplicateTextFingerprint.hasHardDiscriminatorConflict(
+                    candidate.ocrText,
+                    record.ocrText
+                ), let similarity = CapturePerceptualImageHash.similarity(
+                    candidateHash,
+                    historicalHash
+                ) else {
+                    continue
                 }
+                best = stronger(
+                    best,
+                    savedRecordMatch(
+                        evidence: .visualContentHash,
+                        similarity: similarity,
+                        candidate: candidate,
+                        record: record
+                    )
+                )
             }
         }
         return best
@@ -655,12 +747,21 @@ enum CaptureDuplicateDetector {
         records: [CaptureDuplicateRecordSnapshot]
     ) -> CaptureDuplicateMatch? {
         var candidatePrints: [
-            (CaptureDuplicateCandidateSnapshot, VNFeaturePrintObservation?)
+            (CaptureDuplicateCandidateSnapshot, CaptureVisionFeatureVector?)
         ] = []
         for candidate in candidates {
             guard !Task.isCancelled else { return nil }
             candidatePrints.append(
-                (candidate, candidate.visualURL.flatMap(CaptureVisionImageFingerprint.make))
+                (
+                    candidate,
+                    CaptureAttachmentDerivedArtifactCodec.decodeVisionFeaturePrint(
+                        candidate.derivedArtifacts.hasCurrentVisionFeaturePrint(
+                            sourceSHA256: candidate.sha256
+                        )
+                            ? candidate.derivedArtifacts.visionFeaturePrintPayload
+                            : nil
+                    )
+                )
             )
         }
         var best: CaptureDuplicateMatch?
@@ -695,44 +796,45 @@ enum CaptureDuplicateDetector {
             }
         }
 
-        var historicalPrintCache: [URL: VNFeaturePrintObservation] = [:]
+        let historicalPrints: [
+            (CaptureDuplicateRecordSnapshot, CaptureVisionFeatureVector)
+        ] = records.flatMap { record in
+            record.attachments.compactMap { attachment in
+                guard attachment.isVisionEligible,
+                      attachment.derivedArtifacts.hasCurrentVisionFeaturePrint(
+                          sourceSHA256: attachment.sha256
+                      ), let value = CaptureAttachmentDerivedArtifactCodec
+                        .decodeVisionFeaturePrint(
+                            attachment.derivedArtifacts.visionFeaturePrintPayload
+                        ) else {
+                    return nil
+                }
+                return (record, value)
+            }
+        }
         for (candidate, candidatePrint) in candidatePrints {
             guard !Task.isCancelled else { return nil }
             guard let candidatePrint else { continue }
-            for record in records {
-                for attachment in record.attachments {
-                    guard !Task.isCancelled else { return nil }
-                    guard !CaptureDuplicateTextFingerprint.hasHardDiscriminatorConflict(
-                        candidate.ocrText,
-                        record.ocrText
-                    ), let url = attachment.visualURL else {
-                        continue
-                    }
-                    let historicalPrint: VNFeaturePrintObservation?
-                    if let cached = historicalPrintCache[url] {
-                        historicalPrint = cached
-                    } else {
-                        let value = CaptureVisionImageFingerprint.make(url: url)
-                        historicalPrintCache[url] = value
-                        historicalPrint = value
-                    }
-                    guard let historicalPrint,
-                          let similarity = CaptureVisionImageFingerprint.similarity(
-                              candidatePrint,
-                              historicalPrint
-                          ) else {
-                        continue
-                    }
-                    best = stronger(
-                        best,
-                        savedRecordMatch(
-                            evidence: .visualContentHash,
-                            similarity: similarity,
-                            candidate: candidate,
-                            record: record
-                        )
-                    )
+            for (record, historicalPrint) in historicalPrints {
+                guard !Task.isCancelled else { return nil }
+                guard !CaptureDuplicateTextFingerprint.hasHardDiscriminatorConflict(
+                    candidate.ocrText,
+                    record.ocrText
+                ), let similarity = CaptureVisionImageFingerprint.similarity(
+                    candidatePrint,
+                    historicalPrint
+                ) else {
+                    continue
                 }
+                best = stronger(
+                    best,
+                    savedRecordMatch(
+                        evidence: .visualContentHash,
+                        similarity: similarity,
+                        candidate: candidate,
+                        record: record
+                    )
+                )
             }
         }
         return best
@@ -844,6 +946,7 @@ enum CaptureDuplicateDetector {
 struct CaptureDuplicateDetectionService {
     let context: ModelContext
     let vault: CaptureVaultService
+    var artifactComputer: CaptureAttachmentDerivedArtifactComputer = .live
 
     func scan(
         patientID: UUID,
@@ -873,16 +976,25 @@ struct CaptureDuplicateDetectionService {
         guard !stagedAssets.isEmpty else {
             throw CaptureDuplicateDetectionError.invalidCaptureInput
         }
+        let currentStagedAssets = try await refreshStagedDerivedArtifacts(
+            stagedAssets
+        )
         // SwiftData is read on MainActor. If another scene commits for this
         // member while image work is detached, rebuild and retry. Once a
         // stable result returns, the caller enters its synchronous save path,
         // so another scene cannot interleave a commit on MainActor.
         for _ in 0..<3 {
             try Task.checkCancellation()
+            let libraryContext = ModelContext(context.container)
+            try await refreshDerivedArtifacts(
+                patientID: patientID,
+                using: libraryContext
+            )
             let input = try makeInput(
                 patientID: patientID,
-                stagedAssets: stagedAssets,
-                ocrTextByAssetID: ocrTextByAssetID
+                stagedAssets: currentStagedAssets,
+                ocrTextByAssetID: ocrTextByAssetID,
+                using: libraryContext
             )
             let worker = Task.detached(priority: .userInitiated) {
                 CaptureDuplicateDetector.strongestMatch(
@@ -904,6 +1016,82 @@ struct CaptureDuplicateDetectionService {
             )
         }
         throw CaptureDuplicateDetectionError.libraryChangedRepeatedly
+    }
+
+    /// Journals from an earlier app build may not carry derived payloads. A
+    /// preflight upgrades those staged candidates once and writes the result
+    /// back before they become Attachment rows.
+    private func refreshStagedDerivedArtifacts(
+        _ assets: [StagedCaptureAsset]
+    ) async throws -> [StagedCaptureAsset] {
+        var jobs: [CaptureDerivedArtifactRefreshJob] = []
+        for asset in assets where asset.kind == .image {
+            let stored = asset.derivedArtifacts ?? .legacyMissing
+            guard !stored.hasCurrentPerceptualHash(sourceSHA256: asset.sha256)
+                    || !stored.hasCurrentVisionFeaturePrint(
+                        sourceSHA256: asset.sha256
+                    ) else {
+                continue
+            }
+            guard let url = try visualURL(
+                kind: asset.kind,
+                preferredPath: asset.previewRelativePath,
+                fallbackPath: asset.originalRelativePath
+            ) else {
+                continue
+            }
+            jobs.append(
+                CaptureDerivedArtifactRefreshJob(
+                    attachmentID: asset.id,
+                    url: url,
+                    sourceSHA256: asset.sha256,
+                    stored: stored,
+                    includeVision: true
+                )
+            )
+        }
+        guard !jobs.isEmpty else { return assets }
+        let computer = artifactComputer
+        let results = try await Task.detached(priority: .userInitiated) {
+            var values: [CaptureDerivedArtifactRefreshResult] = []
+            values.reserveCapacity(jobs.count)
+            for job in jobs {
+                try Task.checkCancellation()
+                values.append(
+                    CaptureDerivedArtifactRefreshResult(
+                        attachmentID: job.attachmentID,
+                        artifacts: computer.refreshing(
+                            job.stored,
+                            url: job.url,
+                            sourceSHA256: job.sourceSHA256,
+                            includeVision: true
+                        )
+                    )
+                )
+            }
+            return values
+        }.value
+        let valuesByID = Dictionary(
+            uniqueKeysWithValues: results.map { ($0.attachmentID, $0.artifacts) }
+        )
+        return assets.map { asset in
+            guard let artifacts = valuesByID[asset.id] else { return asset }
+            do {
+                return try vault.updateStagedDerivedArtifacts(
+                    batchID: asset.batchID,
+                    assetID: asset.id,
+                    artifacts: artifacts
+                )
+            } catch {
+                // Direct service tests and recovered in-memory inputs may not
+                // have a writable journal. The refreshed value still travels
+                // explicitly into Attachment on this save.
+                AppLog.vault.warning(
+                    "Could not persist refreshed staged attachment artifacts"
+                )
+                return asset.replacingDerivedArtifacts(artifacts)
+            }
+        }
     }
 
     private func stagedAssets(
@@ -958,7 +1146,8 @@ struct CaptureDuplicateDetectionService {
     private func makeInput(
         patientID: UUID,
         stagedAssets: [StagedCaptureAsset],
-        ocrTextByAssetID: [UUID: String]
+        ocrTextByAssetID: [UUID: String],
+        using sourceContext: ModelContext
     ) throws -> (
         candidates: [CaptureDuplicateCandidateSnapshot],
         records: [CaptureDuplicateRecordSnapshot],
@@ -976,15 +1165,21 @@ struct CaptureDuplicateDetectionService {
                 ),
                 pixelWidth: asset.pixelWidth,
                 pixelHeight: asset.pixelHeight,
-                ocrText: ocrTextByAssetID[asset.id] ?? ""
+                ocrText: ocrTextByAssetID[asset.id] ?? "",
+                derivedArtifacts: asset.derivedArtifacts ?? .legacyMissing
             )
         }
         var descriptor = FetchDescriptor<MedicalRecord>(
             predicate: #Predicate { $0.patientId == patientID },
             sortBy: [SortDescriptor(\MedicalRecord.eventDate, order: .reverse)]
         )
-        descriptor.includePendingChanges = true
-        let records = try context.fetch(descriptor).map { record in
+        descriptor.includePendingChanges = false
+        let fetchedRecords = try sourceContext.fetch(descriptor)
+        let visionEligibleIDs =
+            CaptureDuplicatePerformancePolicy.visionEligibleAttachmentIDs(
+                records: fetchedRecords
+            )
+        let records = try fetchedRecords.map { record in
             let attachments = try record.attachments.map { attachment in
                 CaptureDuplicateAttachmentSnapshot(
                     id: attachment.id,
@@ -995,7 +1190,9 @@ struct CaptureDuplicateDetectionService {
                         fallbackPath: attachment.originalRelativePath
                     ),
                     pixelWidth: attachment.pixelWidth,
-                    pixelHeight: attachment.pixelHeight
+                    pixelHeight: attachment.pixelHeight,
+                    derivedArtifacts: attachment.derivedArtifacts,
+                    isVisionEligible: visionEligibleIDs.contains(attachment.id)
                 )
             }
             return CaptureDuplicateRecordSnapshot(
@@ -1010,9 +1207,104 @@ struct CaptureDuplicateDetectionService {
             candidates,
             records,
             CaptureDuplicateLibraryRevision(
-                records: try recordRevisions(patientID: patientID)
+                records: try recordRevisions(
+                    patientID: patientID,
+                    using: sourceContext
+                )
             )
         )
+    }
+
+    /// Backfills only missing/stale payloads. Current, decodable fingerprints
+    /// remain read-only across service instances and process restarts.
+    private func refreshDerivedArtifacts(
+        patientID: UUID,
+        using sourceContext: ModelContext
+    ) async throws {
+        var descriptor = FetchDescriptor<MedicalRecord>(
+            predicate: #Predicate { $0.patientId == patientID },
+            sortBy: [SortDescriptor(\MedicalRecord.eventDate, order: .reverse)]
+        )
+        descriptor.includePendingChanges = false
+        let records = try sourceContext.fetch(descriptor)
+        let visionEligibleIDs =
+            CaptureDuplicatePerformancePolicy.visionEligibleAttachmentIDs(
+                records: records
+            )
+        var jobs: [CaptureDerivedArtifactRefreshJob] = []
+        for record in records {
+            for attachment in record.attachments where attachment.kind == .image {
+                let stored = attachment.derivedArtifacts
+                let includeVision = visionEligibleIDs.contains(attachment.id)
+                guard !stored.hasCurrentPerceptualHash(
+                    sourceSHA256: attachment.sha256
+                )
+                        || (includeVision
+                            && !stored.hasCurrentVisionFeaturePrint(
+                                sourceSHA256: attachment.sha256
+                            )) else {
+                    continue
+                }
+                guard let url = try visualURL(
+                    kind: attachment.kind,
+                    preferredPath: attachment.derivedRelativePath,
+                    fallbackPath: attachment.originalRelativePath
+                ) else {
+                    continue
+                }
+                jobs.append(
+                    CaptureDerivedArtifactRefreshJob(
+                        attachmentID: attachment.id,
+                        url: url,
+                        sourceSHA256: attachment.sha256,
+                        stored: stored,
+                        includeVision: includeVision
+                    )
+                )
+            }
+        }
+        guard !jobs.isEmpty else { return }
+        let computer = artifactComputer
+        let results = try await Task.detached(priority: .utility) {
+            var values: [CaptureDerivedArtifactRefreshResult] = []
+            values.reserveCapacity(jobs.count)
+            for job in jobs {
+                try Task.checkCancellation()
+                values.append(
+                    CaptureDerivedArtifactRefreshResult(
+                        attachmentID: job.attachmentID,
+                        artifacts: computer.refreshing(
+                            job.stored,
+                            url: job.url,
+                            sourceSHA256: job.sourceSHA256,
+                            includeVision: job.includeVision
+                        )
+                    )
+                )
+            }
+            return values
+        }.value
+        let valuesByID = Dictionary(
+            uniqueKeysWithValues: results.map { ($0.attachmentID, $0.artifacts) }
+        )
+        for record in records {
+            for attachment in record.attachments {
+                guard let value = valuesByID[attachment.id] else { continue }
+                attachment.replaceDerivedArtifacts(value)
+            }
+        }
+        do {
+            try sourceContext.save()
+            AppLog.data.info(
+                "Refreshed \(results.count, privacy: .public) attachment derived artifacts"
+            )
+        } catch {
+            sourceContext.rollback()
+            AppLog.data.error(
+                "Persisting attachment derived artifacts failed"
+            )
+            throw error
+        }
     }
 
     private func libraryRevision(
@@ -1043,7 +1335,15 @@ struct CaptureDuplicateDetectionService {
                 updatedAt: record.updatedAt,
                 contentRevision: record.contentRevision,
                 attachmentSignatures: record.attachments.map {
-                    "\($0.id.uuidString):\($0.sha256.lowercased())"
+                    [
+                        $0.id.uuidString,
+                        $0.sha256.lowercased(),
+                        $0.derivedArtifacts.sourceSHA256 ?? "-",
+                        $0.derivedArtifacts.perceptualHashAlgorithmVersion ?? "-",
+                        String($0.derivedArtifacts.perceptualHashPayload?.count ?? -1),
+                        $0.derivedArtifacts.visionFeaturePrintAlgorithmVersion ?? "-",
+                        String($0.derivedArtifacts.visionFeaturePrintPayload?.count ?? -1)
+                    ].joined(separator: ":")
                 }.sorted()
             )
         }

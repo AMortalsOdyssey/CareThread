@@ -435,6 +435,52 @@ struct CaptureVaultServiceTests {
         }
     }
 
+    @Test("journal 指纹升级后旧暂存句柄仍按不可变源安全 finalize")
+    func finalize_acceptsStaleHandleAfterDerivedArtifactRefresh() throws {
+        let root = try TestSupport.temporaryDirectory()
+            .appendingPathComponent("Vault", isDirectory: true)
+        let vault = try CaptureVaultService(rootURL: root)
+        let staged = try vault.stagePhotoData(
+            try #require(
+                UIGraphicsImageRenderer(
+                    size: CGSize(width: 64, height: 64)
+                ).image { context in
+                    UIColor.white.setFill()
+                    context.cgContext.fill(
+                        CGRect(x: 0, y: 0, width: 64, height: 64)
+                    )
+                }.pngData()
+            ),
+            batchID: UUID(),
+            displayName: "虚构报告.png",
+            preferredExtension: "png",
+            uniformTypeIdentifier: "public.png"
+        )
+        let originalArtifacts = try #require(staged.derivedArtifacts)
+        let refreshed = CaptureAttachmentDerivedArtifactSet(
+            sourceSHA256: staged.sha256,
+            perceptualHashPayload: originalArtifacts.perceptualHashPayload,
+            perceptualHashAlgorithmVersion:
+                originalArtifacts.perceptualHashAlgorithmVersion,
+            visionFeaturePrintPayload: nil,
+            visionFeaturePrintAlgorithmVersion:
+                CaptureVisionImageFingerprint.algorithmIdentifier
+        )
+        _ = try vault.updateStagedDerivedArtifacts(
+            batchID: staged.batchID,
+            assetID: staged.id,
+            artifacts: refreshed
+        )
+
+        let finalized = try vault.finalize(
+            asset: staged,
+            patientID: UUID(),
+            recordID: UUID()
+        )
+
+        #expect(finalized.staged.derivedArtifacts == refreshed)
+    }
+
     @Test("文件移动后数据库未提交的崩溃事务在启动时回滚到 staging")
     func reconciliation_rollsBackMovedFilesWithoutDatabaseCommit() throws {
         let fixture = try makeFinalizationFixture()

@@ -1141,7 +1141,8 @@ struct CaptureConfirmationView: View {
                         importSource: sourceByStagedID[stagedID] ?? fallbackSource,
                         pixelWidth: staged.pixelWidth,
                         pixelHeight: staged.pixelHeight,
-                        pageCount: staged.pageCount
+                        pageCount: staged.pageCount,
+                        derivedArtifacts: staged.derivedArtifacts ?? .legacyMissing
                     )
                 )
             }

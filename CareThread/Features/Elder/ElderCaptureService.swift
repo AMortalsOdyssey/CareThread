@@ -328,7 +328,9 @@ final class ElderCaptureService {
                     importSource: request.source.importSource,
                     pixelWidth: final.staged.pixelWidth,
                     pixelHeight: final.staged.pixelHeight,
-                    pageCount: final.staged.pageCount
+                    pageCount: final.staged.pageCount,
+                    derivedArtifacts:
+                        final.staged.derivedArtifacts ?? .legacyMissing
                 )
             }
             let title = aggregate.title.trimmingCharacters(

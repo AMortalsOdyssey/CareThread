@@ -67,6 +67,132 @@ struct StagedCaptureAsset: Codable, Hashable, Identifiable, Sendable {
     let pixelHeight: Int?
     let pageCount: Int?
     let createdAt: Date
+    /// Optional keeps journals written before the derived-data layer readable.
+    /// New image assets always carry a versioned value, even when an algorithm
+    /// cannot produce a payload for malformed visual content.
+    let derivedArtifacts: CaptureAttachmentDerivedArtifactSet?
+
+    init(
+        id: UUID,
+        batchID: UUID,
+        originalRelativePath: String,
+        previewRelativePath: String?,
+        displayName: String,
+        fileExtension: String,
+        uniformTypeIdentifier: String,
+        kind: AttachmentKind,
+        byteCount: Int64,
+        sha256: String,
+        pixelWidth: Int?,
+        pixelHeight: Int?,
+        pageCount: Int?,
+        createdAt: Date,
+        derivedArtifacts: CaptureAttachmentDerivedArtifactSet? = nil
+    ) {
+        self.id = id
+        self.batchID = batchID
+        self.originalRelativePath = originalRelativePath
+        self.previewRelativePath = previewRelativePath
+        self.displayName = displayName
+        self.fileExtension = fileExtension
+        self.uniformTypeIdentifier = uniformTypeIdentifier
+        self.kind = kind
+        self.byteCount = byteCount
+        self.sha256 = sha256
+        self.pixelWidth = pixelWidth
+        self.pixelHeight = pixelHeight
+        self.pageCount = pageCount
+        self.createdAt = createdAt
+        self.derivedArtifacts = derivedArtifacts
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case id
+        case batchID
+        case originalRelativePath
+        case previewRelativePath
+        case displayName
+        case fileExtension
+        case uniformTypeIdentifier
+        case kind
+        case byteCount
+        case sha256
+        case pixelWidth
+        case pixelHeight
+        case pageCount
+        case createdAt
+        case derivedArtifacts
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(UUID.self, forKey: .id)
+        batchID = try container.decode(UUID.self, forKey: .batchID)
+        originalRelativePath = try container.decode(
+            String.self,
+            forKey: .originalRelativePath
+        )
+        previewRelativePath = try container.decodeIfPresent(
+            String.self,
+            forKey: .previewRelativePath
+        )
+        displayName = try container.decode(String.self, forKey: .displayName)
+        fileExtension = try container.decode(String.self, forKey: .fileExtension)
+        uniformTypeIdentifier = try container.decode(
+            String.self,
+            forKey: .uniformTypeIdentifier
+        )
+        kind = try container.decode(AttachmentKind.self, forKey: .kind)
+        byteCount = try container.decode(Int64.self, forKey: .byteCount)
+        sha256 = try container.decode(String.self, forKey: .sha256)
+        pixelWidth = try container.decodeIfPresent(Int.self, forKey: .pixelWidth)
+        pixelHeight = try container.decodeIfPresent(Int.self, forKey: .pixelHeight)
+        pageCount = try container.decodeIfPresent(Int.self, forKey: .pageCount)
+        createdAt = try container.decode(Date.self, forKey: .createdAt)
+        derivedArtifacts = try container.decodeIfPresent(
+            CaptureAttachmentDerivedArtifactSet.self,
+            forKey: .derivedArtifacts
+        )
+    }
+
+    func replacingDerivedArtifacts(
+        _ value: CaptureAttachmentDerivedArtifactSet
+    ) -> StagedCaptureAsset {
+        StagedCaptureAsset(
+            id: id,
+            batchID: batchID,
+            originalRelativePath: originalRelativePath,
+            previewRelativePath: previewRelativePath,
+            displayName: displayName,
+            fileExtension: fileExtension,
+            uniformTypeIdentifier: uniformTypeIdentifier,
+            kind: kind,
+            byteCount: byteCount,
+            sha256: sha256,
+            pixelWidth: pixelWidth,
+            pixelHeight: pixelHeight,
+            pageCount: pageCount,
+            createdAt: createdAt,
+            derivedArtifacts: value
+        )
+    }
+
+    func hasSameImmutableSource(as other: StagedCaptureAsset) -> Bool {
+        id == other.id
+            && batchID == other.batchID
+            && originalRelativePath == other.originalRelativePath
+            && previewRelativePath == other.previewRelativePath
+            && displayName == other.displayName
+            && fileExtension == other.fileExtension
+            && uniformTypeIdentifier == other.uniformTypeIdentifier
+            && kind == other.kind
+            && byteCount == other.byteCount
+            && sha256 == other.sha256
+            && pixelWidth == other.pixelWidth
+            && pixelHeight == other.pixelHeight
+            && pageCount == other.pageCount
+            && createdAt == other.createdAt
+    }
 }
 
 struct CaptureFinalizationTransaction: Codable, Equatable {
@@ -239,6 +365,27 @@ enum CaptureAssetStagingWorker {
             }
         }.value
     }
+
+    /// Keeps security-scoped access and all image/PDF decoding on the worker
+    /// that consumes the URL. This prevents Vision fingerprint generation from
+    /// blocking SwiftUI's MainActor during Files imports.
+    static func stageFile(
+        at sourceURL: URL,
+        vaultRootURL: URL,
+        batchID: UUID
+    ) async throws -> StagedCaptureAsset {
+        try await Task.detached(priority: .userInitiated) {
+            try Task.checkCancellation()
+            let accessed = sourceURL.startAccessingSecurityScopedResource()
+            defer {
+                if accessed { sourceURL.stopAccessingSecurityScopedResource() }
+            }
+            return try CaptureVaultService(rootURL: vaultRootURL).stageFile(
+                at: sourceURL,
+                batchID: batchID
+            )
+        }.value
+    }
 }
 
 /// Owns the only write path for captured originals.
@@ -368,6 +515,10 @@ final class CaptureVaultService {
                 width: width,
                 height: height
             )
+            let visualURL = try previewPath.map(resolve) ?? destination
+            let digest = Self.sha256(data)
+            let derivedArtifacts = CaptureAttachmentDerivedArtifactComputer.live
+                .makeAll(url: visualURL, sourceSHA256: digest)
             let asset = StagedCaptureAsset(
                 id: id,
                 batchID: batchID,
@@ -378,11 +529,12 @@ final class CaptureVaultService {
                 uniformTypeIdentifier: uniformTypeIdentifier,
                 kind: .image,
                 byteCount: Int64(data.count),
-                sha256: Self.sha256(data),
+                sha256: digest,
                 pixelWidth: width,
                 pixelHeight: height,
                 pageCount: nil,
-                createdAt: journalTimestamp()
+                createdAt: journalTimestamp(),
+                derivedArtifacts: derivedArtifacts
             )
             try appendToJournal(asset)
             return asset
@@ -440,6 +592,15 @@ final class CaptureVaultService {
                 batchID: batchID,
                 assetID: id
             )
+            let derivedArtifacts: CaptureAttachmentDerivedArtifactSet?
+            if type.conforms(to: .image) {
+                let visualURL = try metadata.previewRelativePath.map(resolve)
+                    ?? destination
+                derivedArtifacts = CaptureAttachmentDerivedArtifactComputer.live
+                    .makeAll(url: visualURL, sourceSHA256: digest)
+            } else {
+                derivedArtifacts = nil
+            }
             let asset = StagedCaptureAsset(
                 id: id,
                 batchID: batchID,
@@ -454,7 +615,8 @@ final class CaptureVaultService {
                 pixelWidth: metadata.width,
                 pixelHeight: metadata.height,
                 pageCount: metadata.pageCount,
-                createdAt: journalTimestamp()
+                createdAt: journalTimestamp(),
+                derivedArtifacts: derivedArtifacts
             )
             try appendToJournal(asset)
             return asset
@@ -486,6 +648,24 @@ final class CaptureVaultService {
         try writeJournal(value)
     }
 
+    @discardableResult
+    func updateStagedDerivedArtifacts(
+        batchID: UUID,
+        assetID: UUID,
+        artifacts: CaptureAttachmentDerivedArtifactSet
+    ) throws -> StagedCaptureAsset {
+        var value = try journal(batchID: batchID)
+        guard let index = value.assets.firstIndex(where: { $0.id == assetID }),
+              !value.finalizedAssetIDs.contains(assetID) else {
+            throw CaptureVaultError.invalidBatch
+        }
+        let replacement = value.assets[index].replacingDerivedArtifacts(artifacts)
+        value.assets[index] = replacement
+        value.updatedAt = Date()
+        try writeJournal(value)
+        return replacement
+    }
+
     func finalize(
         asset: StagedCaptureAsset,
         patientID: UUID,
@@ -493,24 +673,27 @@ final class CaptureVaultService {
     ) throws -> FinalizedCaptureAsset {
         let currentJournal = try journal(batchID: asset.batchID)
         guard currentJournal.batchID == asset.batchID,
-              currentJournal.assets.contains(asset),
+              let currentAsset = currentJournal.assets.first(where: {
+                  $0.id == asset.id
+              }),
+              currentAsset.hasSameImmutableSource(as: asset),
               !currentJournal.finalizedAssetIDs.contains(asset.id) else {
             throw CaptureVaultError.invalidBatch
         }
-        let source = try resolve(asset.originalRelativePath)
+        let source = try resolve(currentAsset.originalRelativePath)
         guard fileManager.fileExists(atPath: source.path) else {
             throw CaptureVaultError.sourceMissing
         }
         let sourceSize = try source.resourceValues(
             forKeys: [.fileSizeKey]
         ).fileSize.map(Int64.init)
-        guard sourceSize == asset.byteCount,
-              try Self.sha256File(at: source) == asset.sha256 else {
+        guard sourceSize == currentAsset.byteCount,
+              try Self.sha256File(at: source) == currentAsset.sha256 else {
             throw CaptureVaultError.integrityMismatch
         }
         let destinationPath =
             "members/\(patientID.uuidString)/records/\(recordID.uuidString)/attachments/"
-            + "\(asset.id.uuidString)/original.\(asset.fileExtension)"
+            + "\(currentAsset.id.uuidString)/original.\(currentAsset.fileExtension)"
         let destination = try resolve(destinationPath)
         guard !fileManager.fileExists(atPath: destination.path) else {
             throw CaptureVaultError.finalDestinationExists
@@ -523,25 +706,25 @@ final class CaptureVaultService {
         try excludeFinalHierarchy(
             patientID: patientID,
             recordID: recordID,
-            attachmentID: asset.id
+            attachmentID: currentAsset.id
         )
-        let previewDestinationPath = asset.previewRelativePath.map { _ in
+        let previewDestinationPath = currentAsset.previewRelativePath.map { _ in
             "members/\(patientID.uuidString)/records/\(recordID.uuidString)/attachments/"
-                + "\(asset.id.uuidString)/preview.jpg"
+                + "\(currentAsset.id.uuidString)/preview.jpg"
         }
-        let previewSource = try asset.previewRelativePath.map(resolve)
+        let previewSource = try currentAsset.previewRelativePath.map(resolve)
         let previewDestination = try previewDestinationPath.map(resolve)
-        var preparedJournal = try journal(batchID: asset.batchID)
+        var preparedJournal = try journal(batchID: currentAsset.batchID)
         preparedJournal.finalizationTransactions.removeAll {
-            $0.assetID == asset.id
+            $0.assetID == currentAsset.id
         }
         preparedJournal.finalizationTransactions.append(
             CaptureFinalizationTransaction(
-                assetID: asset.id,
+                assetID: currentAsset.id,
                 patientID: patientID,
                 recordID: recordID,
-                stagedOriginalRelativePath: asset.originalRelativePath,
-                stagedPreviewRelativePath: asset.previewRelativePath,
+                stagedOriginalRelativePath: currentAsset.originalRelativePath,
+                stagedPreviewRelativePath: currentAsset.previewRelativePath,
                 finalOriginalRelativePath: destinationPath,
                 finalPreviewRelativePath: previewDestinationPath,
                 state: .prepared
@@ -573,12 +756,12 @@ final class CaptureVaultService {
                     ofItemAtPath: url.path
                 )
             }
-            var value = try journal(batchID: asset.batchID)
-            value.finalizedAssetIDs.append(asset.id)
+            var value = try journal(batchID: currentAsset.batchID)
+            value.finalizedAssetIDs.append(currentAsset.id)
             value.finalizedAssetIDs = Array(Set(value.finalizedAssetIDs))
                 .sorted { $0.uuidString < $1.uuidString }
             if let index = value.finalizationTransactions.firstIndex(
-                where: { $0.assetID == asset.id }
+                where: { $0.assetID == currentAsset.id }
             ) {
                 value.finalizationTransactions[index].state = .filesMoved
             }
@@ -586,7 +769,7 @@ final class CaptureVaultService {
             value.updatedAt = Date()
             try writeJournal(value)
             return FinalizedCaptureAsset(
-                staged: asset,
+                staged: currentAsset,
                 recordID: recordID,
                 finalRelativePath: destinationPath,
                 finalPreviewRelativePath: previewDestinationPath

@@ -45,7 +45,10 @@ enum CareThreadMigrationPlan: SchemaMigrationPlan {
         [CareThreadSchemaV1.self]
     }
 
-    /// V1 is the first unpublished on-device schema.
+    /// V1 is the first unpublished on-device schema. Optional rebuildable
+    /// derived fields may evolve in place until the first public release; V1
+    /// freezes at that release and every later shape change requires a new
+    /// version plus an explicit migration stage.
     static var stages: [MigrationStage] {
         []
     }

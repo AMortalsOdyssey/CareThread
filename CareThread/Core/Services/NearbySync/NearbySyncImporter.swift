@@ -109,6 +109,12 @@ struct NearbySyncImportResult: Equatable, Sendable {
     let resultSHA256: String
 }
 
+private struct NearbyAttachmentArtifactJob: Sendable {
+    let attachmentID: UUID
+    let url: URL
+    let sha256: String
+}
+
 @MainActor
 final class NearbySyncImporter {
     private let context: ModelContext
@@ -131,7 +137,7 @@ final class NearbySyncImporter {
     func importVerified(
         _ verified: VerifiedTransfer,
         userConfirmedManifest: Bool,
-        cancellation: @Sendable () -> Bool = { false }
+        cancellation: @escaping @Sendable () -> Bool = { false }
     ) async throws -> NearbySyncImportResult {
         guard userConfirmedManifest else {
             throw NearbySyncError.cancelled
@@ -176,9 +182,15 @@ final class NearbySyncImporter {
                 )
             }
             if cancellation() { throw NearbySyncError.cancelled }
+            let derivedArtifacts = try await makeAttachmentDerivedArtifacts(
+                plan: plan,
+                attachmentPaths: attachmentPaths,
+                cancellation: cancellation
+            )
             try insert(
                 plan: plan,
                 attachmentPaths: attachmentPaths,
+                derivedArtifacts: derivedArtifacts,
                 cancellation: cancellation
             )
             try context.save()
@@ -216,6 +228,7 @@ final class NearbySyncImporter {
     func insert(
         plan: NearbySyncReceivePlan,
         attachmentPaths: [UUID: String],
+        derivedArtifacts: [UUID: CaptureAttachmentDerivedArtifactSet] = [:],
         cancellation: @Sendable () -> Bool
     ) throws {
         let inserts = plan.payloads.filter {
@@ -379,7 +392,9 @@ final class NearbySyncImporter {
                 importSource: body.importSource,
                 pixelWidth: body.pixelWidth,
                 pixelHeight: body.pixelHeight,
-                pageCount: body.pageCount
+                pageCount: body.pageCount,
+                derivedArtifacts:
+                    derivedArtifacts[payload.entityID] ?? .legacyMissing
             )
             try record.bindAttachment(value)
             context.insert(value)
@@ -498,6 +513,40 @@ final class NearbySyncImporter {
             record.applyEditableContent(body.editable)
             record.restoreContentRevision(body.contentRevision)
         }
+    }
+
+    private func makeAttachmentDerivedArtifacts(
+        plan: NearbySyncReceivePlan,
+        attachmentPaths: [UUID: String],
+        cancellation: @escaping @Sendable () -> Bool
+    ) async throws -> [UUID: CaptureAttachmentDerivedArtifactSet] {
+        let jobs: [NearbyAttachmentArtifactJob] = try attachmentPaths.compactMap {
+            entry in
+            let (attachmentID, path) = entry
+            guard let body = plan.payloads[attachmentID]?.attachment,
+                  body.kind == .image else {
+                return nil
+            }
+            return NearbyAttachmentArtifactJob(
+                attachmentID: attachmentID,
+                url: try vault.url(for: path),
+                sha256: body.sha256
+            )
+        }
+        guard !jobs.isEmpty else { return [:] }
+        return try await Task.detached(priority: .userInitiated) {
+            var result: [UUID: CaptureAttachmentDerivedArtifactSet] = [:]
+            result.reserveCapacity(jobs.count)
+            for job in jobs {
+                if cancellation() { throw NearbySyncError.cancelled }
+                result[job.attachmentID] =
+                    CaptureAttachmentDerivedArtifactComputer.live.makeAll(
+                        url: job.url,
+                        sourceSHA256: job.sha256
+                    )
+            }
+            return result
+        }.value
     }
 
     private func ordered(

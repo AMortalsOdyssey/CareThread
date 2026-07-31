@@ -4,6 +4,8 @@ import Testing
 import UIKit
 @testable import CareThread
 
+private typealias Attachment = CareThread.Attachment
+
 /// All report contents, names and identifiers in this suite are fictional.
 struct CaptureDuplicateDetectorTests {
     @Test("同一批次原图 SHA 相同属于不可覆盖的精确重复")
@@ -882,6 +884,404 @@ struct CaptureDuplicateDetectorTests {
         }
     }
 
+    @MainActor
+    @Test("派生指纹损坏时各重建一次，重开数据库后不再计算")
+    func derivedArtifactsRebuildOnceAndSurviveReopen() async throws {
+        let directory = try TestSupport.temporaryDirectory()
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let storeURL = directory.appendingPathComponent("derived.sqlite")
+        let vault = try CaptureVaultService(
+            rootURL: directory.appendingPathComponent("Vault")
+        )
+        let patientID = UUID()
+        let recordID = UUID()
+        let attachmentID = UUID()
+        let relativePath =
+            "members/\(patientID.uuidString)/records/\(recordID.uuidString)"
+            + "/attachments/\(attachmentID.uuidString)/original.png"
+        let originalURL = try vault.url(for: relativePath)
+        try FileManager.default.createDirectory(
+            at: originalURL.deletingLastPathComponent(),
+            withIntermediateDirectories: true
+        )
+        let originalData = try #require(
+            reportImage(title: "虚构历史报告", lines: ["派生数据重建测试"]).pngData()
+        )
+        try originalData.write(to: originalURL)
+        let originalSHA = try CaptureVaultService.sha256File(at: originalURL)
+        let corrupted = CaptureAttachmentDerivedArtifactSet(
+            sourceSHA256: originalSHA,
+            perceptualHashPayload: Data([0x01, 0x02]),
+            perceptualHashAlgorithmVersion:
+                CapturePerceptualImageHash.algorithmIdentifier,
+            visionFeaturePrintPayload: Data([0x03, 0x04]),
+            visionFeaturePrintAlgorithmVersion:
+                CaptureVisionImageFingerprint.algorithmIdentifier
+        )
+        let textIndex = Data("虚构本地索引".utf8)
+        do {
+            let container = try TestSupport.persistentContainer(at: storeURL)
+            let record = MedicalRecord(
+                id: recordID,
+                patientId: patientID,
+                title: "虚构历史报告",
+                eventDate: CTDate.make(2026, 7, 1)
+            )
+            record.replaceDerivedTextIndex(
+                payload: textIndex,
+                algorithmVersion: "carethread-bm25-fixture-v1",
+                sourceRevision: record.contentRevision
+            )
+            let attachment = try Attachment.verified(
+                id: attachmentID,
+                patientId: patientID,
+                recordId: recordID,
+                originalRelativePath: relativePath,
+                displayFileName: "虚构历史报告.png",
+                kind: .image,
+                pageIndex: 0,
+                uniformTypeIdentifier: "public.png",
+                byteCount: Int64(originalData.count),
+                sha256: originalSHA,
+                importSource: .fixture,
+                pixelWidth: 1_200,
+                pixelHeight: 1_600,
+                derivedArtifacts: corrupted
+            )
+            try record.bindAttachment(attachment)
+            container.mainContext.insert(record)
+            try container.mainContext.save()
+
+            let counters = DerivedArtifactCallCounters()
+            let staged = try vault.stagePhotoData(
+                try #require(
+                    reportImage(
+                        title: "虚构新报告",
+                        lines: ["重启语义验证"]
+                    ).pngData()
+                ),
+                batchID: UUID(),
+                displayName: "虚构新报告.png",
+                preferredExtension: "png",
+                uniformTypeIdentifier: "public.png"
+            )
+            _ = try await CaptureDuplicateDetectionService(
+                context: container.mainContext,
+                vault: vault,
+                artifactComputer: countingComputer(counters)
+            ).scan(
+                patientID: patientID,
+                stagedAssets: [staged],
+                ocrTextByAssetID: [:]
+            )
+            #expect(counters.perceptualHashCalls == 1)
+            #expect(counters.visionFeaturePrintCalls == 1)
+        }
+
+        do {
+            let reopened = try TestSupport.persistentContainer(at: storeURL)
+            let counters = DerivedArtifactCallCounters()
+            let staged = try vault.stagePhotoData(
+                try #require(
+                    reportImage(
+                        title: "虚构第二份新报告",
+                        lines: ["跨服务实例验证"]
+                    ).pngData()
+                ),
+                batchID: UUID(),
+                displayName: "虚构第二份新报告.png",
+                preferredExtension: "png",
+                uniformTypeIdentifier: "public.png"
+            )
+            _ = try await CaptureDuplicateDetectionService(
+                context: reopened.mainContext,
+                vault: vault,
+                artifactComputer: countingComputer(counters)
+            ).scan(
+                patientID: patientID,
+                stagedAssets: [staged],
+                ocrTextByAssetID: [:]
+            )
+            #expect(counters.perceptualHashCalls == 0)
+            #expect(counters.visionFeaturePrintCalls == 0)
+            let attachments = try reopened.mainContext.fetch(
+                FetchDescriptor<Attachment>()
+            )
+            let persisted = try #require(
+                attachments.first(where: { $0.id == attachmentID })
+            )
+            #expect(persisted.derivedArtifacts.sourceSHA256 == originalSHA)
+            #expect(
+                persisted.derivedArtifacts.hasCurrentPerceptualHash(
+                    sourceSHA256: originalSHA
+                )
+            )
+            #expect(
+                persisted.derivedArtifacts.hasCurrentVisionFeaturePrint(
+                    sourceSHA256: originalSHA
+                )
+            )
+            let persistedRecord = try #require(
+                try reopened.mainContext.fetch(FetchDescriptor<MedicalRecord>())
+                    .first(where: { $0.id == recordID })
+            )
+            #expect(persistedRecord.derivedTextIndexPayload == textIndex)
+            #expect(
+                persistedRecord.derivedTextIndexAlgorithmVersion
+                    == "carethread-bm25-fixture-v1"
+            )
+            #expect(persistedRecord.derivedTextIndexSourceRevision == 0)
+        }
+    }
+
+    @Test("Vision 数值向量持久化可往返且距离确定")
+    func visionFeatureVectorPersistenceRoundTrip() throws {
+        let vector = try #require(
+            CaptureVisionFeatureVector(values: [0.10, -0.25, 0.50, 0.75])
+        )
+        let payload = try #require(
+            CaptureAttachmentDerivedArtifactCodec.encodeVisionFeaturePrint(
+                vector
+            )
+        )
+        let decoded = try #require(
+            CaptureAttachmentDerivedArtifactCodec.decodeVisionFeaturePrint(
+                payload
+            )
+        )
+        #expect(decoded == vector)
+        #expect(
+            CaptureVisionImageFingerprint.distance(vector, decoded) == 0
+        )
+        let shifted = try #require(
+            CaptureVisionFeatureVector(values: [0.40, -0.25, 0.90, 0.75])
+        )
+        #expect(
+            abs(
+                try #require(
+                    CaptureVisionImageFingerprint.distance(vector, shifted)
+                ) - 0.5
+            ) < 0.000_001
+        )
+    }
+
+    @MainActor
+    @Test("300 附件查重不重算历史指纹并保持回归时延")
+    func threeHundredAttachmentLookupPerformanceBaseline() async throws {
+        let container = try TestSupport.container()
+        let context = container.mainContext
+        let directory = try TestSupport.temporaryDirectory()
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let vault = try CaptureVaultService(
+            rootURL: directory.appendingPathComponent("Vault")
+        )
+        let patientID = UUID()
+        let fixtureImage = reportImage(
+            title: "虚构历史报告",
+            lines: ["300 附件性能基线"]
+        )
+        let fixtureData = try #require(
+            fixtureImage.pngData()
+        )
+        let candidateData = try #require(
+            fixtureImage.jpegData(compressionQuality: 0.71)
+        )
+        let historicalSHA = CaptureVaultService.sha256(fixtureData)
+        let candidateSHA = CaptureVaultService.sha256(candidateData)
+        #expect(historicalSHA != candidateSHA)
+        var staged = try vault.stagePhotoData(
+            candidateData,
+            batchID: UUID(),
+            displayName: "虚构候选.jpg",
+            preferredExtension: "jpg",
+            uniformTypeIdentifier: "public.jpeg"
+        )
+        let stagedArtifacts = try #require(staged.derivedArtifacts)
+        let candidateHash = try #require(
+            CaptureAttachmentDerivedArtifactCodec.decodePerceptualHash(
+                stagedArtifacts.perceptualHashPayload
+            )
+        )
+        let forcedMissHash = CapturePerceptualHashValue(
+            dctHashes: candidateHash.dctHashes.map { ~$0 },
+            blockHashes: candidateHash.blockHashes.map { ~$0 },
+            differenceHashes: candidateHash.differenceHashes.map { ~$0 }
+        )
+        let syntheticVisionVector = try #require(
+            CaptureVisionFeatureVector(
+                values: (0..<512).map { Float($0 % 17) / 17 }
+            )
+        )
+        let syntheticVisionPayload = try #require(
+            CaptureAttachmentDerivedArtifactCodec.encodeVisionFeaturePrint(
+                syntheticVisionVector
+            )
+        )
+        let candidateArtifacts = CaptureAttachmentDerivedArtifactSet(
+            sourceSHA256: candidateSHA,
+            perceptualHashPayload: stagedArtifacts.perceptualHashPayload,
+            perceptualHashAlgorithmVersion:
+                CapturePerceptualImageHash.algorithmIdentifier,
+            visionFeaturePrintPayload: syntheticVisionPayload,
+            visionFeaturePrintAlgorithmVersion:
+                CaptureVisionImageFingerprint.algorithmIdentifier
+        )
+        staged = try vault.updateStagedDerivedArtifacts(
+            batchID: staged.batchID,
+            assetID: staged.id,
+            artifacts: candidateArtifacts
+        )
+        // Persist the candidate's valid Vision vector on the sole recent
+        // synthetic history row so the benchmark deterministically reaches
+        // and matches at level four after SHA, pHash and OCR all miss.
+        let historicalArtifacts = CaptureAttachmentDerivedArtifactSet(
+            sourceSHA256: historicalSHA,
+            perceptualHashPayload:
+                CaptureAttachmentDerivedArtifactCodec.encodePerceptualHash(
+                    forcedMissHash
+                ),
+            perceptualHashAlgorithmVersion:
+                CapturePerceptualImageHash.algorithmIdentifier,
+            visionFeaturePrintPayload: syntheticVisionPayload,
+            visionFeaturePrintAlgorithmVersion:
+                CaptureVisionImageFingerprint.algorithmIdentifier
+        )
+        #expect(
+            candidateArtifacts.hasCurrentVisionFeaturePrint(
+                sourceSHA256: candidateSHA
+            )
+        )
+        #expect(
+            historicalArtifacts.hasCurrentVisionFeaturePrint(
+                sourceSHA256: historicalSHA
+            )
+        )
+        let candidatePrint = try #require(
+            CaptureAttachmentDerivedArtifactCodec.decodeVisionFeaturePrint(
+                candidateArtifacts.visionFeaturePrintPayload
+            )
+        )
+        let historicalPrint = try #require(
+            CaptureAttachmentDerivedArtifactCodec.decodeVisionFeaturePrint(
+                historicalArtifacts.visionFeaturePrintPayload
+            )
+        )
+        #expect(
+            CaptureVisionImageFingerprint.distance(
+                candidatePrint,
+                historicalPrint
+            ) == 0
+        )
+        for index in 0..<300 {
+            let recordID = UUID()
+            let attachmentID = UUID()
+            let path =
+                "members/\(patientID.uuidString)/records/\(recordID.uuidString)"
+                + "/attachments/\(attachmentID.uuidString)/original.png"
+            let url = try vault.url(for: path)
+            try FileManager.default.createDirectory(
+                at: url.deletingLastPathComponent(),
+                withIntermediateDirectories: true
+            )
+            try fixtureData.write(to: url)
+            let record = MedicalRecord(
+                id: recordID,
+                patientId: patientID,
+                title: "虚构历史报告 \(index)",
+                eventDate: index == 299
+                    ? CTDate.make(2026, 7, 1)
+                    : CTDate.make(2020, 1, 1)
+            )
+            let historical = try Attachment.verified(
+                id: attachmentID,
+                patientId: patientID,
+                recordId: recordID,
+                originalRelativePath: path,
+                displayFileName: "虚构历史报告-\(index).png",
+                kind: .image,
+                pageIndex: 0,
+                uniformTypeIdentifier: "public.png",
+                byteCount: Int64(fixtureData.count),
+                sha256: historicalSHA,
+                importSource: .fixture,
+                pixelWidth: 1_200,
+                pixelHeight: 1_600,
+                derivedArtifacts: historicalArtifacts
+            )
+            try record.bindAttachment(historical)
+            context.insert(record)
+        }
+        try context.save()
+
+        let records = try context.fetch(FetchDescriptor<MedicalRecord>())
+        let visionIDs = CaptureDuplicatePerformancePolicy
+            .visionEligibleAttachmentIDs(
+                records: records,
+                now: CTDate.make(2026, 7, 31)
+            )
+        #expect(visionIDs.count == 1)
+
+        let counters = DerivedArtifactCallCounters()
+        var samples: [Double] = []
+        var lastMatch: CaptureDuplicateMatch?
+        for _ in 0..<5 {
+            let start = CFAbsoluteTimeGetCurrent()
+            lastMatch = try await CaptureDuplicateDetectionService(
+                context: context,
+                vault: vault,
+                artifactComputer: countingComputer(counters)
+            ).scan(
+                patientID: patientID,
+                stagedAssets: [staged],
+                ocrTextByAssetID: [:]
+            )
+            samples.append((CFAbsoluteTimeGetCurrent() - start) * 1_000)
+        }
+        let sorted = samples.sorted()
+        let medianMilliseconds = sorted[sorted.count / 2]
+        let p95Milliseconds = sorted[sorted.count - 1]
+        print(
+            "BATCH3_PERF_300_ATTACHMENTS_MEDIAN_MS="
+                + String(format: "%.2f", medianMilliseconds)
+                + " P95_MS=" + String(format: "%.2f", p95Milliseconds)
+        )
+        #expect(lastMatch?.evidence == .visualContentHash)
+        #expect(counters.perceptualHashCalls == 0)
+        #expect(counters.visionFeaturePrintCalls == 0)
+        #expect(p95Milliseconds < 2_000)
+    }
+
+    @Test("Vision 降级在 201 张启用且精确覆盖最近 24 个月")
+    func visionFallbackBoundaryIsExplicit() throws {
+        #expect(
+            !CaptureDuplicatePerformancePolicy.usesRecentVisionWindow(
+                imageAttachmentCount: 200
+            )
+        )
+        #expect(
+            CaptureDuplicatePerformancePolicy.usesRecentVisionWindow(
+                imageAttachmentCount: 201
+            )
+        )
+        let now = CTDate.make(2026, 7, 31)
+        let cutoff = try #require(
+            CaptureDuplicatePerformancePolicy.recentVisionCutoff(now: now)
+        )
+        #expect(cutoff == CTDate.make(2024, 7, 31))
+        #expect(
+            CaptureDuplicatePerformancePolicy.isVisionEventEligible(
+                cutoff,
+                cutoff: cutoff
+            )
+        )
+        #expect(
+            !CaptureDuplicatePerformancePolicy.isVisionEventEligible(
+                cutoff.addingTimeInterval(-1),
+                cutoff: cutoff
+            )
+        )
+    }
+
     private var fictionalOCR: String {
         """
         虚构市第一医院甲状腺功能检验报告
@@ -890,6 +1290,21 @@ struct CaptureDuplicateDetectorTests {
         FT4 24.6 pmol/L 参考范围 12.0-22.0
         本内容完全虚构，仅供自动化测试。
         """
+    }
+
+    private func countingComputer(
+        _ counters: DerivedArtifactCallCounters
+    ) -> CaptureAttachmentDerivedArtifactComputer {
+        CaptureAttachmentDerivedArtifactComputer(
+            makePerceptualHash: { url in
+                counters.recordPerceptualHashCall()
+                return CapturePerceptualImageHash.make(url: url)
+            },
+            makeVisionFeaturePrint: { url in
+                counters.recordVisionFeaturePrintCall()
+                return CaptureVisionImageFingerprint.make(url: url)
+            }
+        )
     }
 
     private var fictionalFourPageOCR: [String] {
@@ -1075,5 +1490,27 @@ struct CaptureDuplicateDetectorTests {
                 in: CGRect(origin: .zero, size: image.size)
             )
         }
+    }
+}
+
+private final class DerivedArtifactCallCounters: @unchecked Sendable {
+    private let lock = NSLock()
+    private var perceptualHashCount = 0
+    private var visionFeaturePrintCount = 0
+
+    var perceptualHashCalls: Int {
+        lock.withLock { perceptualHashCount }
+    }
+
+    var visionFeaturePrintCalls: Int {
+        lock.withLock { visionFeaturePrintCount }
+    }
+
+    func recordPerceptualHashCall() {
+        lock.withLock { perceptualHashCount += 1 }
+    }
+
+    func recordVisionFeaturePrintCall() {
+        lock.withLock { visionFeaturePrintCount += 1 }
     }
 }
