@@ -168,6 +168,7 @@ struct ManagementHubView: View {
                     symbol: "info.circle",
                     action: onAbout
                 )
+                .accessibilityIdentifier("m45.manage.about")
             }
             Section {
                 Text(Copy.Manage.localOnly)

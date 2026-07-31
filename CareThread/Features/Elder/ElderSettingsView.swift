@@ -11,8 +11,6 @@ struct ElderSettingsView: View {
 
     let onRequestStandardMode: () -> Void
 
-    @State private var showDisclaimer = false
-
     private var scale: Binding<ElderFontScale> {
         Binding(
             get: {
@@ -129,8 +127,8 @@ struct ElderSettingsView: View {
             }
             .accessibilityIdentifier("elder.settings.standard")
 
-            Button {
-                showDisclaimer = true
+            NavigationLink {
+                AboutCareThreadView(usesLargeType: true)
             } label: {
                 Label(
                     Copy.Elder.about,
@@ -157,14 +155,6 @@ struct ElderSettingsView: View {
                 .font(CT.Font.elderSubhead)
                 .frame(minHeight: CT.Size.elderTouchTarget)
             }
-        }
-        .alert(
-            Copy.Elder.disclaimerTitle,
-            isPresented: $showDisclaimer
-        ) {
-            Button(Copy.Common.acknowledge) {}
-        } message: {
-            Text(Copy.disclaimer)
         }
         .dynamicTypeSize(...ElderDynamicTypePolicy.maximum)
         .accessibilityIdentifier("elder.settings")

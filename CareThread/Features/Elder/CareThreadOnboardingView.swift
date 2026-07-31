@@ -2,8 +2,8 @@ import SwiftUI
 
 enum CareThreadOnboardingPage: Int, CaseIterable, Codable {
     case localPrivacy
-    case organize
     case modeChoice
+    case legalConsent
 }
 
 struct CareThreadOnboardingLaunchPolicy: Equatable {
@@ -29,18 +29,18 @@ struct CareThreadOnboardingStateMachine: Equatable {
     private(set) var isComplete = false
 
     var canSkip: Bool {
-        page != .modeChoice && !isComplete
+        page == .localPrivacy && !isComplete
     }
 
     mutating func advance() {
         guard !isComplete else { return }
         switch page {
         case .localPrivacy:
-            page = .organize
-        case .organize:
             page = .modeChoice
         case .modeChoice:
-            complete()
+            page = .legalConsent
+        case .legalConsent:
+            break
         }
     }
 
@@ -55,7 +55,7 @@ struct CareThreadOnboardingStateMachine: Equatable {
     }
 
     mutating func complete() {
-        guard page == .modeChoice else { return }
+        guard page == .legalConsent else { return }
         isComplete = true
     }
 }
@@ -65,7 +65,10 @@ struct CareThreadOnboardingView: View {
     private var storedMode = DisplayMode.standard.rawValue
     @AppStorage(CareThreadOnboardingLaunchPolicy.completionKey)
     private var completed = false
+    @AppStorage(LegalAgreement.acceptedTermsVersionKey)
+    private var acceptedTermsVersion = ""
     @State private var state = CareThreadOnboardingStateMachine()
+    @State private var presentedLegalDocument: LegalDocumentKind?
 
     let onComplete: (DisplayMode) -> Void
 
@@ -93,10 +96,10 @@ struct CareThreadOnboardingView: View {
                 switch state.page {
                 case .localPrivacy:
                     localPrivacyPage
-                case .organize:
-                    organizePage
                 case .modeChoice:
                     modeChoicePage
+                case .legalConsent:
+                    legalConsentPage
                 }
             }
             Spacer()
@@ -121,14 +124,14 @@ struct CareThreadOnboardingView: View {
             .accessibilityLabel(
                 "第 \(state.page.rawValue + 1) 页，共 3 页"
             )
-            if state.page != .modeChoice {
-                Button(state.page == .organize ? "我知道了" : "继续") {
+            if state.page != .legalConsent {
+                Button("继续") {
                     state.advance()
                 }
                 .buttonStyle(CTPrimaryButtonStyle())
                 .accessibilityIdentifier("onboarding.next")
             } else {
-                Button("开始使用") {
+                Button("我已了解，开始使用") {
                     finish()
                 }
                 .buttonStyle(CTPrimaryButtonStyle())
@@ -138,6 +141,18 @@ struct CareThreadOnboardingView: View {
         .padding(CT.Space.s5)
         .background(CT.Color.bgBase)
         .tint(CT.Color.primary)
+        .sheet(item: $presentedLegalDocument) { kind in
+            NavigationStack {
+                LegalDocumentView(kind: kind)
+                    .toolbar {
+                        ToolbarItem(placement: .confirmationAction) {
+                            Button(Copy.Common.done) {
+                                presentedLegalDocument = nil
+                            }
+                        }
+                    }
+            }
+        }
     }
 
     private var localPrivacyPage: some View {
@@ -158,38 +173,23 @@ struct CareThreadOnboardingView: View {
         .accessibilityIdentifier("onboarding.localPrivacy")
     }
 
-    private var organizePage: some View {
-        VStack(spacing: CT.Space.s5) {
-            Image(systemName: "point.3.connected.trianglepath.dotted")
-                .font(.system(size: CT.Size.elderEmptySymbol))
-                .foregroundStyle(CT.Color.thread)
-            Text("把散落的报告，串成一条病程线")
-                .font(CT.Font.title1)
-                .foregroundStyle(CT.Color.inkPrimary)
-                .multilineTextAlignment(.center)
-            Text("拍照或导入报告后，CareThread 会在本机整理日期、类型与重要字段。你可以随时核对和修改。")
-                .font(CT.Font.bodyReading)
-                .foregroundStyle(CT.Color.inkPrimary)
-                .multilineTextAlignment(.center)
-                .lineSpacing(8)
-            Text(Copy.disclaimer)
-                .font(CT.Font.footnote)
-                .foregroundStyle(CT.Color.inkSecondary)
-                .multilineTextAlignment(.center)
-        }
-        .accessibilityIdentifier("onboarding.organize")
-    }
-
     private var modeChoicePage: some View {
-        VStack(spacing: CT.Space.s5) {
+        VStack(spacing: CT.Space.s4) {
             Color.clear
                 .frame(width: 1, height: 1)
                 .accessibilityElement()
                 .accessibilityIdentifier("onboarding.modeChoice")
-            Text("这台手机主要谁在用？")
+            Text("把报告串成病程线")
                 .font(CT.Font.title1)
                 .foregroundStyle(CT.Color.inkPrimary)
                 .multilineTextAlignment(.center)
+            Text("拍照或导入后，可以核对、修改，再按家人分别整理。")
+                .font(CT.Font.bodyReading)
+                .foregroundStyle(CT.Color.inkSecondary)
+                .multilineTextAlignment(.center)
+            Text("选择这台手机的使用方式")
+                .font(CT.Font.headline)
+                .foregroundStyle(CT.Color.inkPrimary)
             modeCard(
                 mode: .standard,
                 title: "我自己或家人帮忙整理",
@@ -207,6 +207,76 @@ struct CareThreadOnboardingView: View {
                 .foregroundStyle(CT.Color.inkSecondary)
                 .multilineTextAlignment(.center)
         }
+    }
+
+    private var legalConsentPage: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: CT.Space.s4) {
+                Text("先说清三件事")
+                    .font(CT.Font.title1)
+                    .foregroundStyle(CT.Color.inkPrimary)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .multilineTextAlignment(.center)
+                legalFact(
+                    number: "1",
+                    title: "你的资料只存在这台手机上",
+                    detail: "CareThread 没有账号、不联网、不上传。我们收不到你的任何资料。"
+                )
+                legalFact(
+                    number: "2",
+                    title: "我们只整理，不做医学判断",
+                    detail: "不提供诊断、治疗或用药建议。所有医疗决定请以医生意见为准。"
+                )
+                legalFact(
+                    number: "3",
+                    title: "资料的保管责任在你",
+                    detail: "请自己做好备份；手机丢失或卸载 App，资料会一并消失。"
+                )
+                HStack(spacing: CT.Space.s4) {
+                    legalDocumentButton(.privacyPolicy)
+                    legalDocumentButton(.termsOfService)
+                }
+                .frame(maxWidth: .infinity)
+            }
+        }
+        .accessibilityIdentifier("onboarding.legalConsent")
+    }
+
+    private func legalFact(
+        number: String,
+        title: String,
+        detail: String
+    ) -> some View {
+        HStack(alignment: .top, spacing: CT.Space.s3) {
+            Text(number)
+                .font(CT.Font.headline)
+                .foregroundStyle(CT.Color.primaryOnContainer)
+                .frame(
+                    width: CT.Size.leadingIcon,
+                    height: CT.Size.leadingIcon
+                )
+                .background(CT.Color.primaryContainer)
+                .clipShape(Circle())
+            VStack(alignment: .leading, spacing: CT.Space.s1) {
+                Text(title)
+                    .font(CT.Font.headline)
+                    .foregroundStyle(CT.Color.inkPrimary)
+                Text(detail)
+                    .font(CT.Font.subhead)
+                    .foregroundStyle(CT.Color.inkSecondary)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    private func legalDocumentButton(_ kind: LegalDocumentKind) -> some View {
+        Button(kind.title) {
+            presentedLegalDocument = kind
+            AppLog.userAction.info("Onboarding legal document opened: \(kind.rawValue)")
+        }
+        .font(CT.Font.headline)
+        .frame(minHeight: CT.Size.secondaryButtonHeight)
+        .accessibilityIdentifier("onboarding.legal.\(kind.rawValue)")
     }
 
     private func onboardingFact(
@@ -287,6 +357,7 @@ struct CareThreadOnboardingView: View {
         state.complete()
         guard state.isComplete else { return }
         storedMode = state.selectedMode.rawValue
+        acceptedTermsVersion = LegalAgreement.currentTermsVersion
         completed = true
         AppLog.userAction.info(
             "Onboarding completed with selected display mode"

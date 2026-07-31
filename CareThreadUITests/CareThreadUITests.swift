@@ -87,6 +87,11 @@ final class CareThreadUITests: XCTestCase {
         )
         fresh.buttons["onboarding.skip"].tap()
         fresh.buttons["onboarding.mode.standard"].tap()
+        fresh.buttons["onboarding.next"].tap()
+        XCTAssertTrue(
+            element("onboarding.legalConsent", in: fresh)
+                .waitForExistence(timeout: 5)
+        )
         fresh.buttons["onboarding.complete"].tap()
         XCTAssertTrue(
             element("standardRoot", in: fresh)

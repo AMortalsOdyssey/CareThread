@@ -113,6 +113,8 @@ Benchmarks/OCRBench/run.sh
 - [贡献规则](CONTRIBUTING.md)：当前 issue-only 阶段与未来 DCO/CLA 要求
 - [品牌使用说明](TRADEMARKS.md)：MIT 代码许可与官方品牌身份的边界
 - [Privacy Manifest 复核](docs/PRIVACY_MANIFEST.md)：零收集声明与 required-reason API 对照
+- [隐私政策](docs/legal/PRIVACY_POLICY.md)与[用户协议](docs/legal/TERMS_OF_SERVICE.md)：App 离线内置且与公开站点共用的锁定正文
+- [App Store 提交说明](docs/APP_STORE_SUBMISSION.md)：隐私 URL、问卷、权限用途、审核备注与发布阻断项
 - [实施进度](docs/PROGRESS.md)：里程碑状态与真机待验项
 - [实施日志](docs/IMPLEMENTATION_LOG.md)：阶段过程、验证命令和查漏记录
 - [阻塞与降级](docs/BLOCKERS.md)：只记录无法在当前环境闭环的事项

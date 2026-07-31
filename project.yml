@@ -34,6 +34,10 @@ targets:
     platform: iOS
     sources:
       - path: CareThread
+      - path: docs/legal/PRIVACY_POLICY.md
+        buildPhase: resources
+      - path: docs/legal/TERMS_OF_SERVICE.md
+        buildPhase: resources
     dependencies:
       - package: ZIPFoundation
     info:

@@ -201,17 +201,18 @@ struct ElderModeTests {
         #expect(state.canSkip)
     }
 
-    @Test("引导正常顺序到模式选择")
+    @Test("引导第三屏固定为法律同意且不可跳过")
     func onboardingAdvancesInOrder() {
         var state = CareThreadOnboardingStateMachine()
         state.advance()
-        #expect(state.page == .organize)
-        state.advance()
         #expect(state.page == .modeChoice)
+        state.advance()
+        #expect(state.page == .legalConsent)
+        #expect(!state.canSkip)
         #expect(!state.isComplete)
     }
 
-    @Test("跳过只跳到不可跳的模式选择")
+    @Test("跳过只略过首屏且不能略过法律同意")
     func onboardingSkipStopsAtModeChoice() {
         var state = CareThreadOnboardingStateMachine()
         state.skip()
@@ -219,16 +220,22 @@ struct ElderModeTests {
         #expect(!state.canSkip)
         state.skip()
         #expect(state.page == .modeChoice)
+        state.advance()
+        state.skip()
+        #expect(state.page == .legalConsent)
         #expect(!state.isComplete)
     }
 
-    @Test("模式选择后才可完成引导")
+    @Test("选择模式并到达法律页后才可完成引导")
     func onboardingRequiresModeChoice() {
         var state = CareThreadOnboardingStateMachine()
         state.complete()
         #expect(!state.isComplete)
         state.skip()
         state.selectMode(.elder)
+        state.complete()
+        #expect(!state.isComplete)
+        state.advance()
         state.complete()
         #expect(state.isComplete)
         #expect(state.selectedMode == .elder)

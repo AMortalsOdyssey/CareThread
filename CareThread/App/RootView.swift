@@ -7,7 +7,10 @@ struct RootView: View {
     private var storedAppearance = AppearanceMode.system.rawValue
     @AppStorage(CareThreadOnboardingLaunchPolicy.completionKey)
     private var onboardingCompleted = false
+    @AppStorage(LegalAgreement.acceptedTermsVersionKey)
+    private var acceptedTermsVersion = ""
     @State private var completedResetOnboardingThisLaunch = false
+    @State private var showLegalUpdateNotice = false
 
     private var displayMode: DisplayMode {
         DisplayMode.launchOverride ?? DisplayMode(rawValue: storedMode) ?? .standard
@@ -55,6 +58,30 @@ struct RootView: View {
         .environment(\.locale, Locale(identifier: "zh_CN"))
         .preferredColorScheme(appearance.colorScheme)
         .tint(CT.Color.primary)
+        .task(id: onboardingCompleted) {
+            #if DEBUG
+            let arguments = ProcessInfo.processInfo.arguments
+            let debugForcesNotice = arguments.contains(
+                "-LegalPresentUpdate"
+            )
+            let isUnrelatedAutomationRoute = arguments.contains("-uiTestMode")
+                && !debugForcesNotice
+            #else
+            let debugForcesNotice = false
+            let isUnrelatedAutomationRoute = false
+            #endif
+            showLegalUpdateNotice = !isUnrelatedAutomationRoute
+                && (debugForcesNotice || LegalAgreement.requiresUpdateNotice(
+                    onboardingCompleted: onboardingCompleted,
+                    acceptedVersion: acceptedTermsVersion
+                ))
+        }
+        .sheet(isPresented: $showLegalUpdateNotice) {
+            LegalUpdateNoticeView {
+                acceptedTermsVersion = LegalAgreement.currentTermsVersion
+                showLegalUpdateNotice = false
+            }
+        }
         #if DEBUG
         .overlay(alignment: .topLeading) {
             if ScreenshotRoute.current == .onboarding {
@@ -73,6 +100,7 @@ private struct StandardRootTabView: View {
         case backup
         case appLock
         case appearance
+        case about
     }
 
     private enum RecordRoute: Hashable {
@@ -203,6 +231,7 @@ private struct StandardRootTabView: View {
                         },
                         onBackup: { openManagement(.backup) },
                         onAppLock: { openManagement(.appLock) },
+                        onAbout: { openManagement(.about) },
                         onCaptureReport: { _ in
                             showCapture = true
                         }
@@ -247,6 +276,8 @@ private struct StandardRootTabView: View {
                             AppLockSettingsView()
                         case .appearance:
                             AppearanceSettingsView()
+                        case .about:
+                            AboutCareThreadView(usesLargeType: false)
                         }
                     }
                 } else {

@@ -1,0 +1,26 @@
+title: CareThread
+description: 完全本地的个人就医资料整理工具
+lang: zh-CN
+url: https://amortalsodyssey.github.io
+baseurl: /CareThread
+exclude:
+  - APP_STORE_SUBMISSION.md
+  - ARCHITECTURE_CONTRACT.md
+  - BLOCKERS.md
+  - PROGRESS.md
+  - IMPLEMENTATION_LOG.md
+  - REQUIREMENTS_TRACEABILITY.md
+  - MANUAL_WALKTHROUGH_EVIDENCE.json
+  - MANUAL_WALKTHROUGH_TEMPLATE.json
+  - MULTIPAGE_IMPORT_DESIGN.md
+  - NEARBY_SYNC_DESIGN.md
+  - OPEN_SOURCE_AND_SUSTAINABILITY_STRATEGY.md
+  - PRIVACY_MANIFEST.md
+  - SCOPE_ADDENDUM.md
+  - SCREENSHOT_MANIFEST.json
+  - USER_NEEDS_RESEARCH.md
+  - 调研报告_OCR选型.md
+  - 调研报告_个人开发者上架AppStore.md
+  - legal
+  - walkthrough
+  - screenshots
