@@ -288,7 +288,7 @@
 - `Scripts/verify.sh`：Xcode 26.6，iPhone 16 / iOS 26.5，651/651 单元与集成测试、50/50 XCUITest，合计 701/701；失败 0、跳过 0。
 - `Scripts/screenshots.sh`：23 个生产导航路由 × Light/Dark = 46 张；标准版 38、老人版 8，全部 1179×2556 且 SHA-256 唯一，清单绑定源码提交 `57b28a6`。
 - `Scripts/validate-screenshot-manifest.sh` 与 `Scripts/validate-walkthrough.sh` 均 PASS；B1–B7 证据保留修复前失败事实，不以最终绿覆盖历史。
-- `Scripts/acceptance.sh` 安排在本证据批次提交后从干净工作树原样运行；验收范围覆盖 M0–M9 提交轨迹、23 项边界、依赖白名单、零互联网、日志/路径/秘密、权限文案、Privacy Manifest、截图与走查证据。
+- `Scripts/acceptance.sh` 在提交 `1c14406` 的干净工作树原样运行并退出 0；M0–M9、701/701 测试、23/23 边界、依赖白名单、零互联网、日志/路径/秘密、权限文案、Privacy Manifest、46 张截图与走查证据全部 PASS。
 - 仍需真实设备的相机、FaceID、通知/日历、微信、双机无线、锁屏文件保护、真实病历 OCR 与老人真人试用保持在 `PROGRESS.md` 末尾，不以模拟器代理冒充。
 
 ### 总验收脚本自检
@@ -296,4 +296,4 @@
 - 证据提交 `d95184b` 后首次从干净工作树运行 `Scripts/acceptance.sh`：M0–M9、干净工作树、`verify.sh`、651/651 单元与集成测试、50/50 UI 测试、零联网与隐私门禁均先通过。
 - 后半段发现两个脚本问题：`.build/DerivedData` 是 Git 已忽略的本机构建缓存，却被 vendored 二进制扫描纳入；截图 PASS 文案中的未加花括号变量紧邻中文全角括号，被 Bash 解析成未绑定变量。
 - 修复提交 `57b28a6`：所有相关扫描显式剪枝 `.build`，中文标点相邻变量统一加 `${...}` 边界；772MB 缓存移至 `/tmp`。`bash -n`、46/38/8 变量展开与独立 vendored 扫描均通过。
-- 因脚本与源码都属于截图指纹输入，未复用旧 manifest；重新生成 46 张截图并把清单、走查证据绑定到 `57b28a6`，再执行最终原命令验收。
+- 因脚本与源码都属于截图指纹输入，未复用旧 manifest；重新生成 46 张截图并把清单、走查证据绑定到 `57b28a6`。最终在提交 `1c14406` 上执行原命令，退出码 0，末行是 `PASS CareThread 最终验收（全部检查通过）`。
