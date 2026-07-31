@@ -26,7 +26,7 @@ enum Copy {
         static let ocrEmpty = "照片存好了，字没认出来，家人可以补。"
         static let recordPending = "等家人核对"
         static let doctorHeader = "把这一页拿给医生看"
-        static let switchToElderTitle = "切换到老人版？"
+        static let switchToElderTitle = "切换到大字版？"
         static let switchToElderBody = "字更大、操作更简单，资料完全一样，随时可以换回来。"
         static let switchToElderAction = "切换"
         static let switchToStandardTitle = "换回标准版？"

@@ -53,7 +53,7 @@ struct DesignSpecConformanceTests {
         #expect(Copy.Elder.dateQuestion == "哪天的？")
         #expect(Copy.Elder.saved == "存好了 ✓")
         #expect(Copy.Elder.doctorHeader == "把这一页拿给医生看")
-        #expect(Copy.Elder.switchToElderTitle == "切换到老人版？")
+        #expect(Copy.Elder.switchToElderTitle == "切换到大字版？")
         #expect(
             Copy.Elder.switchToElderBody
                 == "字更大、操作更简单，资料完全一样，随时可以换回来。"
