@@ -77,9 +77,9 @@ check_sha256 docs/legal/PRIVACY_POLICY.md \
 check_sha256 docs/legal/TERMS_OF_SERVICE.md \
   a045562ee39ab7df36f43218c24cc303f7d6137bb8672735c13f8827cb4d2e0e
 check_sha256 website/privacy/index.html \
-  868a18046526e3444a4b9453dad60f05c53db87040721823ad4e7fff3b027e83
+  681c0b891e636ccee3999669a5d76607507bfbcb6d3b1157d5dfbf5a7ccb6ad6
 check_sha256 website/terms/index.html \
-  dbed8444b606c33884881036c50f36a1e2f3511822435447b1f62f6c6da4629f
+  58e38ecce22daf48e1c866897d547defc6fbe88bccfd14081016762a8d16bfe2
 if [[ "$legal_source_integrity" -eq 1 ]] &&
   rg -q 'path: docs/legal/PRIVACY_POLICY\.md' project.yml &&
   rg -q 'path: docs/legal/TERMS_OF_SERVICE\.md' project.yml &&
@@ -142,6 +142,20 @@ else
   else
     fail "官网第三方运行时资源扫描执行失败（rg 状态 ${remote_runtime_status}）"
   fi
+fi
+
+# Cloudflare Email Address Obfuscation injects a runtime decoder unless every
+# visible mailto fragment opts out. Pair counts lock the live zero-script
+# contract without changing any visible copy or design.
+mailto_count="$(rg -o 'href="mailto:' website --glob '*.html' | wc -l | tr -d ' ')"
+email_off_start_count="$(rg -o '<!--email_off-->' website --glob '*.html' | wc -l | tr -d ' ')"
+email_off_end_count="$(rg -o '<!--/email_off-->' website --glob '*.html' | wc -l | tr -d ' ')"
+if [[ "$mailto_count" -gt 0 ]] &&
+  [[ "$email_off_start_count" -eq "$mailto_count" ]] &&
+  [[ "$email_off_end_count" -eq "$mailto_count" ]]; then
+  pass "官网邮箱关闭 Cloudflare 脚本注入"
+else
+  fail "官网邮箱关闭 Cloudflare 脚本注入（mailto=${mailto_count} / start=${email_off_start_count} / end=${email_off_end_count}）"
 fi
 
 milestone_failures=0
