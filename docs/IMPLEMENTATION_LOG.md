@@ -202,3 +202,60 @@
 - 已加入 `CONTRIBUTING.md` 与 `TRADEMARKS.md`。ICLA/CCLA 未就绪前只收 issue/虚构复现；未来实质贡献必须同时经过 DCO 和 CLA，确保持续开源、再许可与出售的 IP 权利链。
 - 出售资产固定为代码/设计权利、品牌/商标/域名、GitHub 社区、App Store App/Bundle ID/评价、聚合经营指标和质量体系；用户设备健康资料、个人 Apple 开发者账号、证书和凭据永不进入交易包。
 - 报告逐项比较 MIT、Apache-2.0、MPL-2.0、GPL/AGPL、双许可和 source-available，也比较免费、买断、IAP、版本收费、订阅及未来 AI 扩展；本地核心唯一收费方式为门槛后的 App Store 一次性买断。
+
+## 2026-07-31 / M3–M9 分阶段交付
+
+### 提交与能力
+
+- `40450bd M3`：离线录入、多报告/多页整理、姓名闸门、资料库、组合筛选、稳定分页、草稿与不可变原件。
+- `70c534a M4`：用药、医嘱、剂量修订、关联复查与本地提醒。
+- `b95e493 M5`：复查计划、权限恢复、系统日历入口和首页。
+- `61bddaf M6`：成员隔离的时间线、筛选、月份定位和 Reduce Motion。
+- `cba6a36 M7`：七档导出、本地对比、系统分享、一页就诊准备卡与问题清单。
+- `5709ce2 M8`：加密备份/恢复、完整性校验、应用锁与标准版打磨。
+- `f6c3361 M9`：首次引导、完整老人版、无障碍、边界门禁和总验收。
+- `0274e64`：补齐原件缺失的备份恢复入口；把私有 `.SFUI-*` 字体改为公开 `UIFontMetrics` 动态字体管线。
+- `9a71871`：增加标准版 AX3 首页/核对/详情三段真实 XCUITest。
+
+所有提交均由 `AMortalsOdyssey` 创作、无 `Co-Authored-By`，并在 `main` 分阶段推送到 Public 仓库。
+
+### 专项审查吸收
+
+- 安全/隐私：跨成员闭包、路径穿越/链接/压缩炸弹、篡改、重放、CAS、日志隐私、Data Protection 和备份/迁移事务均补充对抗测试。
+- 性能/崩溃：300×2 记录/100 次切换、100/50/22 页、48MP、250MiB PDF、16MiB Nearby、8MiB 备份、300 条 PDF 和 100 轮 staging 清理成为可重复代理。
+- 就诊准备卡：八类可选内容、固定内容预算、严格单成员隔离与一页 PDF。
+- 设计：颜色/间距 token、Light/Dark、一步原文、关键文案、AX3/AX2、Reduce Motion、老人版无隐藏手势均固化为测试与走查证据。
+
+## 2026-07-31 / 最终模拟器验收
+
+### 全量回归
+
+- `Scripts/verify.sh`：退出码 0。
+- Swift Testing：607/607；XCUITest：39/39；零失败、零跳过。
+- 构建目标：iPhone 16 / iOS 18.6；结果包：本地 `DerivedData/Verify.xcresult`。
+- 边界矩阵：23/23 项均由 `Scripts/acceptance.sh` 绑定到真实测试方法。
+
+### 截图与人工走查
+
+- `Scripts/screenshots.sh`：36 张真实模拟器 PNG；标准版 28、老人版 8；Light/Dark 各 18；尺寸 1179×2556；36 个不同 SHA-256。
+- `docs/SCREENSHOT_MANIFEST.json` 绑定源码提交 `9a71871`、源码指纹、设备/runtime、路由、就绪标记与每图哈希，`sourceTreeDirty=false`。
+- 视觉检查 36 屏：没有空白、错误路由、字体回退、老人版裁剪或主操作缺失。
+- `docs/MANUAL_WALKTHROUGH_EVIDENCE.json` 将设计 §14 八项与 B9/B16/B17/B18/B23 的 13 份证据逐项哈希固定。
+- Reduce Motion 在模拟器中临时开启后检查时间线路由，完成后恢复默认。
+
+### 权限与降级记录
+
+- 按用户要求调用 Computer Use；Mac 处于锁定状态，工具明确拒绝自动解锁。
+- 未绕过锁屏或伪造点击；使用 simctl、XCUITest、xcresult 和静态/视觉交叉证据继续闭环。
+- 需要相机、FaceID、通知真实到达、EventKit、微信、无线链路、低存储/锁屏与老人真人的项目保留在 `PROGRESS.md` 末尾。
+
+### 最终查漏
+
+- [x] M0–M9 独立提交并推送
+- [x] 607 单元/集成测试与 39 UI 测试全绿
+- [x] 23 项边界矩阵自动化
+- [x] 36 张截图与可复核 manifest
+- [x] 13 项设计/边界走查证据
+- [x] README、进度、追踪表、阻塞与商业化文档同步
+- [x] MIT License、品牌边界和未来出售路线落仓库
+- [ ] 真机/真人清单由用户在具备设备和系统权限时执行

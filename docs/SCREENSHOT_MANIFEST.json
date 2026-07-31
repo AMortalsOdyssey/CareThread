@@ -1,0 +1,378 @@
+{
+  "schemaVersion": 1,
+  "generator": "Scripts/screenshots.sh",
+  "generatedAtUTC": "2026-07-30T23:53:36Z",
+  "sourceCommit": "9a7187188e5f892e5738ad461b86736b2ef8b8c7",
+  "sourceTreeDirty": false,
+  "sourceFingerprint": "00c6d94f4bb0d8684be6535c4c20f92d0152948fcf88d5ed1d60940462dd6388",
+  "screenshotScriptSHA256": "374800074911fb15222b0497c4b78112a5023498e15ae90eb75ba2ea6fa22ab3",
+  "deviceName": "iPhone 16",
+  "osVersion": "18.6",
+  "runtimeIdentifier": "com.apple.CoreSimulator.SimRuntime.iOS-18-6",
+  "bundleID": "me.multiego.carethread",
+  "configuration": "Debug",
+  "language": "zh-Hans",
+  "locale": "zh_CN",
+  "screenshots": [
+    {
+      "file": "docs/screenshots/01-onboarding-light.png",
+      "route": "onboarding",
+      "mode": "standard",
+      "appearance": "light",
+      "readyMarker": "screenshot.route.onboarding",
+      "width": 1179,
+      "height": 2556,
+      "sha256": "adb2e2c9ca6bcde012c009932fe92c15ccfccd0144a6d964e2ffb67e0ab580a4"
+    },
+    {
+      "file": "docs/screenshots/01-onboarding-dark.png",
+      "route": "onboarding",
+      "mode": "standard",
+      "appearance": "dark",
+      "readyMarker": "screenshot.route.onboarding",
+      "width": 1179,
+      "height": 2556,
+      "sha256": "adc2ea1a09066b4b1cb2adad31a7e1fc6c90fad69538a70970440f1b240b50a5"
+    },
+    {
+      "file": "docs/screenshots/02-home-light.png",
+      "route": "home",
+      "mode": "standard",
+      "appearance": "light",
+      "readyMarker": "screenshot.route.home",
+      "width": 1179,
+      "height": 2556,
+      "sha256": "2b0f09bfa395f5770f0b2b6fb6051d5898ba617c0a6c1e3e5f4707b4b9327812"
+    },
+    {
+      "file": "docs/screenshots/02-home-dark.png",
+      "route": "home",
+      "mode": "standard",
+      "appearance": "dark",
+      "readyMarker": "screenshot.route.home",
+      "width": 1179,
+      "height": 2556,
+      "sha256": "822f93603c132200a9a79adc00b8acfbfeb2b5fbe290a56acbcc1bddbff5b884"
+    },
+    {
+      "file": "docs/screenshots/03-capture-source-light.png",
+      "route": "capture-source",
+      "mode": "standard",
+      "appearance": "light",
+      "readyMarker": "screenshot.route.capture-source",
+      "width": 1179,
+      "height": 2556,
+      "sha256": "dd6c9e52a78e9bcc0fa37e8c3e9cc7b53773fe4e831ffd91f9a5f376c8106a4b"
+    },
+    {
+      "file": "docs/screenshots/03-capture-source-dark.png",
+      "route": "capture-source",
+      "mode": "standard",
+      "appearance": "dark",
+      "readyMarker": "screenshot.route.capture-source",
+      "width": 1179,
+      "height": 2556,
+      "sha256": "d958a81939bf6511089422b0033cfd7d3a9706d7208bea95cfa5dd57063d95e3"
+    },
+    {
+      "file": "docs/screenshots/04-capture-confirmation-light.png",
+      "route": "capture-confirmation",
+      "mode": "standard",
+      "appearance": "light",
+      "readyMarker": "screenshot.route.capture-confirmation",
+      "width": 1179,
+      "height": 2556,
+      "sha256": "79e6b94cd1b714ec219d42798a5ae236899f5fe95d247a254d9af558b57989c4"
+    },
+    {
+      "file": "docs/screenshots/04-capture-confirmation-dark.png",
+      "route": "capture-confirmation",
+      "mode": "standard",
+      "appearance": "dark",
+      "readyMarker": "screenshot.route.capture-confirmation",
+      "width": 1179,
+      "height": 2556,
+      "sha256": "60b3de0dc0d40e5e616497b0fe77bfbcc23f85041813eec52acfaeec6e99691d"
+    },
+    {
+      "file": "docs/screenshots/05-records-light.png",
+      "route": "records",
+      "mode": "standard",
+      "appearance": "light",
+      "readyMarker": "screenshot.route.records",
+      "width": 1179,
+      "height": 2556,
+      "sha256": "c7574e9efff7bf172d1a6eb413ef2bed6e174445551f9904dfcd9822a6bc7cdd"
+    },
+    {
+      "file": "docs/screenshots/05-records-dark.png",
+      "route": "records",
+      "mode": "standard",
+      "appearance": "dark",
+      "readyMarker": "screenshot.route.records",
+      "width": 1179,
+      "height": 2556,
+      "sha256": "33322bad2d1e62bbe9d1a5856305764a38403ef9aae3c43f5deca3c6c8837ebb"
+    },
+    {
+      "file": "docs/screenshots/06-record-detail-light.png",
+      "route": "record-detail",
+      "mode": "standard",
+      "appearance": "light",
+      "readyMarker": "screenshot.route.record-detail",
+      "width": 1179,
+      "height": 2556,
+      "sha256": "7f09dc5d6946a65d88b4ab41b36e808d5286aa21bb30242f9cd9bc8a74551ea1"
+    },
+    {
+      "file": "docs/screenshots/06-record-detail-dark.png",
+      "route": "record-detail",
+      "mode": "standard",
+      "appearance": "dark",
+      "readyMarker": "screenshot.route.record-detail",
+      "width": 1179,
+      "height": 2556,
+      "sha256": "a516458e38a1c755a2d2618fa00ee5f7a1c35be99befa780e9e933d197f48106"
+    },
+    {
+      "file": "docs/screenshots/07-original-ocr-light.png",
+      "route": "original-ocr",
+      "mode": "standard",
+      "appearance": "light",
+      "readyMarker": "screenshot.route.original-ocr",
+      "width": 1179,
+      "height": 2556,
+      "sha256": "cf59c440a7456ca657d3d91210731d925ea662a23fcca8fc05921334a76ef9b1"
+    },
+    {
+      "file": "docs/screenshots/07-original-ocr-dark.png",
+      "route": "original-ocr",
+      "mode": "standard",
+      "appearance": "dark",
+      "readyMarker": "screenshot.route.original-ocr",
+      "width": 1179,
+      "height": 2556,
+      "sha256": "2ff97d5f43537fc591ade3a10e6dea5adadbb2c2bece2b9e0c0ed8760ffd4008"
+    },
+    {
+      "file": "docs/screenshots/08-medications-light.png",
+      "route": "medications",
+      "mode": "standard",
+      "appearance": "light",
+      "readyMarker": "screenshot.route.medications",
+      "width": 1179,
+      "height": 2556,
+      "sha256": "74783d68cb34cb3dd76343887b759e38368c126e0a3bd6cbafa1ce46f532fed3"
+    },
+    {
+      "file": "docs/screenshots/08-medications-dark.png",
+      "route": "medications",
+      "mode": "standard",
+      "appearance": "dark",
+      "readyMarker": "screenshot.route.medications",
+      "width": 1179,
+      "height": 2556,
+      "sha256": "e4b1e902a6f0433b5dda2ba4baaf409e3088a48eb96145861188fca7ab137513"
+    },
+    {
+      "file": "docs/screenshots/09-followups-light.png",
+      "route": "followups",
+      "mode": "standard",
+      "appearance": "light",
+      "readyMarker": "screenshot.route.followups",
+      "width": 1179,
+      "height": 2556,
+      "sha256": "64e8078a025949c321417e067dea29afb52374174406c29c69fa8630ef3d45a0"
+    },
+    {
+      "file": "docs/screenshots/09-followups-dark.png",
+      "route": "followups",
+      "mode": "standard",
+      "appearance": "dark",
+      "readyMarker": "screenshot.route.followups",
+      "width": 1179,
+      "height": 2556,
+      "sha256": "93a79fcb4ccf393021668756e8903507552a0cd2374787bc17c4c362892f2a92"
+    },
+    {
+      "file": "docs/screenshots/10-timeline-light.png",
+      "route": "timeline",
+      "mode": "standard",
+      "appearance": "light",
+      "readyMarker": "screenshot.route.timeline",
+      "width": 1179,
+      "height": 2556,
+      "sha256": "eeff9503eb99a5fe614d8fa52069f5ed281e67c40d054b542f5325531360591b"
+    },
+    {
+      "file": "docs/screenshots/10-timeline-dark.png",
+      "route": "timeline",
+      "mode": "standard",
+      "appearance": "dark",
+      "readyMarker": "screenshot.route.timeline",
+      "width": 1179,
+      "height": 2556,
+      "sha256": "bb1a419263616b13c3fa559d18d87476eb5289feccb4deebdfb1cab0fbc41bf4"
+    },
+    {
+      "file": "docs/screenshots/11-brief-light.png",
+      "route": "brief",
+      "mode": "standard",
+      "appearance": "light",
+      "readyMarker": "screenshot.route.brief",
+      "width": 1179,
+      "height": 2556,
+      "sha256": "df592f09bdd8275779c26178f180671318ef9ff12a46af57eb181a961c9b3805"
+    },
+    {
+      "file": "docs/screenshots/11-brief-dark.png",
+      "route": "brief",
+      "mode": "standard",
+      "appearance": "dark",
+      "readyMarker": "screenshot.route.brief",
+      "width": 1179,
+      "height": 2556,
+      "sha256": "2951d64215ef2479b45cfb4e94f07840da53494c393d114336620821825ad4c6"
+    },
+    {
+      "file": "docs/screenshots/12-manage-light.png",
+      "route": "manage",
+      "mode": "standard",
+      "appearance": "light",
+      "readyMarker": "screenshot.route.manage",
+      "width": 1179,
+      "height": 2556,
+      "sha256": "a552c31166d4c6eac70cd245314c3b673a349222c1c6e28f55ce9daf3f861947"
+    },
+    {
+      "file": "docs/screenshots/12-manage-dark.png",
+      "route": "manage",
+      "mode": "standard",
+      "appearance": "dark",
+      "readyMarker": "screenshot.route.manage",
+      "width": 1179,
+      "height": 2556,
+      "sha256": "2d96443194ce3dd9407fe899d630520283a210d92698e7de984cc5b49c54027c"
+    },
+    {
+      "file": "docs/screenshots/13-backup-light.png",
+      "route": "backup",
+      "mode": "standard",
+      "appearance": "light",
+      "readyMarker": "screenshot.route.backup",
+      "width": 1179,
+      "height": 2556,
+      "sha256": "648499ff971681936ee4eb00c721f26bc89cf812e788d6bfce00951c5d1355f2"
+    },
+    {
+      "file": "docs/screenshots/13-backup-dark.png",
+      "route": "backup",
+      "mode": "standard",
+      "appearance": "dark",
+      "readyMarker": "screenshot.route.backup",
+      "width": 1179,
+      "height": 2556,
+      "sha256": "e2847a0fdf400cc55820e6484709177f672dc5b6544d52af45b2f5c9fb1ffd26"
+    },
+    {
+      "file": "docs/screenshots/14-lock-light.png",
+      "route": "lock",
+      "mode": "standard",
+      "appearance": "light",
+      "readyMarker": "process-stable",
+      "width": 1179,
+      "height": 2556,
+      "sha256": "50e9caa46182dfdef54ab0797290ba6982ff3cdfe58587872ba54c79c6f8b056"
+    },
+    {
+      "file": "docs/screenshots/14-lock-dark.png",
+      "route": "lock",
+      "mode": "standard",
+      "appearance": "dark",
+      "readyMarker": "process-stable",
+      "width": 1179,
+      "height": 2556,
+      "sha256": "a42202f6d5b761c6296b18ccfb65a2b13f11dfafea6ed4b49bf87bd2607160ee"
+    },
+    {
+      "file": "docs/screenshots/15-elder-today-light.png",
+      "route": "elder-today",
+      "mode": "elder",
+      "appearance": "light",
+      "readyMarker": "screenshot.route.elder-today",
+      "width": 1179,
+      "height": 2556,
+      "sha256": "7cda502713782cf8bb077fddec28249ef184a3b60ae30e16888bec0031f90c83"
+    },
+    {
+      "file": "docs/screenshots/15-elder-today-dark.png",
+      "route": "elder-today",
+      "mode": "elder",
+      "appearance": "dark",
+      "readyMarker": "screenshot.route.elder-today",
+      "width": 1179,
+      "height": 2556,
+      "sha256": "97fff56068eef73fbcea7f24ebdbf4631b7991ef8c9afc14f44e5260edf7d18e"
+    },
+    {
+      "file": "docs/screenshots/16-elder-capture-question-light.png",
+      "route": "elder-capture-question",
+      "mode": "elder",
+      "appearance": "light",
+      "readyMarker": "screenshot.route.elder-capture-question",
+      "width": 1179,
+      "height": 2556,
+      "sha256": "889fadcaf76caf9a89bb339e6a9384850d19e6622a9215f19c3248366874a5be"
+    },
+    {
+      "file": "docs/screenshots/16-elder-capture-question-dark.png",
+      "route": "elder-capture-question",
+      "mode": "elder",
+      "appearance": "dark",
+      "readyMarker": "screenshot.route.elder-capture-question",
+      "width": 1179,
+      "height": 2556,
+      "sha256": "58b5432654aa66ce5543c6b0fb14586a1983f09fe45f9f8bba536e9d9f87dda0"
+    },
+    {
+      "file": "docs/screenshots/17-elder-records-light.png",
+      "route": "elder-records",
+      "mode": "elder",
+      "appearance": "light",
+      "readyMarker": "screenshot.route.elder-records",
+      "width": 1179,
+      "height": 2556,
+      "sha256": "32e162ea1739f4acee2b9ba9b61cd9d40378d1cf0af6afa0d650a7d543b72ffc"
+    },
+    {
+      "file": "docs/screenshots/17-elder-records-dark.png",
+      "route": "elder-records",
+      "mode": "elder",
+      "appearance": "dark",
+      "readyMarker": "screenshot.route.elder-records",
+      "width": 1179,
+      "height": 2556,
+      "sha256": "b95ebbfd9eebf37f956dfc7c6b7ff022e52ae40630131a8a942aaaae351a7128"
+    },
+    {
+      "file": "docs/screenshots/18-elder-brief-light.png",
+      "route": "elder-brief",
+      "mode": "elder",
+      "appearance": "light",
+      "readyMarker": "screenshot.route.elder-brief",
+      "width": 1179,
+      "height": 2556,
+      "sha256": "3c7ae088db7252711cf0b74ad0a1ecec0361aaafc6d6c2f502b8fb6dd63c8e4b"
+    },
+    {
+      "file": "docs/screenshots/18-elder-brief-dark.png",
+      "route": "elder-brief",
+      "mode": "elder",
+      "appearance": "dark",
+      "readyMarker": "screenshot.route.elder-brief",
+      "width": 1179,
+      "height": 2556,
+      "sha256": "9c72d4dcb0c67843c34b0e890ccff02120f4e8980dc0f1d9b1be90b60fd7ef1c"
+    }
+  ]
+}

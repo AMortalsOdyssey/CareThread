@@ -1,0 +1,155 @@
+{
+  "schemaVersion": 1,
+  "sourceCommit": "9a7187188e5f892e5738ad461b86736b2ef8b8c7",
+  "reviewedAtUTC": "2026-07-30T23:57:00Z",
+  "reviewer": "Codex visual review + XCTest/simctl; Computer Use blocked by locked Mac",
+  "simulator": {
+    "deviceName": "iPhone 16",
+    "osVersion": "18.6"
+  },
+  "checks": [
+    {
+      "id": "DESIGN-01",
+      "status": "passed",
+      "notes": "抽样 10 处语义颜色并核对 Light/Dark token 与视觉层级。",
+      "evidence": [
+        {
+          "path": "docs/walkthrough/DESIGN-01-colors.md",
+          "sha256": "16be3a91dbe4232e32af238dba21f2ba89e2dfc818c85ac793137e4e6f3f4181"
+        }
+      ]
+    },
+    {
+      "id": "DESIGN-02",
+      "status": "passed",
+      "notes": "抽样 10 处间距并核对 4pt 网格和老人版触达尺寸。",
+      "evidence": [
+        {
+          "path": "docs/walkthrough/DESIGN-02-spacing.md",
+          "sha256": "c8b6a5c67dde98e6618793200bf38b7f9606b0ef82cf2b76c93b32c2dce04e33"
+        }
+      ]
+    },
+    {
+      "id": "DESIGN-03",
+      "status": "passed",
+      "notes": "18 个页面逐一核对 Light/Dark，共 36 屏。",
+      "evidence": [
+        {
+          "path": "docs/walkthrough/DESIGN-03-appearances.md",
+          "sha256": "a734d9847cf915415d77467fee66294e14958b61228745f67893111157404a53"
+        }
+      ]
+    },
+    {
+      "id": "DESIGN-04",
+      "status": "passed",
+      "notes": "卡片、详情与确认页均可一步到达原文。",
+      "evidence": [
+        {
+          "path": "docs/walkthrough/DESIGN-04-original-access.md",
+          "sha256": "1e435fd62b4c2906a3b9b6bedfb370236b61972f659479265d9563ee86f4539d"
+        }
+      ]
+    },
+    {
+      "id": "DESIGN-05",
+      "status": "passed",
+      "notes": "关键文案逐字断言并视觉抽样，保持非诊断边界。",
+      "evidence": [
+        {
+          "path": "docs/walkthrough/DESIGN-05-copy.md",
+          "sha256": "44fc503071efd44dcab147177737e0c7242c689561dac141f5ab5c2e2315bab0"
+        }
+      ]
+    },
+    {
+      "id": "DESIGN-06",
+      "status": "passed",
+      "notes": "标准版 AX3 与老人版 AX2 的关键操作均保持可达可点。",
+      "evidence": [
+        {
+          "path": "docs/walkthrough/DESIGN-06-dynamic-type.md",
+          "sha256": "1615d2a8be610a58ca8862a8199c22deea653ee02fcb4be001e65d364cdd3ebf"
+        }
+      ]
+    },
+    {
+      "id": "DESIGN-07",
+      "status": "passed",
+      "notes": "模拟器开启减弱动态效果后核对时间线，并复核动画降级分支。",
+      "evidence": [
+        {
+          "path": "docs/walkthrough/DESIGN-07-reduce-motion.md",
+          "sha256": "2cb9beb80359db8bc08d2ed2c6acea0810a0ab5f324ddec0f3f889f201a66968"
+        }
+      ]
+    },
+    {
+      "id": "DESIGN-08",
+      "status": "passed",
+      "notes": "老人版三槽、显式按钮、60pt 主操作和关键流程均通过。",
+      "evidence": [
+        {
+          "path": "docs/walkthrough/DESIGN-08-elder.md",
+          "sha256": "5abebdf85c1caea8d6f995f84400a1cb7099270c0bca7a851583e22de73e2a0d"
+        }
+      ]
+    },
+    {
+      "id": "B9",
+      "status": "passed",
+      "notes": "原件缺失时标准版与老人版均显示错误和备份恢复入口。",
+      "evidence": [
+        {
+          "path": "docs/walkthrough/B9-missing-original.md",
+          "sha256": "ce09e53eeaa4eeadf3d063d7d2cd3b8051a61c1b414d4ab75bfb68e1d06f9b46"
+        }
+      ]
+    },
+    {
+      "id": "B16",
+      "status": "passed",
+      "notes": "22 页报告先给软限制告知，显式确认后才继续。",
+      "evidence": [
+        {
+          "path": "docs/walkthrough/B16-large-document.md",
+          "sha256": "8ec9b0e7954e88de962f97f0d383d575478020ac3e11a3af06859ca7cbaa07cf"
+        }
+      ]
+    },
+    {
+      "id": "B17",
+      "status": "passed",
+      "notes": "48MP 原件哈希不变，独立工作图降采样到 3000px。",
+      "evidence": [
+        {
+          "path": "docs/walkthrough/B17-large-image.md",
+          "sha256": "9f5f1b3d75bf7ae6c380c6259567fd3581573760e36e3d046786031b46cd79b6"
+        }
+      ]
+    },
+    {
+      "id": "B18",
+      "status": "passed",
+      "notes": "通知权限拒绝不阻止资料保存，并显示系统设置恢复入口。",
+      "evidence": [
+        {
+          "path": "docs/walkthrough/B18-permission-denied.md",
+          "sha256": "1ff4a1bfaa632714a4d8daca9145ec53f672a452a326873457a3a9d632e2f1e6"
+        }
+      ]
+    },
+    {
+      "id": "B23",
+      "status": "passed",
+      "notes": "标准版可恢复持久化草稿，老人版隐藏复杂草稿入口。",
+      "evidence": [
+        {
+          "path": "docs/walkthrough/B23-draft-resume.md",
+          "sha256": "e65763afd9ee2bab55ffd3f48471d8d106ed37f24560b2374c70de9db28b7e4f"
+        }
+      ]
+    }
+  ]
+}
