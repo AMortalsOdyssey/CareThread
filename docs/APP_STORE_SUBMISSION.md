@@ -8,21 +8,35 @@
 
 - **法律正文与当前备份行为不一致。** `docs/legal/PRIVACY_POLICY.md` 第 75–81 行及 `TERMS_OF_SERVICE.md` 第 59–66 行写的是“备份导出默认使用至少 12 位密码加密”；当前产品主路径则是默认导出明文存档、口令加密仅为折叠的可选项。两份正文已被本轮任务明确锁定，代码也不得回退。必须由产品负责人完成法律复核，形成新版本正文、更新“最后更新”日期与 `LegalAgreement.currentTermsVersion`，再重新跑法律页和版本变更测试。
 - **照片权限描述需要与系统选择器口径统一。** 当前录入使用 `PhotosPicker` 系统选择器读取用户明确选择的图片，没有调用 `PHPhotoLibrary.requestAuthorization` 请求整个照片库权限；隐私政策第 52–65 行和 `NSPhotoLibraryUsageDescription` 仍按“从相册导入时申请照片权限”表述。它没有扩大数据访问，但属于事实口径差异。下一次法律正文修订时应由产品/法务决定改成“通过系统照片选择器读取你明确选择的图片”，并在归档上确认实际权限行为；本轮不改已锁定正文。
-- GitHub Pages 尚需在仓库设置中启用 `main` 分支 `/docs` 目录，并实测下列两个 URL 在未登录、无缓存环境返回 HTTP 200 且手机可完整阅读：
-  - 隐私政策：`https://amortalsodyssey.github.io/CareThread/privacy.html`
-  - 用户协议：`https://amortalsodyssey.github.io/CareThread/terms.html`
-- Pages 验证成功后，才可把 `CareThreadPDFBranding.officialWebsiteURL` 改为 `https://amortalsodyssey.github.io/CareThread/`，并把 PDF 二维码说明恢复为“扫码访问官网”。在站点实际上线前不得宣称二维码已经指向官网。
+- **官网协议副本与锁定 Markdown 存在事实差异。** `website/privacy/index.html` 与 `website/terms/index.html` 使用当前“默认可读存档、口令可选”产品口径及 `founder@8xd.io`，锁定 Markdown 仍使用“默认口令加密”及 `jianghaibo@multiego.me`。本轮同时禁止改写官网正文和锁定 Markdown，因此自动化只冻结三处当前版本、防止单边漂移；正式提交审核前必须由产品/法务选定唯一正文并一次同步三处。
+- Cloudflare Pages 项目 `carethread` 以 `website/` 为站点根、无构建命令和环境变量；正式域名为：
+  - 首页：`https://carethread.8xd.io/`
+  - 隐私政策：`https://carethread.8xd.io/privacy`
+  - 用户协议：`https://carethread.8xd.io/terms`
+- `CareThreadPDFBranding.officialWebsiteURL` 已指向上述首页，PDF 二维码说明已恢复为“扫码访问官网”；二维码载荷仍由离线 Core Image 生成，不会在导出时联网。
 - 用 Archive 的 Privacy Report 再核对一次 App 本体和 ZIPFoundation 的隐私清单；不得只凭源码文件判断最终归档。
+
+重新部署官网时，从仓库根目录执行：
+
+```bash
+opencli wrangler pages deploy website \
+  --project-name carethread \
+  --branch main \
+  --commit-hash <完整提交 SHA> \
+  --commit-message "Deploy CareThread static website"
+```
+
+随后必须重新验证三条 HTTPS 路径、同源 CSS/图片，并运行 `Scripts/acceptance.sh` 的协议版本锁定与官网零第三方资源检查。
 
 ## 2. App Store Connect 隐私政策 URL
 
 发布前验证通过后填写：
 
-`https://amortalsodyssey.github.io/CareThread/privacy.html`
+`https://carethread.8xd.io/privacy`
 
 支持 URL 可填写首页：
 
-`https://amortalsodyssey.github.io/CareThread/`
+`https://carethread.8xd.io/`
 
 ## 3. App 隐私问卷
 
@@ -72,5 +86,5 @@
 - `acceptedTermsVersion` 在首次同意后写入；法律版本变化只弹变更摘要，不重跑整个引导。
 - `PrivacyInfo.xcprivacy` 仍为 `NSPrivacyTracking=false`、追踪域名空、收集数据类型空。
 - 启动过程没有系统权限弹窗；相机、照片、通知、日历、生物识别和本地网络各自只由用户动作触发。
-- About 标准版和大字版入口、反馈邮箱 `jianghaibo@multiego.me`、版本号与 MIT/ZIPFoundation 许可均可见。
+- About 标准版和大字版入口、可选官网外链、反馈邮箱 `jianghaibo@multiego.me`、版本号与 MIT/ZIPFoundation 许可均可见；协议正文始终读取 App 本地资源，官网链接不作为正文来源。
 - 零第三方依赖新增；运行时网络能力仍只有既有局域网换机传输。

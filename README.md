@@ -103,6 +103,7 @@ Benchmarks/OCRBench/run.sh
 
 ## 文档导航
 
+- [CareThread 官网](https://carethread.8xd.io/)：产品说明、公开隐私政策与用户协议
 - [一期架构合同](docs/ARCHITECTURE_CONTRACT.md)：跨成员、安全、迁移、性能与原生平台边界
 - [新增范围与验收追踪](docs/SCOPE_ADDENDUM.md)：用户追加能力的逐项验收口径
 - [一期需求追踪表](docs/REQUIREMENTS_TRACEABILITY.md)：所有引导要求到实现、测试和证据的编号清单

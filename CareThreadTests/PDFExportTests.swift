@@ -34,24 +34,25 @@ struct M7PDFExportTests {
         #expect(text.contains(CareThreadPDFBranding.productName))
         #expect(text.containsIgnoringLayoutWhitespace("把家人的病程资料"))
         #expect(text.containsIgnoringLayoutWhitespace("安全地串成一条线"))
-        #expect(text.contains("扫码了解这个工具"))
+        #expect(text.contains("扫码访问官网"))
         #expect(
             decodedQRCode(from: result.fileURL)
                 == CareThreadPDFBranding.officialWebsiteURL.absoluteString
         )
     }
 
-    @Test("PDF 品牌二维码离线编码临时产品页地址")
+    @Test("PDF 品牌二维码离线编码已上线官网地址")
     func brandQRCodeEncodesCentralWebsiteHook() throws {
         #expect(
             CareThreadPDFBranding.officialWebsiteURL.scheme == "https"
         )
         #expect(
-            CareThreadPDFBranding.officialWebsiteURL.host == "github.com"
+            CareThreadPDFBranding.officialWebsiteURL.host
+                == "carethread.8xd.io"
         )
         #expect(
             CareThreadPDFBranding.officialWebsiteURL.path
-                == "/AMortalsOdyssey/CareThread"
+                == "/"
         )
         let image = try #require(
             CareThreadPDFBranding.makeQRCode(side: 240)

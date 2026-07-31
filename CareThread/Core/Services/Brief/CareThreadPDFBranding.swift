@@ -4,14 +4,13 @@ import UIKit
 
 /// One offline branding hook shared by every CareThread PDF export.
 ///
-/// The public project page is the temporary QR destination while the product
-/// website is being prepared. Replacing this single constant updates every
-/// exported PDF without touching either renderer.
+/// The public product site is the single QR destination shared by every
+/// exported PDF. Keeping the URL here prevents renderer-specific drift.
 enum CareThreadPDFBranding {
     static let productName = "CareThread"
     static let tagline = "把家人的病程资料，安全地串成一条线。"
     static let officialWebsiteURL = URL(
-        string: "https://github.com/AMortalsOdyssey/CareThread"
+        string: "https://carethread.8xd.io/"
     )!
 
     static let headerHeight: CGFloat = 30
@@ -118,7 +117,7 @@ enum CareThreadPDFBranding {
             )
         )
         drawText(
-            "扫码了解这个工具",
+            "扫码访问官网",
             font: .systemFont(
                 ofSize: isCompact ? 6.5 : 7.5,
                 weight: .regular

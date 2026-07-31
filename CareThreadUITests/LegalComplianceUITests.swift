@@ -85,6 +85,7 @@ final class LegalComplianceUITests: XCTestCase {
             "about.legal.termsOfService",
             "about.medicalDisclaimer",
             "about.version",
+            "about.website",
             "about.openSource",
             "about.feedback"
         ] {

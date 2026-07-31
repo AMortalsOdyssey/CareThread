@@ -127,7 +127,7 @@ struct VisitPreparationCardTests {
             .contains("把家人的病程资料"))
         #expect(text.replacingOccurrences(of: " ", with: "")
             .contains("安全地串成一条线"))
-        #expect(text.contains("扫码了解这个工具"))
+        #expect(text.contains("扫码访问官网"))
         #expect(
             decodedQRCode(from: result.fileURL)
                 == CareThreadPDFBranding.officialWebsiteURL.absoluteString

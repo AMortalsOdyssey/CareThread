@@ -54,6 +54,7 @@ main {
   background: var(--surface);
   border: 1px solid var(--line);
   border-radius: 20px;
+  overflow-wrap: anywhere;
 }
 
 h1, h2, h3 { line-height: 1.3; }

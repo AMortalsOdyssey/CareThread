@@ -1,6 +1,21 @@
 # CareThread 官网（静态站点）
 
+> 正式站点：<https://carethread.8xd.io/>
+
 纯静态站点，无构建步骤、无 JS 框架、无外部请求。可直接作为 Cloudflare Pages 的产物目录部署。
+
+## 部署与重新部署
+
+- Cloudflare Pages 项目：`carethread`
+- 生产分支标记：`main`
+- 产物目录：`website/`（无构建命令、无环境变量）
+- 自定义域：`carethread.8xd.io`
+
+重新部署已提交的站点版本：
+
+    opencli wrangler pages deploy website --project-name carethread --branch main --commit-hash <完整提交 SHA> --commit-message "Deploy CareThread static website"
+
+部署后必须分别检查 `/`、`/privacy`、`/terms` 的 HTTPS 状态、同源样式和图片资源。
 
 ## 结构与路径
 

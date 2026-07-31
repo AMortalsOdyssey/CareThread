@@ -57,6 +57,60 @@ require_command sips
 require_command git
 require_command shasum
 
+legal_source_integrity=1
+check_sha256() {
+  local path="$1"
+  local expected="$2"
+  local actual
+  actual="$(shasum -a 256 "$path" | awk '{print $1}')"
+  if [[ "$actual" != "$expected" ]]; then
+    printf 'Legal source drift: %s\n' "$path"
+    legal_source_integrity=0
+  fi
+}
+
+# The App resource entries point directly at docs/legal, so there is no hidden
+# fourth copy. The paired source/site hashes make any unilateral edit fail until
+# all legal surfaces are deliberately reviewed and the contract is updated.
+check_sha256 docs/legal/PRIVACY_POLICY.md \
+  18a1d8a957c5962037842b7680d532bd64717f4db6170377cbb3b88c45a75ab3
+check_sha256 docs/legal/TERMS_OF_SERVICE.md \
+  1c36779ed1374ed85fc3de43fa9c769d4ffcd2b1087de4f40d265ea398eb8065
+check_sha256 website/privacy/index.html \
+  58eb8a54555baf01570fb9f743fc8f43d9673b3fdebf2b23569bd441d065f6ee
+check_sha256 website/terms/index.html \
+  1ee43f93a9303bb20173d0599dd14e1586c9d02f68df1e3baede09e533fe4ee0
+if [[ "$legal_source_integrity" -eq 1 ]] &&
+  rg -q 'path: docs/legal/PRIVACY_POLICY\.md' project.yml &&
+  rg -q 'path: docs/legal/TERMS_OF_SERVICE\.md' project.yml &&
+  rg -q '最后更新：2026-07-31' docs/legal/PRIVACY_POLICY.md &&
+  rg -q '最后更新：2026-07-31' docs/legal/TERMS_OF_SERVICE.md &&
+  rg -q '最后更新：2026-07-31' website/privacy/index.html &&
+  rg -q '最后更新：2026-07-31' website/terms/index.html; then
+  pass "协议源、官网副本与 App 本地资源分别锁定"
+else
+  fail "协议源、官网副本与 App 本地资源分别锁定"
+fi
+
+# App resources are the Markdown source itself. The website must repeat the
+# same release-critical backup and contact commitments before this gate can be
+# green; pinning two different versions is deliberately not treated as sync.
+if rg -q '备份密码要求至少 12 位' website/privacy/index.html &&
+  rg -q '备份包使用你自己设置的密码加密' website/terms/index.html &&
+  rg -q 'jianghaibo@multiego\.me' website/privacy/index.html &&
+  rg -q 'jianghaibo@multiego\.me' website/terms/index.html; then
+  pass "协议 Markdown、官网与 App 关键事实同源"
+else
+  fail "协议 Markdown、官网与 App 关键事实同源（正文红线冲突，需产品/法务统一）"
+fi
+if rg -n -i \
+  '<script|<(img|source)[^>]+src=["'"']https?://|<link[^>]+(stylesheet|preconnect|font)[^>]+href=["'"']https?://|@import[[:space:]]+url\(["'"']?https?://' \
+  website --glob '*.{html,css}'; then
+  fail "官网不得加载第三方脚本、字体、分析或追踪资源"
+else
+  pass "官网零第三方运行时资源"
+fi
+
 milestone_failures=0
 for milestone in $(seq 0 9); do
   milestone_commits="$(
@@ -238,7 +292,7 @@ url_literal_matches="$(
 unsafe_url_literal_matches="$(
   printf '%s\n' "$url_literal_matches" |
     rg -v \
-      '^CareThread/Core/Services/Brief/CareThreadPDFBranding\.swift:[0-9]+:[[:space:]]*string: "https://github\.com/AMortalsOdyssey/CareThread"$' \
+      '^CareThread/Core/Services/Brief/CareThreadPDFBranding\.swift:[0-9]+:[[:space:]]*string: "https://carethread\.8xd\.io/"$' \
       || true
 )"
 if [[ -n "$unsafe_network_api_matches" ||

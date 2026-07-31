@@ -41,6 +41,18 @@ struct AboutCareThreadView: View {
                 LabeledContent("版本", value: AppVersionDisplay.current)
                     .font(usesLargeType ? CT.Font.elderBody : CT.Font.body)
                     .accessibilityIdentifier("about.version")
+                Link(destination: CareThreadPDFBranding.officialWebsiteURL) {
+                    Label("在网页上查看", systemImage: "safari")
+                        .font(usesLargeType ? CT.Font.elderBody : CT.Font.body)
+                        .foregroundStyle(CT.Color.primary)
+                        .frame(
+                            minHeight: usesLargeType
+                                ? CT.Size.elderTouchTarget
+                                : CT.Size.secondaryButtonHeight
+                        )
+                }
+                .accessibilityHint("会离开 CareThread 并打开系统浏览器")
+                .accessibilityIdentifier("about.website")
                 NavigationLink {
                     OpenSourceLicensesView(usesLargeType: usesLargeType)
                 } label: {
