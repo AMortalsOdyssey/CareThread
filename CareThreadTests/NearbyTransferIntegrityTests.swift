@@ -3,6 +3,9 @@ import Foundation
 import Testing
 @testable import CareThread
 
+// Xcode 26.6 起 Swift Testing 自带 Attachment 类型，与 App 模型撞名；本文件内统一指回 App 模型。
+private typealias Attachment = CareThread.Attachment
+
 struct NearbyTransferIntegrityTests {
     @Test("清单、domain graph 与所有暂存文件通过后才返回 VerifiedTransfer")
     func allIntegrityChecksProduceVerifiedTransfer() async throws {

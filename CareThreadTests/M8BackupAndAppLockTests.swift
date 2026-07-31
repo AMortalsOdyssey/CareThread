@@ -5,6 +5,9 @@ import Testing
 import ZIPFoundation
 @testable import CareThread
 
+// Xcode 26.6 起 Swift Testing 自带 Attachment 类型，与 App 模型撞名；本文件内统一指回 App 模型。
+private typealias Attachment = CareThread.Attachment
+
 @Suite(.serialized)
 struct M8BackupTests {
     @MainActor

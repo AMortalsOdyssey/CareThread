@@ -3,6 +3,9 @@ import SwiftData
 import Testing
 @testable import CareThread
 
+// Xcode 26.6 起 Swift Testing 自带 Attachment 类型，与 App 模型撞名；本文件内统一指回 App 模型。
+private typealias Attachment = CareThread.Attachment
+
 @MainActor
 struct RecordAggregateEditServiceTests {
     @Test("病历字段与疾病标签单事务保存且主病种不重复")
