@@ -3,6 +3,7 @@ import SwiftData
 
 enum RecordRepositoryError: Error, Equatable {
     case manualInsertOnly
+    case manualRecordContainsCaptureEvidence
     case patientMissing
     case invalidGraph
     case attachmentCleanupUnavailable
@@ -36,6 +37,18 @@ final class RecordRepository {
         guard record.sourceType == .manual else {
             AppLog.data.warning("Rejected non-manual record through manual repository")
             throw RecordRepositoryError.manualInsertOnly
+        }
+        guard record.attachments.isEmpty,
+              record.ocrText?.trimmingCharacters(
+                  in: .whitespacesAndNewlines
+              ).isEmpty != false,
+              record.ocrEngineIdentifier == nil,
+              record.machineExtraction == nil,
+              record.machineExtractionRevision == 0 else {
+            AppLog.data.warning(
+                "Rejected capture evidence through manual repository"
+            )
+            throw RecordRepositoryError.manualRecordContainsCaptureEvidence
         }
         guard try patientExists(id: record.patientId) else {
             throw RecordRepositoryError.patientMissing

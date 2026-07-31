@@ -215,9 +215,23 @@ struct CaptureFlowHost: View {
                ProcessInfo.processInfo.arguments.contains(
                    "-M3BlankOCRConfirmation"
                ) {
-                controller.loadBlankOCRConfirmationFixtureState()
                 processingTask = Task { @MainActor in
                     do {
+                        let batchID = try ensureImportBatch(source: .fixture)
+                        var page = try M3CaptureFileStore.storeData(
+                            try blankOCRFixtureData(),
+                            fileExtension: "png",
+                            batchID: batchID,
+                            sourceOrder: 0,
+                            displayName: "虚构空白病历页.png",
+                            captureSource: .fixture
+                        )
+                        page.ocrText = ""
+                        page.recognitionGeneration = controller.flowGeneration
+                        page.recognitionStatus = .noEvidence
+                        controller.loadBlankOCRConfirmationFixtureState(
+                            page: page
+                        )
                         try await materializeConfirmation()
                         controller.phase = .confirmation
                     } catch {
@@ -877,6 +891,26 @@ struct CaptureFlowHost: View {
         controller.activeBatchID = batch.id
         return batch.id
     }
+
+#if DEBUG
+    private func blankOCRFixtureData() throws -> Data {
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = 1
+        format.opaque = true
+        let size = CGSize(width: 640, height: 880)
+        let image = UIGraphicsImageRenderer(
+            size: size,
+            format: format
+        ).image { context in
+            UIColor.white.setFill()
+            context.fill(CGRect(origin: .zero, size: size))
+        }
+        guard let data = image.pngData() else {
+            throw CaptureBulkImportError.imageEncodingFailed
+        }
+        return data
+    }
+#endif
 
     private func fetchBatch(id: UUID) throws -> ImportBatch? {
         var descriptor = FetchDescriptor<ImportBatch>(

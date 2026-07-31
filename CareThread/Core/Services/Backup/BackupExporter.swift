@@ -599,7 +599,16 @@ final class BackupExporter {
                 withIntermediateDirectories: true,
                 attributes: [.protectionKey: FileProtectionType.complete]
             )
-            try fileManager.copyItem(at: source, to: destination)
+            // Vault originals are intentionally immutable. `copyItem` carries
+            // that BSD flag to the temporary backup copy, after which iOS
+            // refuses the protection/exclusion metadata update with Cocoa
+            // error 513. Stream only bytes into a fresh protected file so the
+            // source remains immutable and the export copy can be hardened.
+            try copyBytesWithoutMetadata(
+                from: source,
+                to: destination,
+                fileManager: fileManager
+            )
             try harden(destination, fileManager: fileManager)
             files.append(
                 BackupFileEntry(
@@ -662,6 +671,35 @@ final class BackupExporter {
         let data = try StableJSON.encode(value)
         try data.write(to: url, options: [.atomic, .completeFileProtection])
         try harden(url, fileManager: fileManager)
+    }
+
+    private nonisolated static func copyBytesWithoutMetadata(
+        from source: URL,
+        to destination: URL,
+        fileManager: FileManager
+    ) throws {
+        try Data().write(
+            to: destination,
+            options: [.atomic, .completeFileProtection]
+        )
+        let reader = try FileHandle(forReadingFrom: source)
+        let writer = try FileHandle(forWritingTo: destination)
+        defer {
+            try? reader.close()
+            try? writer.close()
+        }
+        do {
+            while let chunk = try reader.read(
+                upToCount: CaptureVaultService.streamingChunkBytes
+            ), !chunk.isEmpty {
+                try Task.checkCancellation()
+                try writer.write(contentsOf: chunk)
+            }
+            try writer.synchronize()
+        } catch {
+            try? fileManager.removeItem(at: destination)
+            throw error
+        }
     }
 
     private nonisolated static func prepareProtectedDirectory(

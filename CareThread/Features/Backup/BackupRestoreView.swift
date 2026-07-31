@@ -262,6 +262,10 @@ struct BackupRestoreView: View {
             } catch is CancellationError {
                 AppLog.userAction.info("Backup export cancelled")
             } catch {
+                let failure = error as NSError
+                AppLog.data.error(
+                    "Backup export UI failed; domain=\(failure.domain, privacy: .public) code=\(failure.code)"
+                )
                 errorMessage = (error as? LocalizedError)?.errorDescription
                     ?? "备份生成失败，请稍后重试。"
             }

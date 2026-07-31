@@ -409,15 +409,21 @@ struct ElderModeTests {
         let vault = try CaptureVaultService(
             rootURL: temporary.appendingPathComponent("Vault")
         )
-        let batchID = UUID()
-        let staged = try vault.stagePhotoData(
-            try fictionalBlankReportData(),
-            batchID: batchID,
-            displayName: "虚构重复报告.png",
+        let reportData = try fictionalBlankReportData()
+        let existingBatchID = UUID()
+        let existingStaged = try vault.stagePhotoData(
+            reportData,
+            batchID: existingBatchID,
+            displayName: "既有虚构重复报告.png",
             preferredExtension: "png",
             uniformTypeIdentifier: "public.png"
         )
         let existingRecordID = UUID()
+        let existingFinal = try vault.finalize(
+            asset: existingStaged,
+            patientID: patient.id,
+            recordID: existingRecordID
+        )
         let existingRecord = MedicalRecord(
             id: existingRecordID,
             patientId: patient.id,
@@ -425,15 +431,39 @@ struct ElderModeTests {
             eventDate: CTDate.make(2026, 7, 1),
             sourceType: .photo,
             attachments: [
-                try verifiedAttachment(
-                    patientID: patient.id,
-                    recordID: existingRecordID,
-                    sha256: staged.sha256
+                try Attachment.verified(
+                    id: existingStaged.id,
+                    patientId: patient.id,
+                    recordId: existingRecordID,
+                    originalRelativePath: existingFinal.finalRelativePath,
+                    derivedRelativePath: existingFinal.finalPreviewRelativePath,
+                    displayFileName: existingStaged.displayName,
+                    kind: existingStaged.kind,
+                    pageIndex: 0,
+                    uniformTypeIdentifier: existingStaged.uniformTypeIdentifier,
+                    byteCount: existingStaged.byteCount,
+                    sha256: existingStaged.sha256,
+                    importedAt: existingStaged.createdAt,
+                    importSource: .fixture,
+                    pixelWidth: existingStaged.pixelWidth,
+                    pixelHeight: existingStaged.pixelHeight,
+                    pageCount: existingStaged.pageCount
                 )
             ]
         )
         context.insert(existingRecord)
         try context.save()
+        try vault.markDatabaseCommitted([existingFinal])
+        try vault.completeBatchIfPossible(existingBatchID)
+
+        let batchID = UUID()
+        let staged = try vault.stagePhotoData(
+            reportData,
+            batchID: batchID,
+            displayName: "虚构重复报告.png",
+            preferredExtension: "png",
+            uniformTypeIdentifier: "public.png"
+        )
         let baselineRecordCount = try context.fetchCount(
             FetchDescriptor<MedicalRecord>()
         )
@@ -551,31 +581,6 @@ struct ElderModeTests {
             )
         }
         return try #require(image.pngData())
-    }
-
-    private func verifiedAttachment(
-        patientID: UUID,
-        recordID: UUID,
-        sha256: String
-    ) throws -> Attachment {
-        let attachmentID = UUID()
-        return try Attachment.verified(
-            id: attachmentID,
-            patientId: patientID,
-            recordId: recordID,
-            originalRelativePath:
-                "members/\(patientID.uuidString)/records/\(recordID.uuidString)"
-                + "/attachments/\(attachmentID.uuidString)/original.png",
-            displayFileName: "既有虚构报告.png",
-            kind: .image,
-            pageIndex: 0,
-            uniformTypeIdentifier: "public.png",
-            byteCount: 128,
-            sha256: sha256,
-            importSource: .fixture,
-            pixelWidth: 320,
-            pixelHeight: 240
-        )
     }
 
     private func replaceJournalAssets(

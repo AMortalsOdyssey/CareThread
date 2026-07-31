@@ -89,7 +89,7 @@ final class M8BackupAppLockUITests: XCTestCase {
         ).tap()
         // SwiftUI confirmationDialog is bridged to UIAlertController; iOS
         // preserves the action label but does not propagate its SwiftUI ID.
-        let confirm = app.buttons["启用应用锁"]
+        let confirm = app.buttons["m8.lock.confirm"].firstMatch
         XCTAssertTrue(confirm.waitForExistence(timeout: 5))
         confirm.tap()
         XCTAssertTrue(

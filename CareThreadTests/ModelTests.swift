@@ -124,8 +124,9 @@ struct ModelTests {
                 record: record
             )
         )
+        context.insert(record)
+        try context.save()
         let repository = RecordRepository(context: context, fileDeletion: vault)
-        try repository.insert(record)
         try repository.delete(record)
 
         #expect(try context.fetchCount(FetchDescriptor<MedicalRecord>()) == 0)

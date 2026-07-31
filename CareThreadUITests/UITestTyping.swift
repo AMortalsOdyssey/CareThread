@@ -84,6 +84,15 @@ extension XCUIElement {
                     before: Date().addingTimeInterval(0.05)
                 )
             }
+            // A partially visible SwiftUI field can report `isHittable` while
+            // its synthesized tap lands on the safe-area boundary. Move it
+            // away from that boundary before the next bounded focus attempt.
+            let application = XCUIApplication()
+            if frame.midY > application.frame.maxY - 80 {
+                application.swipeUp()
+            } else if frame.midY < application.frame.minY + 80 {
+                application.swipeDown()
+            }
         }
         XCTFail(
             "输入控件在 3 次点击后仍未获得键盘焦点：\(identifier)",

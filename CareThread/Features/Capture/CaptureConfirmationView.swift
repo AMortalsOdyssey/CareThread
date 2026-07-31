@@ -821,12 +821,23 @@ struct CaptureConfirmationView: View {
                 eventDate: document.eventDate
             )
             let recordID = UUID()
-            let finalized = try makeAttachments(
-                pages: document.pages,
-                patientID: assignedPatientID,
-                recordID: recordID,
-                fallbackSource: document.importSource
+            let finalized: (
+                attachments: [Attachment],
+                finalized: [FinalizedCaptureAsset]
             )
+            if document.sourceType == .manual {
+                guard document.pages.isEmpty else {
+                    throw CaptureCommitError.invalidCaptureDocument
+                }
+                finalized = ([], [])
+            } else {
+                finalized = try makeAttachments(
+                    pages: document.pages,
+                    patientID: assignedPatientID,
+                    recordID: recordID,
+                    fallbackSource: document.importSource
+                )
+            }
             finalizedAssets = finalized.finalized
             let record = MedicalRecord(
                 id: recordID,
@@ -842,8 +853,12 @@ struct CaptureConfirmationView: View {
                 diseaseTags: document.diseaseValues,
                 ageAtEvent: age,
                 sourceType: document.sourceType,
-                ocrText: document.pages.compactMap(\.ocrText).joined(separator: "\n"),
-                ocrEngineIdentifier: document.machine.engineIdentifier,
+                ocrText: document.sourceType == .manual
+                    ? nil
+                    : document.pages.compactMap(\.ocrText).joined(separator: "\n"),
+                ocrEngineIdentifier: document.sourceType == .manual
+                    ? nil
+                    : document.machine.engineIdentifier,
                 machineExtractionRevision: document.sourceType == .manual ? 0 : 1,
                 confirmedRevision: 1,
                 confirmedAt: Date(),
@@ -929,12 +944,22 @@ struct CaptureConfirmationView: View {
             overrideReason: overrideReason,
             approvedDuplicate: approvedDuplicate
         )
-        guard current.sourceType != .manual, !current.pages.isEmpty else {
+        if current.sourceType == .manual {
+            guard current.pages.isEmpty else {
+                saveErrorMessage = Copy.Capture.duplicateCheckFailed
+                showSaveError = true
+                return
+            }
             saveCurrent(
                 decision: decision,
                 assignedPatientID: assignedPatientID,
                 overrideReason: overrideReason
             )
+            return
+        }
+        guard !current.pages.isEmpty else {
+            saveErrorMessage = Copy.Capture.duplicateCheckFailed
+            showSaveError = true
             return
         }
         let documentID = current.id

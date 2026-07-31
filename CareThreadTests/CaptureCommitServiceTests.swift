@@ -232,6 +232,50 @@ struct CaptureCommitServiceTests {
         #expect(try context.fetchCount(FetchDescriptor<MedicalRecord>()) == 0)
     }
 
+    @Test("手工仓储拒绝夹带上传附件或 OCR 证据")
+    func recordRepository_rejectsCaptureEvidenceMarkedAsManual() throws {
+        let container = try TestSupport.container()
+        let context = container.mainContext
+        let patient = Patient(name: "成员")
+        context.insert(patient)
+        try context.save()
+
+        let attachmentRecord = MedicalRecord(
+            patientId: patient.id,
+            title: "伪装手工附件",
+            eventDate: Date(),
+            sourceType: .manual,
+            attachments: [
+                Attachment(
+                    patientId: patient.id,
+                    fileName: "fixture.jpg",
+                    kind: .image,
+                    pageIndex: 0
+                )
+            ]
+        )
+        #expect(
+            throws: RecordRepositoryError.manualRecordContainsCaptureEvidence
+        ) {
+            try RecordRepository(context: context).insert(attachmentRecord)
+        }
+
+        let ocrRecord = MedicalRecord(
+            patientId: patient.id,
+            title: "伪装手工 OCR",
+            eventDate: Date(),
+            sourceType: .manual,
+            ocrText: "来自上传图片的文字",
+            ocrEngineIdentifier: "fixture"
+        )
+        #expect(
+            throws: RecordRepositoryError.manualRecordContainsCaptureEvidence
+        ) {
+            try RecordRepository(context: context).insert(ocrRecord)
+        }
+        #expect(try context.fetchCount(FetchDescriptor<MedicalRecord>()) == 0)
+    }
+
     @Test("可靠姓名不匹配时普通确认被硬拦截且无审计")
     func mismatch_normalAcceptanceIsBlocked() throws {
         let container = try TestSupport.container()

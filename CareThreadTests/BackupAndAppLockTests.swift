@@ -877,6 +877,10 @@ private struct M8BackupFixture {
                 )
                 let bytes = Data("完全虚构的病历原件".utf8)
                 try bytes.write(to: file)
+                try FileManager.default.setAttributes(
+                    [.immutable: true],
+                    ofItemAtPath: file.path
+                )
                 let sha = Data(SHA256.hash(data: bytes)).hexString
                 attachments = [
                     try Attachment.verified(

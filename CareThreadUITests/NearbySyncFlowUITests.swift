@@ -18,7 +18,8 @@ final class NearbySyncFlowUITests: XCTestCase {
         )
         app.tabBars.buttons["录入"].tap()
         let transfer = app.buttons["m45.more.transfer"]
-        XCTAssertTrue(transfer.waitForExistence(timeout: 5))
+        XCTAssertTrue(reveal(transfer, in: app))
+        XCTAssertTrue(transfer.isHittable)
         transfer.tap()
         XCTAssertTrue(
             element("nearbySync.root", in: app).waitForExistence(timeout: 8)
@@ -35,7 +36,8 @@ final class NearbySyncFlowUITests: XCTestCase {
         )
         app.tabBars.buttons["录入"].tap()
         let transfer = app.buttons["m45.more.transfer"]
-        XCTAssertTrue(transfer.waitForExistence(timeout: 5))
+        XCTAssertTrue(reveal(transfer, in: app))
+        XCTAssertTrue(transfer.isHittable)
         transfer.tap()
         XCTAssertTrue(
             element("nearbySync.root", in: app).waitForExistence(timeout: 8)
@@ -52,5 +54,22 @@ final class NearbySyncFlowUITests: XCTestCase {
         in app: XCUIApplication
     ) -> XCUIElement {
         app.descendants(matching: .any)[identifier].firstMatch
+    }
+
+    private func reveal(
+        _ element: XCUIElement,
+        in app: XCUIApplication,
+        maximumSwipes: Int = 8
+    ) -> Bool {
+        if element.waitForExistence(timeout: 1), element.isHittable {
+            return true
+        }
+        for _ in 0..<maximumSwipes {
+            app.swipeUp()
+            if element.waitForExistence(timeout: 1), element.isHittable {
+                return true
+            }
+        }
+        return false
     }
 }

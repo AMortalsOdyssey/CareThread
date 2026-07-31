@@ -46,8 +46,17 @@ final class M3CaptureRecordsUITests: XCTestCase {
         confirmation.terminate()
 
         let records = launch(["-M3OpenRecords"], accessibilitySize: true)
-        let record = records.staticTexts["甲状腺功能五项"]
+        let record = records.descendants(matching: .any)
+            .matching(
+                NSPredicate(
+                    format: "identifier BEGINSWITH %@",
+                    "m3.records.row."
+                )
+            )
+            .firstMatch
+        scrollUntilHittable(record, in: records)
         XCTAssertTrue(record.waitForExistence(timeout: 10))
+        XCTAssertTrue(record.isHittable)
         record.tap()
         XCTAssertTrue(
             element("m3.detail", in: records)
@@ -160,6 +169,10 @@ final class M3CaptureRecordsUITests: XCTestCase {
         scrollUntilHittable(save, in: app)
         XCTAssertTrue(save.isEnabled)
         save.tap()
+        let duplicateOverride = app.buttons["确认不是重复，继续添加"]
+        if duplicateOverride.waitForExistence(timeout: 3) {
+            duplicateOverride.tap()
+        }
         XCTAssertTrue(
             element("m3.capture.completed", in: app)
                 .waitForExistence(timeout: 8)

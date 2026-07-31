@@ -551,20 +551,11 @@ final class M3CaptureFlowController: ObservableObject {
 #if DEBUG
     /// Deterministic zero-text OCR terminal state for B5 UI semantics. The
     /// host still materializes a real draft and saves through CaptureCommitService.
-    func loadBlankOCRConfirmationFixtureState() {
+    func loadBlankOCRConfirmationFixtureState(page: M3CapturePageAsset) {
         activeSource = .fixture
         documents = [
             M3CaptureDocument(
-                pages: [
-                    M3CapturePageAsset(
-                        displayName: "虚构空白病历页",
-                        sourceOrder: 0,
-                        ocrText: "",
-                        captureSource: .fixture,
-                        recognitionGeneration: flowGeneration,
-                        recognitionStatus: .noEvidence
-                    )
-                ]
+                pages: [page]
             )
         ]
         groupingConfirmed = true
