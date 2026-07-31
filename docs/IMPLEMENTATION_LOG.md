@@ -374,3 +374,4 @@
 - 走查哈希根因是早期“大字版”术语统一后未同步证据 JSON，不是正文损坏。已核对并更新 9 份实际文件哈希；验证器新增 B1–B7 `reviewRemediation` 结构与文件哈希覆盖，`validate-walkthrough.sh` 通过。
 - 在干净源码提交 `7b39ba3` 上用 iPhone 16 / iOS 26.5 重新构建并重拍 23 条生产路由 × Light/Dark：46 张、标准版 38、大字版 8、统一 1179×2556、SHA-256 唯一 46。首页、用药、复查和大字版今天页浅/深色已人工抽查，`validate-screenshot-manifest.sh` 通过。
 - 截图与阶段证据提交 `45136ea` 已推送。随后从该干净工作树完整复跑 `Scripts/acceptance.sh`：719/719 单元与集成测试、60/60 UI、23/23 边界及所有非法律发布门禁均 PASS；脚本以 1 项失败退出，唯一失败为锁定 Markdown/App 与官网正文的法律关键事实不同源。
+- 目标续跑审计在当前 `fc757df` 上再次完整执行 `Scripts/device-sim-acceptance.sh`，退出码 0，汇总 `PASS FAIL=0 RESIDUAL=4`；107/107 聚焦测试、4/4 通知到达、分享面板、可解包 ZIP、5 页 PDF 和两台模拟器换机入口继续通过。四项残余仍是完整照片库 TCC、3/4 通知未置前、通知冷启动未唤起和 48MP `PhotosPicker` 未返回添加/RSS，没有新增漂移。
