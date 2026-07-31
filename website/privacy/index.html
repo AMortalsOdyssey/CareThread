@@ -32,7 +32,7 @@
 
 <main class="doc">
   <h1>隐私政策</h1>
-  <p class="updated">最后更新：2026-07-31</p>
+  <p class="updated">最后更新：2026-08-01</p>
 
   <div class="summary-box">
     <p><strong>一句话总结：</strong>CareThread 不收集你的任何信息。你的资料只保存在你自己的 iPhone 上，我们看不到，也拿不到。</p>
@@ -75,14 +75,14 @@
     <li>明确禁用蜂窝数据。</li>
   </ul>
 
-  <h2 id="permissions">五、App 会申请哪些权限、什么时候申请</h2>
+  <h2 id="permissions">五、App 会使用哪些权限或系统能力、什么时候使用</h2>
   <p><strong>启动时不申请任何权限。</strong> 你可以在不授予任何权限的情况下浏览资料、查看时间线、阅读就诊摘要、导出 PDF。</p>
-  <p>以下权限只在你主动使用对应功能时才会申请，<strong>拒绝后其余功能照常可用</strong>：</p>
+  <p>以下权限或系统能力只在你主动使用对应功能时才会调用，<strong>拒绝或取消后其余功能照常可用</strong>：</p>
   <table>
     <thead><tr><th>权限</th><th>何时申请</th><th>用途</th></tr></thead>
     <tbody>
       <tr><td>相机</td><td>你选择"拍照"录入报告时</td><td>拍摄纸质单据</td></tr>
-      <tr><td>照片</td><td>你选择从相册导入时</td><td>读取你选中的图片</td></tr>
+      <tr><td>系统照片选择器</td><td>你选择从相册导入时</td><td>只读取你明确选择的项目，不请求整个照片库权限</td></tr>
       <tr><td>通知</td><td>你打开用药或复查提醒开关时</td><td>在本机发出提醒</td></tr>
       <tr><td>日历</td><td>你选择把复查安排写入系统日历时</td><td>创建你指定的日历事件</td></tr>
       <tr><td>面容 ID / 触控 ID</td><td>你打开应用锁时</td><td>仅用于本机解锁</td></tr>
@@ -96,8 +96,8 @@
   <p>你主动导出的内容（存档文件、就诊摘要 PDF、通过系统分享面板发送的文件）去向完全由你决定。一旦你把这些内容发送给他人或其他 App，其后的处理就受对方的规则约束，我们无法参与也无法追回。</p>
 
   <h2 id="export">七、导出文件的保护</h2>
-  <p>App 内的"导出存档"默认产出一个可以直接打开的文件，方便你自己在电脑上查看和长期保管。<strong>这个文件没有加密，谁拿到都能看到其中内容</strong>，所以请不要把它放进共享目录或发送到聊天工具。</p>
-  <p>如果你需要更强的保护，可以在导出时展开"给这个文件设个口令（可选）"，此时文件将使用 AES-256-GCM 加密，密钥由你设置的口令通过 PBKDF2-HMAC-SHA256（210,000 次迭代）派生。<strong>这个口令只有你知道，我们没有任何后门或找回途径；口令丢失则该文件无法解开。</strong></p>
+  <p><strong>导出存档默认不加密。</strong> App 会生成一个可以直接打开的 ZIP 文件，方便你在电脑上查看和长期保管；任何拿到该文件的人都能读取其中内容，请不要把它放进共享目录或发送到聊天工具。</p>
+  <p>如果你需要更强的保护，可以在导出时<strong>选择设置至少 12 位的口令</strong>。此时文件使用 AES-256-GCM 加密，密钥由口令通过 PBKDF2-HMAC-SHA256（210,000 次迭代）派生。<strong>口令丢失即无法解开该文件，我们没有任何后门或找回途径。</strong> 请妥善保管。</p>
 
   <h2 id="control">八、你的控制权</h2>
   <ul>
@@ -123,7 +123,7 @@
   <p>本政策发生实质变更时，我们会在 App 内提示你，并更新本页顶部的"最后更新"日期。你可以在 App 的「管理 → 关于 CareThread」中随时查看当前版本全文。</p>
 
   <h2 id="contact">十二、联系我们</h2>
-  <p>有任何隐私相关的疑问，可以邮件联系：<a href="mailto:founder@8xd.io" style="color:var(--primary)">founder@8xd.io</a></p>
+  <p>有任何隐私相关的疑问，可以邮件联系：<a href="mailto:jianghaibo@multiego.me" style="color:var(--primary)">jianghaibo@multiego.me</a></p>
 
   <p style="margin-top:var(--sp-8)" class="small">
     CareThread 的完整源代码以 MIT 许可公开，你可以自行核对本政策中的每一条技术描述是否与代码一致：
@@ -135,7 +135,7 @@
   <div class="wrap">
     <div class="footer-bottom">
       <span>© 2026 CareThread. All rights reserved.</span>
-      <span><a href="/">首页</a> · <a href="/terms">用户协议</a> · <a class="ico-link" href="mailto:founder@8xd.io"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true" style="vertical-align:-3px;margin-right:6px"><rect x="2.6" y="4.8" width="18.8" height="14.4" rx="2.6"/><path d="M3.4 6.6 12 12.9l8.6-6.3"/></svg>founder@8xd.io</a></span>
+      <span><a href="/">首页</a> · <a href="/terms">用户协议</a> · <a class="ico-link" href="mailto:jianghaibo@multiego.me"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true" style="vertical-align:-3px;margin-right:6px"><rect x="2.6" y="4.8" width="18.8" height="14.4" rx="2.6"/><path d="M3.4 6.6 12 12.9l8.6-6.3"/></svg>jianghaibo@multiego.me</a></span>
     </div>
   </div>
 </footer>

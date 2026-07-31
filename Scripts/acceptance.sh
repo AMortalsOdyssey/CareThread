@@ -73,35 +73,60 @@ check_sha256() {
 # fourth copy. The paired source/site hashes make any unilateral edit fail until
 # all legal surfaces are deliberately reviewed and the contract is updated.
 check_sha256 docs/legal/PRIVACY_POLICY.md \
-  18a1d8a957c5962037842b7680d532bd64717f4db6170377cbb3b88c45a75ab3
+  9435f48571bde3c56312434652a7a80f7c3648aeaa510f62529d4058bfba89da
 check_sha256 docs/legal/TERMS_OF_SERVICE.md \
-  1c36779ed1374ed85fc3de43fa9c769d4ffcd2b1087de4f40d265ea398eb8065
+  a045562ee39ab7df36f43218c24cc303f7d6137bb8672735c13f8827cb4d2e0e
 check_sha256 website/privacy/index.html \
-  58eb8a54555baf01570fb9f743fc8f43d9673b3fdebf2b23569bd441d065f6ee
+  868a18046526e3444a4b9453dad60f05c53db87040721823ad4e7fff3b027e83
 check_sha256 website/terms/index.html \
-  1ee43f93a9303bb20173d0599dd14e1586c9d02f68df1e3baede09e533fe4ee0
+  dbed8444b606c33884881036c50f36a1e2f3511822435447b1f62f6c6da4629f
 if [[ "$legal_source_integrity" -eq 1 ]] &&
   rg -q 'path: docs/legal/PRIVACY_POLICY\.md' project.yml &&
   rg -q 'path: docs/legal/TERMS_OF_SERVICE\.md' project.yml &&
-  rg -q '最后更新：2026-07-31' docs/legal/PRIVACY_POLICY.md &&
-  rg -q '最后更新：2026-07-31' docs/legal/TERMS_OF_SERVICE.md &&
-  rg -q '最后更新：2026-07-31' website/privacy/index.html &&
-  rg -q '最后更新：2026-07-31' website/terms/index.html; then
+  rg -q '最后更新：2026-08-01' docs/legal/PRIVACY_POLICY.md &&
+  rg -q '最后更新：2026-08-01' docs/legal/TERMS_OF_SERVICE.md &&
+  rg -q '最后更新：2026-08-01' website/privacy/index.html &&
+  rg -q '最后更新：2026-08-01' website/terms/index.html &&
+  rg -q 'currentTermsVersion = "2026-08-01"' \
+    CareThread/Core/Legal/LegalDocuments.swift; then
   pass "协议源、官网副本与 App 本地资源分别锁定"
 else
   fail "协议源、官网副本与 App 本地资源分别锁定"
 fi
 
-# App resources are the Markdown source itself. The website must repeat the
-# same release-critical backup and contact commitments before this gate can be
-# green; pinning two different versions is deliberately not treated as sync.
-if rg -q '备份密码要求至少 12 位' website/privacy/index.html &&
-  rg -q '备份包使用你自己设置的密码加密' website/terms/index.html &&
-  rg -q 'jianghaibo@multiego\.me' website/privacy/index.html &&
-  rg -q 'jianghaibo@multiego\.me' website/terms/index.html; then
+all_files_contain() {
+  local pattern="$1"
+  shift
+  local path
+  for path in "$@"; do
+    rg -q -- "$pattern" "$path" || return 1
+  done
+}
+
+# App resources are the Markdown source itself. The website repeats the same
+# release-critical backup, recovery and contact commitments, while the two
+# privacy surfaces also lock the production PhotosPicker access boundary.
+legal_surfaces=(
+  docs/legal/PRIVACY_POLICY.md
+  docs/legal/TERMS_OF_SERVICE.md
+  website/privacy/index.html
+  website/terms/index.html
+)
+privacy_surfaces=(
+  docs/legal/PRIVACY_POLICY.md
+  website/privacy/index.html
+)
+if all_files_contain '导出存档默认不加密' "${legal_surfaces[@]}" &&
+  all_files_contain '至少 12 位的口令' "${legal_surfaces[@]}" &&
+  all_files_contain '口令丢失即无法解开该文件' "${legal_surfaces[@]}" &&
+  all_files_contain 'jianghaibo@multiego\.me' "${legal_surfaces[@]}" &&
+  all_files_contain '只读取你明确选择的项目，不请求整个照片库权限' \
+    "${privacy_surfaces[@]}" &&
+  all_files_contain '通过系统照片选择器读取你明确选中的报告截图' \
+    project.yml CareThread/Resources/Info.plist; then
   pass "协议 Markdown、官网与 App 关键事实同源"
 else
-  fail "协议 Markdown、官网与 App 关键事实同源（正文红线冲突，需产品/法务统一）"
+  fail "协议 Markdown、官网与 App 关键事实同源"
 fi
 if rg -n -i --glob '*.{html,css}' \
   -e '<script' \

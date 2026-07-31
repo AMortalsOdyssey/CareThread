@@ -48,4 +48,4 @@ App 内展示的协议全文是打包进 App 的本地副本（不联网读取�
 
 ## 联系方式
 
-founder@8xd.io
+jianghaibo@multiego.me

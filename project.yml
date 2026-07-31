@@ -61,7 +61,7 @@ targets:
         NSCalendarsFullAccessUsageDescription: "只有在你主动选择“加入系统日历”时，CareThread 才会把复查安排写入日历。"
         NSFaceIDUsageDescription: "用面容 ID 保护你的健康资料。"
         NSLocalNetworkUsageDescription: "在你主动发起换机时，通过本地网络把所选家人的资料加密传到另一台 iPhone。"
-        NSPhotoLibraryUsageDescription: "从相册导入报告截图需要访问照片。所选照片只会保存在这台手机上。"
+        NSPhotoLibraryUsageDescription: "通过系统照片选择器读取你明确选中的报告截图。所选照片只会保存在这台手机上。"
         UILaunchScreen: {}
         UIApplicationSceneManifest:
           UIApplicationSupportsMultipleScenes: false

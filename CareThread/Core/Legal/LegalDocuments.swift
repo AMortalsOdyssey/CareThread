@@ -73,9 +73,9 @@ struct LegalDocumentLoader {
 
 enum LegalAgreement {
     static let acceptedTermsVersionKey = "carethread.acceptedTermsVersion"
-    static let currentTermsVersion = "2026-07-31"
+    static let currentTermsVersion = "2026-08-01"
     static let currentChangeSummary =
-        "隐私政策和用户协议现已内置到 App。资料仍只保存在本机，CareThread 仍不提供医学判断；请继续自行保管与备份资料。"
+        "本次统一了导出存档与照片选择器说明：存档默认不加密，可选至少 12 位口令；相册仅读取你明确选择的项目。资料仍只保存在本机，CareThread 不提供医学判断。"
 
     static func requiresUpdateNotice(
         onboardingCompleted: Bool,

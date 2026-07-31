@@ -37,7 +37,7 @@
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>在你主动发起换机时，通过本地网络把所选家人的资料加密传到另一台 iPhone。</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>从相册导入报告截图需要访问照片。所选照片只会保存在这台手机上。</string>
+	<string>通过系统照片选择器读取你明确选中的报告截图。所选照片只会保存在这台手机上。</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

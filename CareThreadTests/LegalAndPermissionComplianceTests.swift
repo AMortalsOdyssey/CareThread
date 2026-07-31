@@ -5,7 +5,10 @@ import Testing
 struct LegalAndPermissionComplianceTests {
     @Test("引导同意版本与协议更新提示策略稳定")
     func agreementVersionPolicy() {
-        #expect(!LegalAgreement.currentTermsVersion.isEmpty)
+        #expect(LegalAgreement.currentTermsVersion == "2026-08-01")
+        #expect(LegalAgreement.currentChangeSummary.contains("默认不加密"))
+        #expect(LegalAgreement.currentChangeSummary.contains("至少 12 位口令"))
+        #expect(LegalAgreement.currentChangeSummary.contains("明确选择的项目"))
         #expect(
             !LegalAgreement.requiresUpdateNotice(
                 onboardingCompleted: false,
@@ -99,6 +102,54 @@ struct LegalAndPermissionComplianceTests {
             )
             #expect(content.contains(kind.title))
             #expect(content.count > 1_000)
+        }
+    }
+
+    @Test("法律源、官网与权限说明锁定同一产品事实")
+    func legalSurfacesShareCanonicalProductFacts() throws {
+        let sourcePaths = [
+            "docs/legal/PRIVACY_POLICY.md",
+            "docs/legal/TERMS_OF_SERVICE.md",
+            "website/privacy/index.html",
+            "website/terms/index.html"
+        ]
+        for relativePath in sourcePaths {
+            let content = try String(
+                contentsOf: repositoryRoot.appendingPathComponent(relativePath),
+                encoding: .utf8
+            )
+            #expect(content.contains("最后更新：2026-08-01"))
+            #expect(content.contains("导出存档默认不加密"))
+            #expect(content.contains("至少 12 位的口令"))
+            #expect(content.contains("口令丢失即无法解开该文件"))
+            #expect(content.contains("jianghaibo@multiego.me"))
+        }
+
+        for relativePath in [
+            "docs/legal/PRIVACY_POLICY.md",
+            "website/privacy/index.html"
+        ] {
+            let content = try String(
+                contentsOf: repositoryRoot.appendingPathComponent(relativePath),
+                encoding: .utf8
+            )
+            #expect(
+                content.contains(
+                    "只读取你明确选择的项目，不请求整个照片库权限"
+                )
+            )
+        }
+
+        for relativePath in ["project.yml", "CareThread/Resources/Info.plist"] {
+            let content = try String(
+                contentsOf: repositoryRoot.appendingPathComponent(relativePath),
+                encoding: .utf8
+            )
+            #expect(
+                content.contains(
+                    "通过系统照片选择器读取你明确选中的报告截图"
+                )
+            )
         }
     }
 
