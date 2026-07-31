@@ -95,6 +95,7 @@
 - 领域化命名：8 个生产、11 个单测、4 个 UI 测试文件共 23 个 `M3/M4/M7/M8` 里程碑前缀改为 Capture、CarePlan、Brief、Backup 等领域名；只改文件名、不扩大到跨仓类型重构。
 - OCR 真实集 v2：新增 Git 默认忽略的 `testset/real/`、隐私临时目录一键脚本与独立评分器。换引擎必须同时达到相对 CER 改善 ≥50% 和字段命中率提升 ≥5pp；续页字段分母只统计实际标注项，仓库结果只允许 SHA-256 与分数。当前无真实照片，不伪造得分，唯一发布结论仍为 Apple Vision。
 - 本批验证：Vault/模型聚焦 Swift Testing 42/42 全绿；OCR v2 纯虚构评分器 6/6 全绿；真实集缺失时一键命令按设计以退出码 2 和中文准备指引停止；真实集图片、文本与清单 `git check-ignore` 均命中。
+- 验收脚本自检：证据提交 `d95184b` 后首次从干净工作树运行 `acceptance.sh`，`verify.sh` 与 701/701 测试全绿；随后暴露两处脚本自身缺陷：忽略的 `.build/DerivedData` 被误判为 vendored 二进制、中文全角括号紧邻未加花括号的变量导致 Bash 未绑定变量。提交 `57b28a6` 已排除 `.build` 缓存并明确变量边界，本地 772MB 构建缓存移至 `/tmp`，等待最终原命令复跑。
 - 整改收口：P0 六项与 P1 九项均已落地；源码独立审查未发现阻断提交问题。截图、B1–B7 走查、全量回归与总验收的最终证据如下。
 
 ## 最终模拟器证据
@@ -103,7 +104,7 @@
 - `Scripts/acceptance.sh`：本证据批次提交后从干净工作树原样执行；它会重新运行 `verify.sh`，并核对 M0–M9、23 项边界、依赖/联网/隐私、截图与走查证据。
 - 性能/崩溃代理：300×2 条记录与 100 次成员切换本轮约 3.13 秒；100/50/22 页连续 100 轮；48MP 工作图 3000px 且原件哈希不变；250MiB 稀疏 PDF 流式暂存；16MiB Nearby 分块；8MiB 备份 AEAD；300 条记录导出 51 页；100 轮 staging 取消零残留。
 - 以上是模拟器/有界内存代理，不冒充真机峰值 RSS、Jetsam、文件保护锁屏或无线链路测量。
-- `docs/SCREENSHOT_MANIFEST.json`：46/46 PNG，标准版 38、老人版 8，Light/Dark 各 23，1179×2556，46 个不同 SHA-256，绑定源码提交 `5b535e4`，`sourceTreeDirty=false`。
+- `docs/SCREENSHOT_MANIFEST.json`：46/46 PNG，标准版 38、老人版 8，Light/Dark 各 23，1179×2556，46 个不同 SHA-256，绑定源码提交 `57b28a6`，`sourceTreeDirty=false`。
 - `docs/MANUAL_WALKTHROUGH_EVIDENCE.json`：B1–B7 保留修复前 FAIL → 修复后 FIXED；设计 §14 八项及 B9/B16/B17/B18/B23 共 13 项全部通过，证据文件逐项 SHA-256 固化。
 - 视觉走查：46 屏接触表逐屏复核，没有空白、错误路由、字体回退、老人版裁剪或主操作丢失；另在 Reduce Motion 开启状态核对时间线。
 - Computer Use：本轮调用因 Mac 锁屏被系统拒绝，未伪造交互结果；按用户授权改用真实 simctl 截图、XCUITest、xcresult 与视觉检查闭环，解锁后的完整手动点击列入真机/桌面复核清单。
@@ -112,7 +113,7 @@
 ## GitHub 公开发布
 
 - 仓库：[AMortalsOdyssey/CareThread](https://github.com/AMortalsOdyssey/CareThread)，可见性已复核为 `PUBLIC`，默认分支 `main`。
-- AMO GitHub CLI 授权已恢复，M0–M9、OCR、调研、MIT 策略与整改修复均按阶段提交并推送；最终截图和走查证据绑定源码提交 `5b535e4`。
+- AMO GitHub CLI 授权已恢复，M0–M9、OCR、调研、MIT 策略与整改修复均按阶段提交并推送；最终截图和走查证据绑定源码提交 `57b28a6`。
 - M0–M9 轨迹：`75ea563`、`c232394`、`7db611a`、`40450bd`、`70c534a`、`b95e493`、`61bddaf`、`cba6a36`、`5709ce2`、`f6c3361`。
 - 当前 Public 仓库按用户决定采用 MIT License；MIT 允许商业复用和再分发，不能作为防套壳手段。
 - 已完成唯一发展路线：MIT 本地核心先免费开源建立信任，达到 12 个月门槛后官方 App Store 版本一次性买断，达到 24/36 个月指标后再准备并执行产品资产出售。品牌、商标、官方发行、权利链和质量证据形成交易价值；用户健康数据与个人开发者账号不进入出售包。

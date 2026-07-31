@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "sourceCommit": "5b535e4a8c93fc7e8b980f4f1fa62c393dd7d9e8",
-  "reviewedAtUTC": "2026-07-31T09:26:37Z",
+  "sourceCommit": "57b28a64e60824856368dc1cd4fe736b4966f6aa",
+  "reviewedAtUTC": "2026-07-31T10:13:58Z",
   "reviewer": "Codex contact-sheet visual review + XCTest/XCUITest/simctl",
   "simulator": {
     "deviceName": "iPhone 16",
@@ -16,7 +16,7 @@
       "evidence": [
         {
           "path": "docs/walkthrough/B1-B7-remediation.md",
-          "sha256": "a9755b9ab25fc5831b9f523ba3a85de6e5a9aec88412741b2ac31be8da134de1"
+          "sha256": "419eff7fec6da619295a0fbc89201a8da50d51a350d9a2b1c7a986dcf5970f01"
         }
       ]
     },
@@ -28,7 +28,7 @@
       "evidence": [
         {
           "path": "docs/walkthrough/B1-B7-remediation.md",
-          "sha256": "a9755b9ab25fc5831b9f523ba3a85de6e5a9aec88412741b2ac31be8da134de1"
+          "sha256": "419eff7fec6da619295a0fbc89201a8da50d51a350d9a2b1c7a986dcf5970f01"
         }
       ]
     },
@@ -40,7 +40,7 @@
       "evidence": [
         {
           "path": "docs/walkthrough/B1-B7-remediation.md",
-          "sha256": "a9755b9ab25fc5831b9f523ba3a85de6e5a9aec88412741b2ac31be8da134de1"
+          "sha256": "419eff7fec6da619295a0fbc89201a8da50d51a350d9a2b1c7a986dcf5970f01"
         }
       ]
     },
@@ -52,7 +52,7 @@
       "evidence": [
         {
           "path": "docs/walkthrough/B1-B7-remediation.md",
-          "sha256": "a9755b9ab25fc5831b9f523ba3a85de6e5a9aec88412741b2ac31be8da134de1"
+          "sha256": "419eff7fec6da619295a0fbc89201a8da50d51a350d9a2b1c7a986dcf5970f01"
         }
       ]
     },
@@ -64,7 +64,7 @@
       "evidence": [
         {
           "path": "docs/walkthrough/B1-B7-remediation.md",
-          "sha256": "a9755b9ab25fc5831b9f523ba3a85de6e5a9aec88412741b2ac31be8da134de1"
+          "sha256": "419eff7fec6da619295a0fbc89201a8da50d51a350d9a2b1c7a986dcf5970f01"
         }
       ]
     },
@@ -76,7 +76,7 @@
       "evidence": [
         {
           "path": "docs/walkthrough/B1-B7-remediation.md",
-          "sha256": "a9755b9ab25fc5831b9f523ba3a85de6e5a9aec88412741b2ac31be8da134de1"
+          "sha256": "419eff7fec6da619295a0fbc89201a8da50d51a350d9a2b1c7a986dcf5970f01"
         }
       ]
     },
@@ -88,7 +88,7 @@
       "evidence": [
         {
           "path": "docs/walkthrough/B1-B7-remediation.md",
-          "sha256": "a9755b9ab25fc5831b9f523ba3a85de6e5a9aec88412741b2ac31be8da134de1"
+          "sha256": "419eff7fec6da619295a0fbc89201a8da50d51a350d9a2b1c7a986dcf5970f01"
         }
       ]
     }
@@ -101,7 +101,7 @@
       "evidence": [
         {
           "path": "docs/walkthrough/DESIGN-01-colors.md",
-          "sha256": "3f3fa1586bd5f769cc3170459ae1d8cc8d56326298fda609b013609f35d78f30"
+          "sha256": "f41a454d0cfbe9b3bbadff272b8ae5d168b9f3d58a5e0b9b053a9ae94b67faed"
         }
       ]
     },
@@ -123,7 +123,7 @@
       "evidence": [
         {
           "path": "docs/walkthrough/DESIGN-03-appearances.md",
-          "sha256": "eb57c3c2de6c3d2382b0e7ac5d291642271c36bd3d3ead486cd82b62c45fcc8f"
+          "sha256": "db96cc4e31b8694acef1344fa67d2c243eed738d44cf218740d249bc83119efa"
         }
       ]
     },
