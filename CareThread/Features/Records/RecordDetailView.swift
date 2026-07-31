@@ -147,12 +147,6 @@ struct RecordDetailView: View {
             Text(DateFormatter.m3DetailDate.string(from: record.eventDate))
                 .font(CT.Font.subhead)
                 .foregroundStyle(CT.Color.inkSecondary)
-            Text(
-                "\(record.eventDatePrecision.recordEditDisplayName) · "
-                    + record.eventTimezoneIdentifier
-            )
-            .font(CT.Font.caption)
-            .foregroundStyle(CT.Color.inkSecondary)
             Text(record.type.displayName)
                 .font(CT.Font.caption)
                 .foregroundStyle(record.type.semanticColor)

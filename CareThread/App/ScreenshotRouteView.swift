@@ -228,7 +228,10 @@ struct ScreenshotRouteView: View {
     private func prepareSeedIfNeeded() {
         guard route != .onboarding, !seeded else { return }
         do {
-            try SeedService.seedDemo(into: modelContext)
+            try SeedService.seedDemo(
+                into: modelContext,
+                vault: try CaptureVaultService()
+            )
             let patientID = SeedService.patientID
             let descriptor = FetchDescriptor<MedicalRecord>(
                 predicate: #Predicate {

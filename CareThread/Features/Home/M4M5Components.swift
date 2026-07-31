@@ -127,6 +127,7 @@ struct M4M5IconRow: View {
     let title: String
     let subtitle: String?
     let systemImage: String
+    var showsChevron = true
 
     var body: some View {
         HStack(spacing: CT.Space.s3) {
@@ -148,9 +149,11 @@ struct M4M5IconRow: View {
                 }
             }
             Spacer(minLength: CT.Space.s2)
-            Image(systemName: "chevron.right")
-                .font(.footnote.weight(.semibold))
-                .foregroundStyle(CT.Color.inkTertiary)
+            if showsChevron {
+                Image(systemName: "chevron.right")
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(CT.Color.inkTertiary)
+            }
         }
         .frame(minHeight: CT.Size.listRowHeight)
         .contentShape(Rectangle())

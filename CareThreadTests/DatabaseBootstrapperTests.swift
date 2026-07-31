@@ -58,6 +58,24 @@ struct DatabaseBootstrapperTests {
         #expect(!info.userMessage.contains("private"))
     }
 
+    @Test("UI 测试只请求内存容器且失败时禁止回落持久库")
+    func uiTestBootstrap_neverFallsBackToPersistentStore() {
+        var requestedModes: [DatabaseStoreMode] = []
+        let state = DatabaseBootstrapper.bootstrapIsolatedUITest { mode in
+            requestedModes.append(mode)
+            throw InjectedDatabaseError.open("ui-memory", "failed")
+        }
+
+        guard case let .recovery(info, container) = state else {
+            Issue.record("内存容器失败后必须进入隔离恢复态")
+            return
+        }
+        #expect(requestedModes == [.recoveryMemory])
+        #expect(container == nil)
+        #expect(info.referenceCode == "UITEST-DB-0001")
+        #expect(info.userMessage.contains("未读取或写入正式资料库"))
+    }
+
     @Test("持久库使用明确受保护目录并重设 SQLite sidecars")
     func persistentBuilder_hardensExplicitStoreAndSidecars() throws {
         let root = try TestSupport.temporaryDirectory()

@@ -76,8 +76,7 @@ final class M3CaptureRecordsUITests: XCTestCase {
 
         let title = app.textFields["m3.confirm.title"]
         XCTAssertTrue(title.waitForExistence(timeout: 5))
-        title.tap()
-        title.typeText("虚构手动随访记录")
+        title.focusAndType("虚构手动随访记录")
         dismissKeyboard(in: app, preferredIdentifier: "m3.confirm.keyboardDone")
 
         let save = app.buttons["m3.confirm.save"]
@@ -94,8 +93,7 @@ final class M3CaptureRecordsUITests: XCTestCase {
         let age = app.textFields["m3.confirm.manualAge"]
         scrollUntilHittable(age, in: app)
         XCTAssertTrue(age.isHittable)
-        age.tap()
-        age.typeText("130")
+        age.focusAndType("130")
         dismissKeyboard(in: app, preferredIdentifier: "m3.confirm.keyboardDone")
 
         let save = app.buttons["m3.confirm.save"]
@@ -121,8 +119,7 @@ final class M3CaptureRecordsUITests: XCTestCase {
 
         let title = app.textFields["m3.confirm.title"]
         scrollUntilHittable(title, in: app)
-        title.tap()
-        title.typeText("虚构未来日期记录")
+        title.focusAndType("虚构未来日期记录")
         dismissKeyboard(in: app, preferredIdentifier: "m3.confirm.keyboardDone")
         let save = app.buttons["m3.confirm.save"]
         scrollUntilHittable(save, in: app)
@@ -156,8 +153,7 @@ final class M3CaptureRecordsUITests: XCTestCase {
         let title = app.textFields["m3.confirm.title"]
         scrollUntilHittable(title, in: app)
         XCTAssertTrue(title.isHittable)
-        title.tap()
-        title.typeText("虚构空白图片人工补录")
+        title.focusAndType("虚构空白图片人工补录")
         dismissKeyboard(in: app, preferredIdentifier: "m3.confirm.keyboardDone")
 
         let save = app.buttons["m3.confirm.save"]
@@ -309,24 +305,4 @@ private extension XCUIElement {
         if exists { tap() }
     }
 
-    func clearAndType(_ text: String) {
-        tap()
-        let previousValue = value as? String ?? ""
-        press(forDuration: 0.8)
-        let selectAll = XCUIApplication().menuItems["Select All"]
-        var selectedAll = false
-        if selectAll.waitForExistence(timeout: 1) {
-            selectAll.tap()
-            selectedAll = true
-        }
-        if !selectedAll, !previousValue.isEmpty {
-            typeText(
-                String(
-                    repeating: XCUIKeyboardKey.delete.rawValue,
-                    count: previousValue.count
-                )
-            )
-        }
-        typeText(text)
-    }
 }

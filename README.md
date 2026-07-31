@@ -21,6 +21,7 @@ CareThread 是一款纯原生 iOS 本地病程资料整理工具。它把病历�
 | 手动编辑与修订 | 所有业务内容可更正、查看修订并撤销；原件/OCR 证据不被覆盖 | 完成 |
 | 就诊准备 | 一页准备卡、问题清单/笔记、重要置顶、补药与复查提醒 | 完成 |
 | 双模式 | 标准版五槽导航与老人版三槽导航，关键能力完整可达 | 完成 |
+| 外观主题 | 跟随系统、浅色、深色三档，标准版与老人版共享并持久化 | 完成 |
 
 ## 核心边界
 
@@ -52,13 +53,16 @@ Scripts/                 # 工程生成、验证与验收脚本
 docs/                    # 架构、进度、验收和调研证据
 ```
 
+## 环境要求
+
+- Xcode 26.6；工程最低部署目标仍为 iOS 17.0。
+- Xcode 必须安装 iOS 26.5 平台组件。缺失时可执行 `xcodebuild -downloadPlatform iOS`，完成后再确认 `xcrun simctl list runtimes` 能看到可用 iOS 运行时。
+- UI 测试前关闭模拟器硬件键盘：`defaults write com.apple.iphonesimulator ConnectHardwareKeyboard -bool false`，避免 `typeText` 偶发丢失焦点。
+- 安装 [XcodeGen](https://github.com/yonaskolb/XcodeGen) 与 `jq`。
+
+`Scripts/verify.sh` 不再写死 iOS 18.6：它优先选择最新可用的 iPhone 16，缺少该机型时退回其他可用 iPhone，并在人机可读的诊断中列出 Xcode、运行时、设备和恢复建议。
+
 ## 本地构建与验证
-
-要求：
-
-- macOS + Xcode 16.4 或兼容版本
-- iOS 17.0+ SDK
-- [XcodeGen](https://github.com/yonaskolb/XcodeGen)
 
 ```bash
 xcodegen generate

@@ -58,8 +58,7 @@ extension Copy {
             case .medicationAdjusted: medicationAdjusted
             case .medicationStopped: medicationStopped
             case .medicalOrder: medicalOrderCreated
-            case .followUpDue: followUpDue
-            case .followUpCompleted: followUpCompleted
+            case .followUpDue, .followUpCompleted: filterFollowUps
             }
         }
     }

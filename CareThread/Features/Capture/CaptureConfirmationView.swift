@@ -953,9 +953,11 @@ struct M3ConfirmFieldRow<Content: View>: View {
                             .textSelection(.enabled)
                     }
                 }
-                Text(Copy.Capture.yourValue)
-                    .font(CT.Font.caption)
-                    .foregroundStyle(CT.Color.inkTertiary)
+                if !machineValue.isEmpty {
+                    Text(Copy.Capture.yourValue)
+                        .font(CT.Font.caption)
+                        .foregroundStyle(CT.Color.inkTertiary)
+                }
                 content
             }
         }

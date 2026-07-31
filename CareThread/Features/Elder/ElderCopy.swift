@@ -30,6 +30,7 @@ extension Copy.Elder {
     static let exportPrint = "导出 / 打印"
     static let reminders = "提醒"
     static let fontSize = "字体大小"
+    static let appearance = "外观主题"
     static let switchStandard = "切换回标准版"
     static let about = "关于与免责"
     static let disclaimerTitle = "重要说明"

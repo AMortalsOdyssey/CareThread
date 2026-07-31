@@ -7,7 +7,7 @@ struct SeedServiceTests {
     @Test("演示种子生成唯一虚构患者")
     func test_seedDemo_whenEmpty_insertsOnePatient() throws {
         let container = try TestSupport.container()
-        try SeedService.seedDemo(into: container.mainContext)
+        try seedDemo(into: container.mainContext)
         let patients = try container.mainContext.fetch(FetchDescriptor<Patient>())
         #expect(patients.count == 1)
         #expect(patients.first?.name == "王晓芸")
@@ -17,14 +17,20 @@ struct SeedServiceTests {
     @Test("演示种子生成六份故事线记录")
     func test_seedDemo_whenEmpty_insertsSixRecords() throws {
         let container = try TestSupport.container()
-        try SeedService.seedDemo(into: container.mainContext)
-        #expect(try container.mainContext.fetchCount(FetchDescriptor<MedicalRecord>()) == 6)
+        try seedDemo(into: container.mainContext)
+        let records = try container.mainContext.fetch(FetchDescriptor<MedicalRecord>())
+        #expect(records.count == 6)
+        #expect(records.allSatisfy { $0.attachments.count == 1 })
+        let lab = try #require(records.first { $0.title == "甲状腺功能五项" })
+        #expect(lab.measurements.count == 5)
+        #expect(lab.measurements.filter { $0.abnormalState != .none }.count == 2)
+        #expect(lab.summary.contains("5 项指标，2 项异常"))
     }
 
     @Test("演示种子包含两段剂量版本")
     func test_seedDemo_whenEmpty_insertsMedicationChain() throws {
         let container = try TestSupport.container()
-        try SeedService.seedDemo(into: container.mainContext)
+        try seedDemo(into: container.mainContext)
         let medications = try container.mainContext.fetch(FetchDescriptor<Medication>())
         #expect(medications.count == 2)
         #expect(medications.contains { $0.doseValue == 75 && $0.isLongTerm })
@@ -34,8 +40,8 @@ struct SeedServiceTests {
     @Test("演示种子重复执行保持幂等")
     func test_seedDemo_whenCalledTwice_doesNotDuplicate() throws {
         let container = try TestSupport.container()
-        try SeedService.seedDemo(into: container.mainContext)
-        try SeedService.seedDemo(into: container.mainContext)
+        try seedDemo(into: container.mainContext)
+        try seedDemo(into: container.mainContext)
         #expect(try container.mainContext.fetchCount(FetchDescriptor<Patient>()) == 1)
         #expect(try container.mainContext.fetchCount(FetchDescriptor<MedicalRecord>()) == 6)
     }
@@ -54,5 +60,15 @@ struct SeedServiceTests {
         let container = try TestSupport.container()
         try SeedService.seedStress(-4, into: container.mainContext)
         #expect(try container.mainContext.fetchCount(FetchDescriptor<MedicalRecord>()) == 0)
+    }
+
+    private func seedDemo(into context: ModelContext) throws {
+        let root = try TestSupport.temporaryDirectory()
+        try SeedService.seedDemo(
+            into: context,
+            vault: try CaptureVaultService(
+                rootURL: root.appendingPathComponent("Vault")
+            )
+        )
     }
 }

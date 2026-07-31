@@ -110,6 +110,30 @@ enum DatabaseBootstrapper {
         }
     }
 
+    /// UI automation must never fall back to the user's persistent store.
+    ///
+    /// A failed in-memory container is surfaced as a protected recovery state
+    /// instead of silently invoking `.persistent`, which prevents test records
+    /// from leaking into an installed app or TestFlight-style build.
+    static func bootstrapIsolatedUITest(
+        builder: @escaping ContainerBuilder = defaultBuilder
+    ) -> DatabaseBootstrapState {
+        do {
+            return .ready(try builder(.recoveryMemory))
+        } catch {
+            AppLog.data.error(
+                "UI test in-memory database open failed; persistent fallback blocked"
+            )
+            return .recovery(
+                info: DatabaseRecoveryInfo(
+                    referenceCode: "UITEST-DB-0001",
+                    userMessage: "UI 自动化的独立资料库无法打开；未读取或写入正式资料库。"
+                ),
+                container: nil
+            )
+        }
+    }
+
     static func defaultBuilder(mode: DatabaseStoreMode) throws -> ModelContainer {
         try defaultBuilder(
             mode: mode,

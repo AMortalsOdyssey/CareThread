@@ -263,6 +263,15 @@ final class CaptureVaultService {
         self.fileManager = fileManager
         if let rootURL {
             self.rootURL = rootURL
+        } else if ProcessInfo.processInfo.arguments.contains("-uiTestMode") {
+            // UI automation must never touch the user's Application Support
+            // Vault. The process-scoped root is discarded with the simulator
+            // app process and mirrors the in-memory SwiftData boundary.
+            self.rootURL = fileManager.temporaryDirectory
+                .appendingPathComponent(
+                    "CareThreadUITestVault-\(ProcessInfo.processInfo.processIdentifier)",
+                    isDirectory: true
+                )
         } else {
             let support = try fileManager.url(
                 for: .applicationSupportDirectory,

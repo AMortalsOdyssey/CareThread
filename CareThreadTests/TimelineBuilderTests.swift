@@ -423,6 +423,20 @@ struct TimelineBuilderTests {
         #expect(record.title == "  \n")
     }
 
+    @Test("复查事件的类型标签不重复标题中的复查安排")
+    func followUpTypeUsesShortCategory() {
+        #expect(
+            Copy.Timeline.eventType(.followUpDue)
+                == Copy.Timeline.filterFollowUps
+        )
+        #expect(
+            Copy.Timeline.dayAndType(
+                day: "15",
+                type: Copy.Timeline.eventType(.followUpDue)
+            ) == "15 日 · 复查"
+        )
+    }
+
     private func build(
         records: [MedicalRecord] = [],
         medications: [Medication] = [],

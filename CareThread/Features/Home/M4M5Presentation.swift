@@ -25,8 +25,38 @@ enum M4M5DateFormatting {
         return value
     }()
 
+    static let dateAndTime: DateFormatter = {
+        let value = DateFormatter()
+        value.locale = Locale(identifier: "zh_CN")
+        value.calendar = Calendar(identifier: .gregorian)
+        value.dateFormat = "yyyy年M月d日 HH:mm"
+        return value
+    }()
+
     static func clock(_ time: ReminderTime) -> String {
         String(format: "%02d:%02d", time.hour, time.minute)
+    }
+}
+
+enum MedicationUsageText {
+    static func humanReadable(_ values: [String]) -> String {
+        let normalized = values.map {
+            $0.trimmingCharacters(in: .whitespacesAndNewlines)
+        }.filter { !$0.isEmpty }
+        if normalized == ["晨起", "空腹", "口服"]
+            || Set(normalized) == Set(["晨起", "空腹", "口服"]) {
+            return "早上空腹吃"
+        }
+        return normalized
+            .map {
+                switch $0 {
+                case "晨起": "早上"
+                case "空腹": "空腹"
+                case "口服": "吃"
+                default: $0
+                }
+            }
+            .joined(separator: "，")
     }
 }
 extension FrequencyPreset {

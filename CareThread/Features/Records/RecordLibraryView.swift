@@ -1,5 +1,7 @@
+import ImageIO
 import SwiftData
 import SwiftUI
+import UIKit
 
 struct RecordLibraryView: View {
     @Environment(\.modelContext) private var modelContext
@@ -121,41 +123,52 @@ struct RecordLibraryView: View {
                     pendingInboxRow
                 }
                 ForEach(viewModel.records, id: \.id) { record in
-                    VStack(spacing: CT.Space.s2) {
-                        NavigationLink {
-                            RecordDetailView(record: record) {
-                                viewModel.reload(patientID: patientID)
-                            }
-                        } label: {
-                            RecordListRow(record: record)
-                        }
-                        .accessibilityIdentifier(
-                            "m3.records.row.\(record.id.uuidString)"
-                        )
-                        if !record.attachments.isEmpty {
-                            Divider()
-                            Button {
-                                selectedOriginalRecord = record
+                    M4M5Card {
+                        VStack(spacing: CT.Space.s2) {
+                            NavigationLink {
+                                RecordDetailView(record: record) {
+                                    viewModel.reload(patientID: patientID)
+                                }
                             } label: {
-                                Label(
-                                    Copy.viewOriginal,
-                                    systemImage: "doc.text.magnifyingglass"
-                                )
-                                .font(CT.Font.subhead)
-                                .foregroundStyle(CT.Color.primary)
-                                .frame(
-                                    maxWidth: .infinity,
-                                    minHeight: CT.Size.secondaryButtonHeight,
-                                    alignment: .leading
+                                RecordListRow(record: record)
+                            }
+                            .accessibilityIdentifier(
+                                "m3.records.row.\(record.id.uuidString)"
+                            )
+                            if !record.attachments.isEmpty {
+                                Divider()
+                                Button {
+                                    selectedOriginalRecord = record
+                                } label: {
+                                    Label(
+                                        Copy.viewOriginal,
+                                        systemImage: "doc.text.magnifyingglass"
+                                    )
+                                    .font(CT.Font.subhead)
+                                    .foregroundStyle(CT.Color.primary)
+                                    .frame(
+                                        maxWidth: .infinity,
+                                        minHeight: CT.Size.secondaryButtonHeight,
+                                        alignment: .leading
+                                    )
+                                }
+                                .buttonStyle(.plain)
+                                .accessibilityIdentifier(
+                                    "m3.records.original.\(record.id.uuidString)"
                                 )
                             }
-                            .buttonStyle(.plain)
-                            .accessibilityIdentifier(
-                                "m3.records.original.\(record.id.uuidString)"
-                            )
                         }
                     }
-                    .listRowBackground(CT.Color.bgElevated)
+                    .listRowInsets(
+                        EdgeInsets(
+                            top: CT.Space.s2,
+                            leading: CT.Space.s4,
+                            bottom: CT.Space.s2,
+                            trailing: CT.Space.s4
+                        )
+                    )
+                    .listRowSeparator(.hidden)
+                    .listRowBackground(CT.Color.bgBase)
                 }
                 if viewModel.hasMore {
                     Button(Copy.Records.loadMore) {
@@ -221,34 +234,107 @@ struct RecordLibraryView: View {
     }
 }
 
-private struct RecordListRow: View {
+struct RecordListRowPresentation: Equatable {
+    let summary: String?
+    let showsAbnormalIndicator: Bool
+    let statusTitle: String?
+    let metadata: String
+    let sourceTitle: String
+    let hasAttachment: Bool
+
+    init(record: MedicalRecord) {
+        let trimmedSummary = record.summary
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        summary = trimmedSummary.isEmpty ? nil : trimmedSummary
+        showsAbnormalIndicator = !record.abnormalFlags.isEmpty
+        statusTitle = switch record.reviewStatus {
+        case .pending: "待确认"
+        case .needsInfo: "待补充"
+        case .confirmed: nil
+        }
+        sourceTitle = switch record.sourceType {
+        case .camera: "拍照"
+        case .photo: "相册"
+        case .file: "文件"
+        case .manual: "手动录入"
+        case .fixture: "演示原件"
+        }
+        let optionalValues: [String?] = [
+            record.department,
+            record.ageAtEvent.map { "\($0) 岁" },
+            sourceTitle
+        ]
+        let values: [String] = optionalValues.compactMap { value in
+            guard let value else { return nil }
+            let trimmed = value.trimmingCharacters(in: .whitespacesAndNewlines)
+            return trimmed.isEmpty ? nil : trimmed
+        }
+        metadata = values.joined(separator: " · ")
+        hasAttachment = !record.attachments.isEmpty
+    }
+}
+
+struct RecordListRow: View {
     let record: MedicalRecord
 
     var body: some View {
+        let presentation = RecordListRowPresentation(record: record)
         HStack(alignment: .top, spacing: CT.Space.s3) {
-            Image(systemName: record.type.symbolName)
-                .font(CT.Font.title3)
-                .foregroundStyle(record.type.semanticColor)
-                .frame(width: CT.Size.leadingIcon, height: CT.Size.leadingIcon)
-                .background(record.type.semanticColor.opacity(0.12))
-                .clipShape(RoundedRectangle(cornerRadius: CT.Radius.thumbnail))
-            VStack(alignment: .leading, spacing: CT.Space.s1) {
-                HStack {
+            RecordThumbnail(record: record)
+            VStack(alignment: .leading, spacing: CT.Space.s2) {
+                HStack(alignment: .firstTextBaseline, spacing: CT.Space.s2) {
                     Text(record.displayTitle)
                         .font(CT.Font.headline)
                         .foregroundStyle(CT.Color.inkPrimary)
                         .lineLimit(2)
+                    Spacer(minLength: CT.Space.s1)
                     if record.isKeyRecord {
                         Image(systemName: "star.fill")
                             .foregroundStyle(CT.Color.warning)
                             .accessibilityLabel(Copy.Records.keyRecord)
                     }
+                    if let statusTitle = presentation.statusTitle {
+                        Text(statusTitle)
+                            .font(CT.Font.label.weight(.semibold))
+                            .foregroundStyle(
+                                record.reviewStatus == .needsInfo
+                                    ? CT.Color.dangerOnContainer
+                                    : CT.Color.warningOnContainer
+                            )
+                            .padding(.horizontal, CT.Space.s2)
+                            .padding(.vertical, CT.Space.s1)
+                            .background(
+                                record.reviewStatus == .needsInfo
+                                    ? CT.Color.dangerContainer
+                                    : CT.Color.warningContainer
+                            )
+                            .clipShape(Capsule())
+                            .accessibilityIdentifier("m3.records.reviewStatus")
+                    }
                 }
-                Text(DateFormatter.m3ListDate.string(from: record.eventDate))
-                    .font(CT.Font.footnote)
-                    .foregroundStyle(CT.Color.inkSecondary)
-                if let hospital = record.hospital {
-                    Text(hospital)
+                if let summary = presentation.summary {
+                    HStack(alignment: .firstTextBaseline, spacing: CT.Space.s1) {
+                        if presentation.showsAbnormalIndicator {
+                            Image(systemName: "exclamationmark.circle.fill")
+                                .foregroundStyle(CT.Color.danger)
+                                .accessibilityLabel("有异常指标")
+                        }
+                        Text(summary)
+                            .font(CT.Font.subhead)
+                            .foregroundStyle(CT.Color.inkPrimary)
+                            .lineLimit(2)
+                    }
+                    .accessibilityIdentifier("m3.records.summary")
+                }
+                Text(
+                    "\(DateFormatter.m3ListDate.string(from: record.eventDate))"
+                    + record.hospital.map { " · \($0)" }.orEmpty
+                )
+                .font(CT.Font.footnote)
+                .foregroundStyle(CT.Color.inkSecondary)
+                .lineLimit(1)
+                if !presentation.metadata.isEmpty {
+                    Text(presentation.metadata)
                         .font(CT.Font.subhead)
                         .foregroundStyle(CT.Color.inkSecondary)
                         .lineLimit(1)
@@ -264,6 +350,65 @@ private struct RecordListRow: View {
         }
         .frame(minHeight: CT.Size.recordCardMinHeight, alignment: .top)
     }
+}
+
+private struct RecordThumbnail: View {
+    let record: MedicalRecord
+    @State private var image: UIImage?
+
+    var body: some View {
+        Group {
+            if let image {
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFill()
+                    .accessibilityLabel("原件缩略图")
+            } else {
+                Image(systemName: record.type.symbolName)
+                    .font(CT.Font.title3)
+                    .foregroundStyle(record.type.semanticColor)
+                    .background(record.type.semanticColor.opacity(CT.Opacity.subtle))
+                    .accessibilityLabel(record.type.displayName)
+            }
+        }
+        .frame(width: CT.Size.cardThumbnail, height: CT.Size.cardThumbnail)
+        .background(CT.Color.bgInset)
+        .clipShape(RoundedRectangle(cornerRadius: CT.Radius.thumbnail))
+        .clipped()
+        .task(id: record.attachments.first?.fileName) {
+            image = await RecordThumbnailLoader.load(record.attachments.first)
+        }
+    }
+}
+
+private enum RecordThumbnailLoader {
+    static func load(_ attachment: Attachment?) async -> UIImage? {
+        guard let attachment, attachment.kind == .image else { return nil }
+        return await Task.detached(priority: .utility) {
+            guard let vault = try? CaptureVaultService(),
+                  let url = try? vault.url(for: attachment.fileName),
+                  let source = CGImageSourceCreateWithURL(url as CFURL, nil) else {
+                return nil
+            }
+            let options: [CFString: Any] = [
+                kCGImageSourceCreateThumbnailFromImageAlways: true,
+                kCGImageSourceThumbnailMaxPixelSize: Int(CT.Size.cardThumbnail * 3),
+                kCGImageSourceCreateThumbnailWithTransform: true
+            ]
+            guard let cgImage = CGImageSourceCreateThumbnailAtIndex(
+                source,
+                0,
+                options as CFDictionary
+            ) else {
+                return nil
+            }
+            return UIImage(cgImage: cgImage)
+        }.value
+    }
+}
+
+private extension Optional where Wrapped == String {
+    var orEmpty: String { self ?? "" }
 }
 
 private struct RecordFilterView: View {

@@ -158,7 +158,10 @@ struct ElderRootView: View {
                         modelContext.insert(patient)
                         try modelContext.save()
                     } else {
-                        try SeedService.seedDemo(into: modelContext)
+                        try SeedService.seedDemo(
+                            into: modelContext,
+                            vault: try CaptureVaultService()
+                        )
                     }
                 } else {
                     let store = InMemorySelectedMemberStore()

@@ -6,6 +6,8 @@ struct ElderSettingsView: View {
     private var remindersEnabled = true
     @AppStorage(ElderFontScale.storageKey)
     private var storedScale = ElderFontScale.standard.rawValue
+    @AppStorage(AppearanceMode.storageKey)
+    private var storedAppearance = AppearanceMode.system.rawValue
 
     let onRequestStandardMode: () -> Void
 
@@ -50,6 +52,54 @@ struct ElderSettingsView: View {
             .frame(minHeight: CT.Size.elderListRowHeight)
             .padding(.vertical, CT.Space.s2)
             .accessibilityIdentifier("elder.settings.fontScale")
+
+            VStack(alignment: .leading, spacing: CT.Space.s3) {
+                Label(Copy.Elder.appearance, systemImage: "circle.lefthalf.filled")
+                    .font(CT.Font.elderHeadline)
+                    .foregroundStyle(CT.Color.inkPrimary)
+                ForEach(AppearanceMode.allCases) { mode in
+                    Button {
+                        storedAppearance = mode.rawValue
+                    } label: {
+                        HStack(spacing: CT.Space.s3) {
+                            Image(systemName: mode.symbol)
+                            Text(mode.displayName)
+                            Spacer()
+                            if storedAppearance == mode.rawValue {
+                                Image(systemName: "checkmark.circle.fill")
+                            }
+                        }
+                        .font(CT.Font.elderHeadline)
+                        .foregroundStyle(CT.Color.inkPrimary)
+                        .frame(
+                            maxWidth: .infinity,
+                            minHeight: CT.Size.elderTouchTarget,
+                            alignment: .leading
+                        )
+                        .padding(.horizontal, CT.Space.s3)
+                        .background(
+                            storedAppearance == mode.rawValue
+                                ? CT.Color.primaryContainer
+                                : CT.Color.bgInset
+                        )
+                        .clipShape(
+                            RoundedRectangle(
+                                cornerRadius: CT.Radius.primaryButton
+                            )
+                        )
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityValue(
+                        storedAppearance == mode.rawValue
+                            ? "已选择"
+                            : "未选择"
+                    )
+                    .accessibilityIdentifier(
+                        "elder.appearance.\(mode.rawValue)"
+                    )
+                }
+            }
+            .padding(.vertical, CT.Space.s2)
 
             Button(action: onRequestStandardMode) {
                 Label(

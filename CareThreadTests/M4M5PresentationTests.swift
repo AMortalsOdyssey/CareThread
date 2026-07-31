@@ -33,6 +33,26 @@ struct M4M5PresentationTests {
         )
     }
 
+    @Test("工程式用药标签转换成日常话术")
+    func medicationUsageIsConversational() {
+        #expect(
+            MedicationUsageText.humanReadable(["晨起", "空腹", "口服"])
+                == "早上空腹吃"
+        )
+        #expect(
+            MedicationUsageText.humanReadable(["餐后", "遵医嘱"])
+                == "餐后，遵医嘱"
+        )
+    }
+
+    @Test("管理页活动时间固定使用中文格式")
+    func managementActivityDateUsesChineseLocale() {
+        let value = M4M5DateFormatting.dateAndTime.string(
+            from: CTDate.make(2026, 7, 31, hour: 9, minute: 5)
+        )
+        #expect(value == "2026年7月31日 09:05")
+    }
+
     @Test("用药表单缺少药名禁止保存")
     func medicationMissingName() {
         var state = MedicationFormState(now: now)

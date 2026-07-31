@@ -40,6 +40,8 @@ struct ManagementSummaryLoader {
 
 struct ManagementHubView: View {
     @Environment(\.modelContext) private var modelContext
+    @AppStorage(AppearanceMode.storageKey)
+    private var storedAppearance = AppearanceMode.system.rawValue
     let patientID: UUID
     var notificationCenter: any LocalNotificationCenterAdapting =
         M4M5RuntimeAdapters.localNotificationCenter()
@@ -106,7 +108,8 @@ struct ManagementHubView: View {
                             format: Copy.Manage.medicationCountFormat,
                             summary.activeMedicationCount
                         ),
-                        systemImage: "pills.fill"
+                        systemImage: "pills.fill",
+                        showsChevron: false
                     )
                 }
                 .accessibilityIdentifier("m45.manage.medication")
@@ -122,7 +125,8 @@ struct ManagementHubView: View {
                     M4M5IconRow(
                         title: Copy.Manage.followUp,
                         subtitle: followUpSubtitle,
-                        systemImage: "calendar.badge.clock"
+                        systemImage: "calendar.badge.clock",
+                        showsChevron: false
                     )
                 }
                 .accessibilityIdentifier("m45.manage.followup")
@@ -148,6 +152,17 @@ struct ManagementHubView: View {
                     symbol: "lock.shield",
                     action: onAppLock
                 )
+                NavigationLink {
+                    AppearanceSettingsView()
+                } label: {
+                    M4M5IconRow(
+                        title: Copy.Manage.appearance,
+                        subtitle: currentAppearance.displayName,
+                        systemImage: currentAppearance.symbol,
+                        showsChevron: false
+                    )
+                }
+                .accessibilityIdentifier("m45.manage.appearance")
                 managementButton(
                     title: Copy.Manage.about,
                     symbol: "info.circle",
@@ -238,10 +253,14 @@ struct ManagementHubView: View {
         ].joined(separator: " · ")
     }
 
+    private var currentAppearance: AppearanceMode {
+        AppearanceMode(rawValue: storedAppearance) ?? .system
+    }
+
     private func activityLine(_ label: String, date: Date?) -> String {
         guard let date else {
             return "\(label)：\(Copy.Manage.neverCompleted)"
         }
-        return "\(label)：\(date.formatted(date: .abbreviated, time: .shortened))"
+        return "\(label)：\(M4M5DateFormatting.dateAndTime.string(from: date))"
     }
 }

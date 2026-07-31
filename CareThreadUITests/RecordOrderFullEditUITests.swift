@@ -144,37 +144,3 @@ private extension XCUIElementQuery {
         )
     }
 }
-
-private extension XCUIElement {
-    func clearAndType(_ text: String) {
-        tap()
-        press(forDuration: 0.8)
-        let app = XCUIApplication()
-        let englishSelectAll = app.menuItems["Select All"]
-        let chineseSelectAll = app.menuItems["全选"]
-        let selectAll = englishSelectAll.waitForExistence(timeout: 0.5)
-            ? englishSelectAll
-            : chineseSelectAll
-        if selectAll.waitForExistence(timeout: 0.5) {
-            selectAll.tap()
-        } else {
-            typeKey("a", modifierFlags: .command)
-        }
-        typeText(XCUIKeyboardKey.delete.rawValue)
-        typeText(text)
-    }
-
-    func replaceExistingValue(with text: String) {
-        tap()
-        let current = value as? String ?? ""
-        if !current.isEmpty {
-            typeText(
-                String(
-                    repeating: XCUIKeyboardKey.delete.rawValue,
-                    count: current.count
-                )
-            )
-        }
-        typeText(text)
-    }
-}

@@ -51,6 +51,58 @@ final class CareThreadUITests: XCTestCase {
         )
     }
 
+    func testUITestDataNeverSurvivesIntoFreshLaunchOrOnboarding() {
+        let writer = XCUIApplication()
+        writer.launchArguments = [
+            "-uiTestMode",
+            "-displayMode", "standard",
+            "-M45OpenMedication"
+        ]
+        writer.launch()
+        XCTAssertTrue(
+            writer.buttons["m45.medication.add"]
+                .waitForExistence(timeout: 8)
+        )
+        writer.buttons["m45.medication.add"].tap()
+        let name = writer.textFields["m45.medication.name"]
+        XCTAssertTrue(name.waitForExistence(timeout: 5))
+        name.focusAndType("不得残留的自动化用药")
+        writer.textFields["m45.medication.dose"].focusAndType("1")
+        writer.navigationBars.buttons["保存用药"].tap()
+        XCTAssertTrue(
+            writer.staticTexts["不得残留的自动化用药"]
+                .waitForExistence(timeout: 5)
+        )
+        writer.terminate()
+
+        let fresh = XCUIApplication()
+        fresh.launchArguments = [
+            "-uiTestMode",
+            "-uiTestEmpty",
+            "-resetOnboarding"
+        ]
+        fresh.launch()
+        XCTAssertTrue(
+            fresh.buttons["onboarding.skip"].waitForExistence(timeout: 8)
+        )
+        fresh.buttons["onboarding.skip"].tap()
+        fresh.buttons["onboarding.mode.standard"].tap()
+        fresh.buttons["onboarding.complete"].tap()
+        XCTAssertTrue(
+            element("standardRoot", in: fresh)
+                .waitForExistence(timeout: 8)
+        )
+        XCTAssertFalse(fresh.staticTexts["不得残留的自动化用药"].exists)
+        fresh.tabBars.buttons["管理"].tap()
+        fresh.buttons["m45.manage.medication"].tap()
+        XCTAssertTrue(
+            fresh.staticTexts[
+                "记下正在吃的药，复诊时不用再翻药盒。"
+            ].waitForExistence(timeout: 8)
+        )
+        XCTAssertFalse(fresh.staticTexts["不得残留的自动化用药"].exists)
+    }
+
     private func element(
         _ identifier: String,
         in app: XCUIApplication

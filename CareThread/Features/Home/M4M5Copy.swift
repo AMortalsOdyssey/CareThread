@@ -86,7 +86,7 @@ extension Copy {
         static let frequencyWeekly = "每周"
         static let frequencyAsNeeded = "按需"
         static let units = ["µg", "mg", "g", "ml", "片", "粒", "袋", "支"]
-        static let usageOptions = ["口服", "空腹", "餐前", "餐后", "睡前", "注射"]
+        static let usageOptions = ["晨起", "口服", "空腹", "餐前", "餐后", "睡前", "注射"]
     }
 
     enum FollowUp {
@@ -138,20 +138,27 @@ extension Copy {
         static let lastMigration = "最近迁移"
         static let neverCompleted = "尚未完成"
         static let appLock = "应用锁"
+        static let appearance = "外观主题"
         static let about = "关于 CareThread"
         static let localOnly = "所有资料只保存在本机；系统日历和通知只在你明确开启时写入。"
     }
 
     enum MoreTools {
         static let title = "更多功能"
+        static let sourceSection = "添加资料"
+        static let toolSection = "提醒与工具"
+        static let camera = "拍照扫描"
+        static let cameraDetail = "扫描纸质病历或多页报告"
+        static let photos = "从相册选择"
+        static let photosDetail = "一次选择多张图片并整理分组"
+        static let files = "从文件导入"
+        static let filesDetail = "支持图片或多页 PDF，不支持视频"
         static let medicationReminder = "用药提醒"
         static let medicationReminderDetail = "记录用药并设置本地通知"
         static let followUpReminder = "复查提醒"
         static let followUpReminderDetail = "安排复查和准备事项"
         static let manualRecord = "手动记录"
         static let manualRecordDetail = "没有原件时直接填写"
-        static let importFile = "导入图片或 PDF"
-        static let importFileDetail = "支持多页资料，不支持视频"
         static let systemCalendar = "系统日历"
         static let systemCalendarDetail = "明确选择后才写入日历"
         static let export = "导出资料"

@@ -9,15 +9,12 @@ struct CareThreadApp: App {
     init() {
         #if DEBUG
         let isUITest = ProcessInfo.processInfo.arguments.contains("-uiTestMode")
-        let uiTestContainer = isUITest
-            ? try? DatabaseBootstrapper.defaultBuilder(mode: .recoveryMemory)
-            : nil
         #else
         let isUITest = false
-        let uiTestContainer: ModelContainer? = nil
         #endif
-        let bootstrapped = uiTestContainer.map(DatabaseBootstrapState.ready)
-            ?? DatabaseBootstrapper.bootstrap()
+        let bootstrapped = isUITest
+            ? DatabaseBootstrapper.bootstrapIsolatedUITest()
+            : DatabaseBootstrapper.bootstrap()
         databaseState = bootstrapped
         skipsStartupRecovery = isUITest
     }

@@ -55,7 +55,9 @@ enum ElderTodaySnapshotBuilder {
                         name: medication.name,
                         dose: doseText(medication),
                         time: String(format: "%02d:%02d", time.hour, time.minute),
-                        usage: medication.usageNotes.joined(separator: "，"),
+                        usage: MedicationUsageText.humanReadable(
+                            medication.usageNotes
+                        ),
                         isPast: isPast(time: time, now: now, calendar: calendar)
                     )
                 }

@@ -20,6 +20,7 @@ struct CaptureFlowHost: View {
     @Query(sort: \Patient.displayName) private var patients: [Patient]
     @StateObject private var controller: M3CaptureFlowController
     @State private var selectedPhotoItems: [PhotosPickerItem] = []
+    @State private var showPhotoPicker = false
     @State private var showFileImporter = false
     @State private var cameraImportSession: CameraImportSession?
     @State private var showDiscardConfirmation = false
@@ -28,16 +29,20 @@ struct CaptureFlowHost: View {
     @State private var showError = false
     @State private var importTask: Task<Void, Never>?
     @State private var processingTask: Task<Void, Never>?
+    @State private var didApplyInitialSource = false
 
+    let initialSource: M3CaptureSource?
     let onSwitchMember: (UUID) -> Void
     let onSaved: () -> Void
 
     init(
         patient: Patient,
+        initialSource: M3CaptureSource? = nil,
         onSwitchMember: @escaping (UUID) -> Void,
         onSaved: @escaping () -> Void
     ) {
         _controller = StateObject(wrappedValue: M3CaptureFlowController(patient: patient))
+        self.initialSource = initialSource
         self.onSwitchMember = onSwitchMember
         self.onSaved = onSaved
     }
@@ -165,6 +170,13 @@ struct CaptureFlowHost: View {
         ) { result in
             importFiles(result)
         }
+        .photosPicker(
+            isPresented: $showPhotoPicker,
+            selection: $selectedPhotoItems,
+            maxSelectionCount: max(1, 100 - controller.pageCount),
+            selectionBehavior: .ordered,
+            matching: .images
+        )
         .onChange(of: selectedPhotoItems) { _, items in
             guard !items.isEmpty else { return }
             importTask?.cancel()
@@ -191,6 +203,7 @@ struct CaptureFlowHost: View {
             importTask?.cancel()
         }
         .onAppear {
+            applyInitialSourceIfNeeded()
 #if DEBUG
             if controller.phase == .sources,
                ProcessInfo.processInfo.arguments.contains(
@@ -223,6 +236,29 @@ struct CaptureFlowHost: View {
 #endif
         }
         .accessibilityIdentifier("m3.capture.host")
+    }
+
+    @MainActor
+    private func applyInitialSourceIfNeeded() {
+        guard !didApplyInitialSource,
+              controller.phase == .sources,
+              let initialSource else {
+            return
+        }
+        didApplyInitialSource = true
+        switch initialSource {
+        case .camera:
+            prepareCameraImport()
+        case .photos:
+            showPhotoPicker = true
+        case .files:
+            importedSourceForAppend = nil
+            showFileImporter = true
+        case .manual:
+            controller.beginManual()
+        case .fixture:
+            controller.loadFixture(mismatch: false)
+        }
     }
 
     private var hasSavedDraft: Bool {

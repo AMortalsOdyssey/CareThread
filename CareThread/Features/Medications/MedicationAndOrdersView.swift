@@ -310,6 +310,11 @@ private struct MedicationCardView: View {
                 )
                 .font(CT.Font.footnote)
                 .foregroundStyle(CT.Color.inkSecondary)
+                if !medication.usageNotes.isEmpty {
+                    Text(MedicationUsageText.humanReadable(medication.usageNotes))
+                        .font(CT.Font.caption)
+                        .foregroundStyle(CT.Color.inkSecondary)
+                }
                 if let remaining = medication.remainingQuantity {
                     Text(
                         "\(Copy.Medication.remaining)：\(remaining.formatted(.number.precision(.fractionLength(0...2))))"
@@ -363,6 +368,14 @@ private struct MedicationDetailView: View {
                         from: medication.startDate
                     )
                 )
+                if !medication.usageNotes.isEmpty {
+                    LabeledContent(
+                        Copy.Medication.usage,
+                        value: MedicationUsageText.humanReadable(
+                            medication.usageNotes
+                        )
+                    )
+                }
             }
             if medication.lifecycleStatus == .active {
                 Section {

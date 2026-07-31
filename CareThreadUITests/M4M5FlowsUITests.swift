@@ -39,11 +39,9 @@ final class M4M5FlowsUITests: XCTestCase {
         app.buttons["m45.medication.add"].tap()
         let name = app.textFields["m45.medication.name"]
         XCTAssertTrue(name.waitForExistence(timeout: 5))
-        name.tap()
-        name.typeText("UI测试优甲乐")
+        name.focusAndType("UI测试优甲乐")
         let dose = app.textFields["m45.medication.dose"]
-        dose.tap()
-        dose.typeText("75")
+        dose.focusAndType("75")
         app.navigationBars.buttons["保存用药"].tap()
 
         XCTAssertTrue(
@@ -119,11 +117,9 @@ final class M4M5FlowsUITests: XCTestCase {
         app.buttons["m45.medication.add"].tap()
         let name = app.textFields["m45.medication.name"]
         XCTAssertTrue(name.waitForExistence(timeout: 5))
-        name.tap()
-        name.typeText("权限测试药")
+        name.focusAndType("权限测试药")
         let dose = app.textFields["m45.medication.dose"]
-        dose.tap()
-        dose.typeText("1")
+        dose.focusAndType("1")
         let reminder = app.switches["m45.medication.reminder"]
         scrollUntilHittable(reminder, in: app)
         reminder.tap()

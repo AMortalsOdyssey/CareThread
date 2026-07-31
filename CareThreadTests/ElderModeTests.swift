@@ -98,7 +98,13 @@ struct ElderModeTests {
     func switchingModeDoesNotMutateData() throws {
         let container = try TestSupport.container()
         let context = container.mainContext
-        try SeedService.seedDemo(into: context)
+        let seedRoot = try TestSupport.temporaryDirectory()
+        try SeedService.seedDemo(
+            into: context,
+            vault: try CaptureVaultService(
+                rootURL: seedRoot.appendingPathComponent("Vault")
+            )
+        )
         let before = try entityCounts(context)
         let suite = try #require(
             UserDefaults(

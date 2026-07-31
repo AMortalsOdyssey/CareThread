@@ -21,8 +21,7 @@ final class MemberProfileQuestionsUITests: XCTestCase {
         app.buttons["member.add"].tap()
         let name = app.textFields["member.create.displayName"]
         XCTAssertTrue(name.waitForExistence(timeout: 2))
-        name.tap()
-        name.typeText("虚构家人乙")
+        name.focusAndType("虚构家人乙")
         tapKeyboardDone("member.create.keyboard.done", in: app)
         app.buttons["member.create.save"].tap()
         XCTAssertTrue(
@@ -45,12 +44,10 @@ final class MemberProfileQuestionsUITests: XCTestCase {
         app.textFields["member.profile.reportName"].tap()
         app.textFields["member.profile.reportName"]
             .clearAndType("测试姓名")
-        app.textFields["member.profile.conditions"].tap()
         app.textFields["member.profile.conditions"]
-            .typeText("虚构情况")
-        app.textFields["member.profile.allergies"].tap()
+            .focusAndType("虚构情况")
         app.textFields["member.profile.allergies"]
-            .typeText("虚构过敏")
+            .focusAndType("虚构过敏")
         tapKeyboardDone("member.profile.keyboard.done", in: app)
         app.buttons["member.profile.save"].tap()
         let feedback = element("member.profile.feedback", in: app)
@@ -81,11 +78,9 @@ final class MemberProfileQuestionsUITests: XCTestCase {
         app.buttons["member.question.add"].tap()
         let question = app.textFields["member.question.text"]
         XCTAssertTrue(question.waitForExistence(timeout: 2))
-        question.tap()
-        question.typeText("下次需要带哪些虚构资料？")
+        question.focusAndType("下次需要带哪些虚构资料？")
         let note = app.textFields["member.question.note"]
-        note.tap()
-        note.typeText("准备虚构资料")
+        note.focusAndType("准备虚构资料")
         tapKeyboardDone("member.question.keyboard.done", in: app)
         app.buttons["member.question.save"].tap()
         XCTAssertTrue(
@@ -129,29 +124,4 @@ private func element(
     app.descendants(matching: .any)
         .matching(identifier: identifier)
         .firstMatch
-}
-
-private extension XCUIElement {
-    func clearAndType(_ text: String) {
-        tap()
-        let existingCharacterCount = (value as? String)?.count ?? 0
-        press(forDuration: 1)
-        let application = XCUIApplication()
-        let selectAll = application.menuItems["Select All"]
-        let localizedSelectAll = application.menuItems["全选"]
-        if selectAll.waitForExistence(timeout: 1) {
-            selectAll.tap()
-            typeText(XCUIKeyboardKey.delete.rawValue)
-        } else if localizedSelectAll.waitForExistence(timeout: 0.5) {
-            localizedSelectAll.tap()
-            typeText(XCUIKeyboardKey.delete.rawValue)
-        } else {
-            let deletes = String(
-                repeating: XCUIKeyboardKey.delete.rawValue,
-                count: max(existingCharacterCount, 1)
-            )
-            typeText(deletes)
-        }
-        typeText(text)
-    }
 }

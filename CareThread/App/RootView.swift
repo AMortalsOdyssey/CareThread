@@ -3,6 +3,8 @@ import SwiftData
 
 struct RootView: View {
     @AppStorage(DisplayMode.storageKey) private var storedMode = DisplayMode.standard.rawValue
+    @AppStorage(AppearanceMode.storageKey)
+    private var storedAppearance = AppearanceMode.system.rawValue
     @AppStorage(CareThreadOnboardingLaunchPolicy.completionKey)
     private var onboardingCompleted = false
     @State private var completedResetOnboardingThisLaunch = false
@@ -20,6 +22,10 @@ struct RootView: View {
         // first-launch acceptance tests. The dedicated reset route exercises
         // onboarding without weakening the real first-launch behavior.
         return !onboardingCompleted && DisplayMode.launchOverride == nil
+    }
+
+    private var appearance: AppearanceMode {
+        AppearanceMode(rawValue: storedAppearance) ?? .system
     }
 
     var body: some View {
@@ -41,6 +47,8 @@ struct RootView: View {
             }
         }
         .environment(\.displayMode, displayMode)
+        .environment(\.locale, Locale(identifier: "zh_CN"))
+        .preferredColorScheme(appearance.colorScheme)
         .tint(CT.Color.primary)
     }
 }
@@ -52,6 +60,7 @@ private struct StandardRootTabView: View {
         case memberManagement
         case backup
         case appLock
+        case appearance
     }
 
     @Environment(\.modelContext) private var modelContext
@@ -62,6 +71,7 @@ private struct StandardRootTabView: View {
     @State private var selectedTab = 0
     @State private var previousContentTab = 0
     @State private var showCapture = false
+    @State private var captureInitialSource: M3CaptureSource?
     @State private var showMoreTools = false
     @State private var showBrief = false
     @State private var showComparison = false
@@ -171,6 +181,8 @@ private struct StandardRootTabView: View {
                             BackupRestoreView(patientID: patientID)
                         case .appLock:
                             AppLockSettingsView()
+                        case .appearance:
+                            AppearanceSettingsView()
                         }
                     }
                 } else {
@@ -197,10 +209,14 @@ private struct StandardRootTabView: View {
         .onChange(of: selectedPatientID) { _, newValue in
             storedPatientID = newValue?.uuidString ?? ""
         }
-        .sheet(isPresented: $showCapture) {
+        .sheet(
+            isPresented: $showCapture,
+            onDismiss: { captureInitialSource = nil }
+        ) {
             if let patient = selectedPatient {
                 CaptureFlowHost(
                     patient: patient,
+                    initialSource: captureInitialSource,
                     onSwitchMember: { newPatientID in
                         selectedPatientID = newPatientID
                     },
@@ -217,10 +233,12 @@ private struct StandardRootTabView: View {
         }
         .sheet(isPresented: $showMoreTools) {
             MoreQuickActionsSheet(
+                onCamera: { openCapture(source: .camera) },
+                onPhotos: { openCapture(source: .photos) },
+                onFiles: { openCapture(source: .files) },
+                onManualRecord: { openCapture(source: .manual) },
                 onMedication: { openManagement(.medications) },
                 onFollowUp: { openManagement(.followUps) },
-                onManualRecord: { showCapture = true },
-                onImport: { showCapture = true },
                 onSystemCalendar: { openManagement(.followUps) },
                 onExport: { showBrief = true },
                 onCompare: { showComparison = true },
@@ -283,6 +301,11 @@ private struct StandardRootTabView: View {
         patients.first(where: { $0.id == selectedPatientID }) ?? patients.first
     }
 
+    private func openCapture(source: M3CaptureSource? = nil) {
+        captureInitialSource = source
+        showCapture = true
+    }
+
     @MainActor
     private func bootstrapM3IfNeeded() {
         let arguments = ProcessInfo.processInfo.arguments
@@ -298,7 +321,10 @@ private struct StandardRootTabView: View {
                         modelContext.insert(patient)
                         try modelContext.save()
                     } else {
-                        try SeedService.seedDemo(into: modelContext)
+                        try SeedService.seedDemo(
+                            into: modelContext,
+                            vault: try CaptureVaultService()
+                        )
                     }
                 } else {
                     let selection = InMemorySelectedMemberStore()
