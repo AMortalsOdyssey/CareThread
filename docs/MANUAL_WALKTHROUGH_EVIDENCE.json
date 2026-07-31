@@ -1,12 +1,98 @@
 {
   "schemaVersion": 1,
-  "sourceCommit": "9a7187188e5f892e5738ad461b86736b2ef8b8c7",
-  "reviewedAtUTC": "2026-07-30T23:57:00Z",
-  "reviewer": "Codex visual review + XCTest/simctl; Computer Use blocked by locked Mac",
+  "sourceCommit": "5b535e4a8c93fc7e8b980f4f1fa62c393dd7d9e8",
+  "reviewedAtUTC": "2026-07-31T09:26:37Z",
+  "reviewer": "Codex contact-sheet visual review + XCTest/XCUITest/simctl",
   "simulator": {
     "deviceName": "iPhone 16",
-    "osVersion": "18.6"
+    "osVersion": "26.5"
   },
+  "reviewRemediation": [
+    {
+      "id": "B1",
+      "beforeStatus": "failed",
+      "afterStatus": "passed",
+      "notes": "记录行已补结论、异常、状态、科室/年龄/来源及演示原件入口。",
+      "evidence": [
+        {
+          "path": "docs/walkthrough/B1-B7-remediation.md",
+          "sha256": "a9755b9ab25fc5831b9f523ba3a85de6e5a9aec88412741b2ac31be8da134de1"
+        }
+      ]
+    },
+    {
+      "id": "B2",
+      "beforeStatus": "failed",
+      "afterStatus": "passed",
+      "notes": "详情移除工程元数据，摘要与五项指标、两项异常保持一致。",
+      "evidence": [
+        {
+          "path": "docs/walkthrough/B1-B7-remediation.md",
+          "sha256": "a9755b9ab25fc5831b9f523ba3a85de6e5a9aec88412741b2ac31be8da134de1"
+        }
+      ]
+    },
+    {
+      "id": "B3",
+      "beforeStatus": "failed",
+      "afterStatus": "passed",
+      "notes": "六份虚构故事线全部挂演示原件并使用真实病程话术。",
+      "evidence": [
+        {
+          "path": "docs/walkthrough/B1-B7-remediation.md",
+          "sha256": "a9755b9ab25fc5831b9f523ba3a85de6e5a9aec88412741b2ac31be8da134de1"
+        }
+      ]
+    },
+    {
+      "id": "B4",
+      "beforeStatus": "failed",
+      "afterStatus": "passed",
+      "notes": "根环境、日期控件、备份时间和截图启动环境均统一简体中文。",
+      "evidence": [
+        {
+          "path": "docs/walkthrough/B1-B7-remediation.md",
+          "sha256": "a9755b9ab25fc5831b9f523ba3a85de6e5a9aec88412741b2ac31be8da134de1"
+        }
+      ]
+    },
+    {
+      "id": "B5",
+      "beforeStatus": "failed",
+      "afterStatus": "passed",
+      "notes": "新证据保留修复前反例，以 FAIL 到 FIXED 记录替代全 passed 自评。",
+      "evidence": [
+        {
+          "path": "docs/walkthrough/B1-B7-remediation.md",
+          "sha256": "a9755b9ab25fc5831b9f523ba3a85de6e5a9aec88412741b2ac31be8da134de1"
+        }
+      ]
+    },
+    {
+      "id": "B6",
+      "beforeStatus": "failed",
+      "afterStatus": "passed",
+      "notes": "UI 测试只使用内存数据库和临时 Vault，禁止回落正式资料库。",
+      "evidence": [
+        {
+          "path": "docs/walkthrough/B1-B7-remediation.md",
+          "sha256": "a9755b9ab25fc5831b9f523ba3a85de6e5a9aec88412741b2ac31be8da134de1"
+        }
+      ]
+    },
+    {
+      "id": "B7",
+      "beforeStatus": "failed",
+      "afterStatus": "passed",
+      "notes": "管理页双箭头已消除，最近活动时间固定中文。",
+      "evidence": [
+        {
+          "path": "docs/walkthrough/B1-B7-remediation.md",
+          "sha256": "a9755b9ab25fc5831b9f523ba3a85de6e5a9aec88412741b2ac31be8da134de1"
+        }
+      ]
+    }
+  ],
   "checks": [
     {
       "id": "DESIGN-01",
@@ -15,7 +101,7 @@
       "evidence": [
         {
           "path": "docs/walkthrough/DESIGN-01-colors.md",
-          "sha256": "16be3a91dbe4232e32af238dba21f2ba89e2dfc818c85ac793137e4e6f3f4181"
+          "sha256": "3f3fa1586bd5f769cc3170459ae1d8cc8d56326298fda609b013609f35d78f30"
         }
       ]
     },
@@ -33,22 +119,22 @@
     {
       "id": "DESIGN-03",
       "status": "passed",
-      "notes": "18 个页面逐一核对 Light/Dark，共 36 屏。",
+      "notes": "23 个生产导航路由逐一核对 Light/Dark，共 46 屏。",
       "evidence": [
         {
           "path": "docs/walkthrough/DESIGN-03-appearances.md",
-          "sha256": "a734d9847cf915415d77467fee66294e14958b61228745f67893111157404a53"
+          "sha256": "eb57c3c2de6c3d2382b0e7ac5d291642271c36bd3d3ead486cd82b62c45fcc8f"
         }
       ]
     },
     {
       "id": "DESIGN-04",
       "status": "passed",
-      "notes": "卡片、详情与确认页均可一步到达原文。",
+      "notes": "保留修复前演示数据不可见 FAIL；修复后卡片、详情与确认页均可见且一步到达原文。",
       "evidence": [
         {
           "path": "docs/walkthrough/DESIGN-04-original-access.md",
-          "sha256": "1e435fd62b4c2906a3b9b6bedfb370236b61972f659479265d9563ee86f4539d"
+          "sha256": "0efd16b94e5dc5d33e4996f888be853a43544757b2aed620ab01babd99051daa"
         }
       ]
     },

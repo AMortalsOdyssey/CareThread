@@ -1,18 +1,26 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "generator": "Scripts/screenshots.sh",
-  "generatedAtUTC": "2026-07-30T23:53:36Z",
-  "sourceCommit": "9a7187188e5f892e5738ad461b86736b2ef8b8c7",
+  "generatedAtUTC": "2026-07-31T09:24:13Z",
+  "sourceCommit": "5b535e4a8c93fc7e8b980f4f1fa62c393dd7d9e8",
   "sourceTreeDirty": false,
-  "sourceFingerprint": "00c6d94f4bb0d8684be6535c4c20f92d0152948fcf88d5ed1d60940462dd6388",
-  "screenshotScriptSHA256": "374800074911fb15222b0497c4b78112a5023498e15ae90eb75ba2ea6fa22ab3",
+  "sourceFingerprint": "67ed9d7d852c149f73aceb740ce803d2a8f6ab9b55bdc644b15fa465ad9d0f68",
+  "screenshotScriptSHA256": "7c5c0a04c9beac597a44be96899e2d74986c4c8bcde51a6642bbcc2d87ef5d49",
   "deviceName": "iPhone 16",
-  "osVersion": "18.6",
-  "runtimeIdentifier": "com.apple.CoreSimulator.SimRuntime.iOS-18-6",
+  "osVersion": "26.5",
+  "runtimeIdentifier": "com.apple.CoreSimulator.SimRuntime.iOS-26-5",
   "bundleID": "me.multiego.carethread",
   "configuration": "Debug",
   "language": "zh-Hans",
   "locale": "zh_CN",
+  "expectedCounts": {
+    "routes": 23,
+    "screenshots": 46,
+    "standard": 38,
+    "elder": 8,
+    "light": 23,
+    "dark": 23
+  },
   "screenshots": [
     {
       "file": "docs/screenshots/01-onboarding-light.png",
@@ -20,9 +28,15 @@
       "mode": "standard",
       "appearance": "light",
       "readyMarker": "screenshot.route.onboarding",
+      "shell": "RootView",
+      "presentation": "onboarding",
+      "selectedTab": null,
+      "tabBarExpected": false,
+      "featureMarker": "onboarding.localPrivacy",
+      "resolvedAppearance": "light",
       "width": 1179,
       "height": 2556,
-      "sha256": "adb2e2c9ca6bcde012c009932fe92c15ccfccd0144a6d964e2ffb67e0ab580a4"
+      "sha256": "2db42bbd6183543a4d3a2fbe16cdd5f49f0e7fea797a552d90c91777b2c9797a"
     },
     {
       "file": "docs/screenshots/01-onboarding-dark.png",
@@ -30,9 +44,15 @@
       "mode": "standard",
       "appearance": "dark",
       "readyMarker": "screenshot.route.onboarding",
+      "shell": "RootView",
+      "presentation": "onboarding",
+      "selectedTab": null,
+      "tabBarExpected": false,
+      "featureMarker": "onboarding.localPrivacy",
+      "resolvedAppearance": "dark",
       "width": 1179,
       "height": 2556,
-      "sha256": "adc2ea1a09066b4b1cb2adad31a7e1fc6c90fad69538a70970440f1b240b50a5"
+      "sha256": "ac57a6f3ab8e124af4553d55ba76fc20d75fb403b839c79c10cb8a53609e9d7e"
     },
     {
       "file": "docs/screenshots/02-home-light.png",
@@ -40,9 +60,15 @@
       "mode": "standard",
       "appearance": "light",
       "readyMarker": "screenshot.route.home",
+      "shell": "StandardRootTabView",
+      "presentation": "tab",
+      "selectedTab": 0,
+      "tabBarExpected": true,
+      "featureMarker": "m45.home",
+      "resolvedAppearance": "light",
       "width": 1179,
       "height": 2556,
-      "sha256": "2b0f09bfa395f5770f0b2b6fb6051d5898ba617c0a6c1e3e5f4707b4b9327812"
+      "sha256": "de76bfcb4cd11be0f3840a036d6d0b6560064a87941ed0ac34dd9b9a3e813f23"
     },
     {
       "file": "docs/screenshots/02-home-dark.png",
@@ -50,9 +76,15 @@
       "mode": "standard",
       "appearance": "dark",
       "readyMarker": "screenshot.route.home",
+      "shell": "StandardRootTabView",
+      "presentation": "tab",
+      "selectedTab": 0,
+      "tabBarExpected": true,
+      "featureMarker": "m45.home",
+      "resolvedAppearance": "dark",
       "width": 1179,
       "height": 2556,
-      "sha256": "822f93603c132200a9a79adc00b8acfbfeb2b5fbe290a56acbcc1bddbff5b884"
+      "sha256": "a4254a92e6b1c108635327247509ee35996ecc7b7a6581f57970a0f03df164b2"
     },
     {
       "file": "docs/screenshots/03-capture-source-light.png",
@@ -60,9 +92,15 @@
       "mode": "standard",
       "appearance": "light",
       "readyMarker": "screenshot.route.capture-source",
+      "shell": "StandardRootTabView",
+      "presentation": "sheet",
+      "selectedTab": 0,
+      "tabBarExpected": false,
+      "featureMarker": "m3.capture.host",
+      "resolvedAppearance": "light",
       "width": 1179,
       "height": 2556,
-      "sha256": "dd6c9e52a78e9bcc0fa37e8c3e9cc7b53773fe4e831ffd91f9a5f376c8106a4b"
+      "sha256": "fd85abde27f607c0be2b65f1cf1f557570d43bdfaecad1e3ff16318ca4ecff72"
     },
     {
       "file": "docs/screenshots/03-capture-source-dark.png",
@@ -70,9 +108,15 @@
       "mode": "standard",
       "appearance": "dark",
       "readyMarker": "screenshot.route.capture-source",
+      "shell": "StandardRootTabView",
+      "presentation": "sheet",
+      "selectedTab": 0,
+      "tabBarExpected": false,
+      "featureMarker": "m3.capture.host",
+      "resolvedAppearance": "dark",
       "width": 1179,
       "height": 2556,
-      "sha256": "d958a81939bf6511089422b0033cfd7d3a9706d7208bea95cfa5dd57063d95e3"
+      "sha256": "b6b22ed6ecad2a59ee2af87935482082e0379396b19e50de6a90d720b7b5fe6a"
     },
     {
       "file": "docs/screenshots/04-capture-confirmation-light.png",
@@ -80,9 +124,15 @@
       "mode": "standard",
       "appearance": "light",
       "readyMarker": "screenshot.route.capture-confirmation",
+      "shell": "StandardRootTabView",
+      "presentation": "sheet",
+      "selectedTab": 0,
+      "tabBarExpected": false,
+      "featureMarker": "m3.confirmation",
+      "resolvedAppearance": "light",
       "width": 1179,
       "height": 2556,
-      "sha256": "79e6b94cd1b714ec219d42798a5ae236899f5fe95d247a254d9af558b57989c4"
+      "sha256": "ee6d88faa5efae00ea0f98836f2b8844e4dfead50b3e39d454ffa4a79ab0eb01"
     },
     {
       "file": "docs/screenshots/04-capture-confirmation-dark.png",
@@ -90,9 +140,15 @@
       "mode": "standard",
       "appearance": "dark",
       "readyMarker": "screenshot.route.capture-confirmation",
+      "shell": "StandardRootTabView",
+      "presentation": "sheet",
+      "selectedTab": 0,
+      "tabBarExpected": false,
+      "featureMarker": "m3.confirmation",
+      "resolvedAppearance": "dark",
       "width": 1179,
       "height": 2556,
-      "sha256": "60b3de0dc0d40e5e616497b0fe77bfbcc23f85041813eec52acfaeec6e99691d"
+      "sha256": "26b877e98dec9c37fbb4ed74408055c05470eada855927ccbc97d66a49b2cfd6"
     },
     {
       "file": "docs/screenshots/05-records-light.png",
@@ -100,9 +156,15 @@
       "mode": "standard",
       "appearance": "light",
       "readyMarker": "screenshot.route.records",
+      "shell": "StandardRootTabView",
+      "presentation": "tab",
+      "selectedTab": 3,
+      "tabBarExpected": true,
+      "featureMarker": "m3.records.library",
+      "resolvedAppearance": "light",
       "width": 1179,
       "height": 2556,
-      "sha256": "c7574e9efff7bf172d1a6eb413ef2bed6e174445551f9904dfcd9822a6bc7cdd"
+      "sha256": "8ab7aee72ca4f896520dabe266ef8e7c9cc8a22dfa52b8a04208de2444d0e3e7"
     },
     {
       "file": "docs/screenshots/05-records-dark.png",
@@ -110,9 +172,15 @@
       "mode": "standard",
       "appearance": "dark",
       "readyMarker": "screenshot.route.records",
+      "shell": "StandardRootTabView",
+      "presentation": "tab",
+      "selectedTab": 3,
+      "tabBarExpected": true,
+      "featureMarker": "m3.records.library",
+      "resolvedAppearance": "dark",
       "width": 1179,
       "height": 2556,
-      "sha256": "33322bad2d1e62bbe9d1a5856305764a38403ef9aae3c43f5deca3c6c8837ebb"
+      "sha256": "88426c15af03dc34371f6b3cc2c9cc428009f53cbad734028ece809269457e49"
     },
     {
       "file": "docs/screenshots/06-record-detail-light.png",
@@ -120,9 +188,15 @@
       "mode": "standard",
       "appearance": "light",
       "readyMarker": "screenshot.route.record-detail",
+      "shell": "StandardRootTabView",
+      "presentation": "push",
+      "selectedTab": 3,
+      "tabBarExpected": true,
+      "featureMarker": "m3.detail",
+      "resolvedAppearance": "light",
       "width": 1179,
       "height": 2556,
-      "sha256": "7f09dc5d6946a65d88b4ab41b36e808d5286aa21bb30242f9cd9bc8a74551ea1"
+      "sha256": "6410e92682d6c4d0c690be0a2f91d7237c4c643053ec73b804c7bbfc25b1ab00"
     },
     {
       "file": "docs/screenshots/06-record-detail-dark.png",
@@ -130,9 +204,15 @@
       "mode": "standard",
       "appearance": "dark",
       "readyMarker": "screenshot.route.record-detail",
+      "shell": "StandardRootTabView",
+      "presentation": "push",
+      "selectedTab": 3,
+      "tabBarExpected": true,
+      "featureMarker": "m3.detail",
+      "resolvedAppearance": "dark",
       "width": 1179,
       "height": 2556,
-      "sha256": "a516458e38a1c755a2d2618fa00ee5f7a1c35be99befa780e9e933d197f48106"
+      "sha256": "9997b12437af5ffaad78e48e33f7f7a78c2a7dde42aeefaaf132ba7dfbdd7809"
     },
     {
       "file": "docs/screenshots/07-original-ocr-light.png",
@@ -140,9 +220,15 @@
       "mode": "standard",
       "appearance": "light",
       "readyMarker": "screenshot.route.original-ocr",
+      "shell": "StandardRootTabView",
+      "presentation": "fullScreen",
+      "selectedTab": 3,
+      "tabBarExpected": false,
+      "featureMarker": "m3.viewer",
+      "resolvedAppearance": "light",
       "width": 1179,
       "height": 2556,
-      "sha256": "cf59c440a7456ca657d3d91210731d925ea662a23fcca8fc05921334a76ef9b1"
+      "sha256": "af331f2f999a39f1b684df6557c78e329b6fe35f1dec6ca8e9ccfbb9f52d1f98"
     },
     {
       "file": "docs/screenshots/07-original-ocr-dark.png",
@@ -150,9 +236,15 @@
       "mode": "standard",
       "appearance": "dark",
       "readyMarker": "screenshot.route.original-ocr",
+      "shell": "StandardRootTabView",
+      "presentation": "fullScreen",
+      "selectedTab": 3,
+      "tabBarExpected": false,
+      "featureMarker": "m3.viewer",
+      "resolvedAppearance": "dark",
       "width": 1179,
       "height": 2556,
-      "sha256": "2ff97d5f43537fc591ade3a10e6dea5adadbb2c2bece2b9e0c0ed8760ffd4008"
+      "sha256": "a6f450a7ec6ec1ed47a6d84ff02c93387d5563cff696853caf38dc718403c6bd"
     },
     {
       "file": "docs/screenshots/08-medications-light.png",
@@ -160,9 +252,15 @@
       "mode": "standard",
       "appearance": "light",
       "readyMarker": "screenshot.route.medications",
+      "shell": "StandardRootTabView",
+      "presentation": "push",
+      "selectedTab": 4,
+      "tabBarExpected": true,
+      "featureMarker": "m45.medication.list",
+      "resolvedAppearance": "light",
       "width": 1179,
       "height": 2556,
-      "sha256": "74783d68cb34cb3dd76343887b759e38368c126e0a3bd6cbafa1ce46f532fed3"
+      "sha256": "3025c4973c17be1e73944100c5b1862c0ecab7c56bbc6515dd4b634a4e6fb3f1"
     },
     {
       "file": "docs/screenshots/08-medications-dark.png",
@@ -170,9 +268,15 @@
       "mode": "standard",
       "appearance": "dark",
       "readyMarker": "screenshot.route.medications",
+      "shell": "StandardRootTabView",
+      "presentation": "push",
+      "selectedTab": 4,
+      "tabBarExpected": true,
+      "featureMarker": "m45.medication.list",
+      "resolvedAppearance": "dark",
       "width": 1179,
       "height": 2556,
-      "sha256": "e4b1e902a6f0433b5dda2ba4baaf409e3088a48eb96145861188fca7ab137513"
+      "sha256": "2d24eca012b21dc2a06ea3b421f262d3c049af94219c41cb09ddf76e8e988901"
     },
     {
       "file": "docs/screenshots/09-followups-light.png",
@@ -180,9 +284,15 @@
       "mode": "standard",
       "appearance": "light",
       "readyMarker": "screenshot.route.followups",
+      "shell": "StandardRootTabView",
+      "presentation": "push",
+      "selectedTab": 4,
+      "tabBarExpected": true,
+      "featureMarker": "m45.followup.list",
+      "resolvedAppearance": "light",
       "width": 1179,
       "height": 2556,
-      "sha256": "64e8078a025949c321417e067dea29afb52374174406c29c69fa8630ef3d45a0"
+      "sha256": "8c750ca159349f65e7c8fb1de960698b40c8b38ca900f062e29af386ee98f491"
     },
     {
       "file": "docs/screenshots/09-followups-dark.png",
@@ -190,9 +300,15 @@
       "mode": "standard",
       "appearance": "dark",
       "readyMarker": "screenshot.route.followups",
+      "shell": "StandardRootTabView",
+      "presentation": "push",
+      "selectedTab": 4,
+      "tabBarExpected": true,
+      "featureMarker": "m45.followup.list",
+      "resolvedAppearance": "dark",
       "width": 1179,
       "height": 2556,
-      "sha256": "93a79fcb4ccf393021668756e8903507552a0cd2374787bc17c4c362892f2a92"
+      "sha256": "d75268d0de863dd4592cb2ea7c60fa6ed01a9de59b4e56d46418ad666162cec6"
     },
     {
       "file": "docs/screenshots/10-timeline-light.png",
@@ -200,9 +316,15 @@
       "mode": "standard",
       "appearance": "light",
       "readyMarker": "screenshot.route.timeline",
+      "shell": "StandardRootTabView",
+      "presentation": "tab",
+      "selectedTab": 1,
+      "tabBarExpected": true,
+      "featureMarker": "m6.timeline",
+      "resolvedAppearance": "light",
       "width": 1179,
       "height": 2556,
-      "sha256": "eeff9503eb99a5fe614d8fa52069f5ed281e67c40d054b542f5325531360591b"
+      "sha256": "7cdf186752808ba15507085deae6cb06d3c1b032391edd7cdf63d33440762cdd"
     },
     {
       "file": "docs/screenshots/10-timeline-dark.png",
@@ -210,9 +332,15 @@
       "mode": "standard",
       "appearance": "dark",
       "readyMarker": "screenshot.route.timeline",
+      "shell": "StandardRootTabView",
+      "presentation": "tab",
+      "selectedTab": 1,
+      "tabBarExpected": true,
+      "featureMarker": "m6.timeline",
+      "resolvedAppearance": "dark",
       "width": 1179,
       "height": 2556,
-      "sha256": "bb1a419263616b13c3fa559d18d87476eb5289feccb4deebdfb1cab0fbc41bf4"
+      "sha256": "429df08f5ba9b5ebde38bf959454d28b1b8661b5863b4f6aae4ca4b759286b66"
     },
     {
       "file": "docs/screenshots/11-brief-light.png",
@@ -220,9 +348,15 @@
       "mode": "standard",
       "appearance": "light",
       "readyMarker": "screenshot.route.brief",
+      "shell": "StandardRootTabView",
+      "presentation": "sheet",
+      "selectedTab": 0,
+      "tabBarExpected": false,
+      "featureMarker": "m7.brief",
+      "resolvedAppearance": "light",
       "width": 1179,
       "height": 2556,
-      "sha256": "df592f09bdd8275779c26178f180671318ef9ff12a46af57eb181a961c9b3805"
+      "sha256": "488ced54d46737136e514b119b7f6910e74707afe61bc3f68da24bd7eb638fb1"
     },
     {
       "file": "docs/screenshots/11-brief-dark.png",
@@ -230,9 +364,15 @@
       "mode": "standard",
       "appearance": "dark",
       "readyMarker": "screenshot.route.brief",
+      "shell": "StandardRootTabView",
+      "presentation": "sheet",
+      "selectedTab": 0,
+      "tabBarExpected": false,
+      "featureMarker": "m7.brief",
+      "resolvedAppearance": "dark",
       "width": 1179,
       "height": 2556,
-      "sha256": "2951d64215ef2479b45cfb4e94f07840da53494c393d114336620821825ad4c6"
+      "sha256": "f08af25a32b92ecd4e2ab2066703306c7378ae85b7a1ffd496cb03006c3a84b2"
     },
     {
       "file": "docs/screenshots/12-manage-light.png",
@@ -240,9 +380,15 @@
       "mode": "standard",
       "appearance": "light",
       "readyMarker": "screenshot.route.manage",
+      "shell": "StandardRootTabView",
+      "presentation": "tab",
+      "selectedTab": 4,
+      "tabBarExpected": true,
+      "featureMarker": "m45.manage",
+      "resolvedAppearance": "light",
       "width": 1179,
       "height": 2556,
-      "sha256": "a552c31166d4c6eac70cd245314c3b673a349222c1c6e28f55ce9daf3f861947"
+      "sha256": "3906a7d70d2ba1b520f8acfae79b3a8c1edff16bdbad3b6ff63a9d493d29bee8"
     },
     {
       "file": "docs/screenshots/12-manage-dark.png",
@@ -250,9 +396,15 @@
       "mode": "standard",
       "appearance": "dark",
       "readyMarker": "screenshot.route.manage",
+      "shell": "StandardRootTabView",
+      "presentation": "tab",
+      "selectedTab": 4,
+      "tabBarExpected": true,
+      "featureMarker": "m45.manage",
+      "resolvedAppearance": "dark",
       "width": 1179,
       "height": 2556,
-      "sha256": "2d96443194ce3dd9407fe899d630520283a210d92698e7de984cc5b49c54027c"
+      "sha256": "0dd940df18f64479ebf9bbd5240bc9d940438f72e2c39761d1dbeb1bc5854eac"
     },
     {
       "file": "docs/screenshots/13-backup-light.png",
@@ -260,9 +412,15 @@
       "mode": "standard",
       "appearance": "light",
       "readyMarker": "screenshot.route.backup",
+      "shell": "StandardRootTabView",
+      "presentation": "push",
+      "selectedTab": 4,
+      "tabBarExpected": true,
+      "featureMarker": "m8.backup.screen",
+      "resolvedAppearance": "light",
       "width": 1179,
       "height": 2556,
-      "sha256": "648499ff971681936ee4eb00c721f26bc89cf812e788d6bfce00951c5d1355f2"
+      "sha256": "2d2dbf0482ae0ea7f0954b1f443d2d6ceaa879ae02caf548d74535bc455ae06f"
     },
     {
       "file": "docs/screenshots/13-backup-dark.png",
@@ -270,29 +428,47 @@
       "mode": "standard",
       "appearance": "dark",
       "readyMarker": "screenshot.route.backup",
+      "shell": "StandardRootTabView",
+      "presentation": "push",
+      "selectedTab": 4,
+      "tabBarExpected": true,
+      "featureMarker": "m8.backup.screen",
+      "resolvedAppearance": "dark",
       "width": 1179,
       "height": 2556,
-      "sha256": "e2847a0fdf400cc55820e6484709177f672dc5b6544d52af45b2f5c9fb1ffd26"
+      "sha256": "99d94563c9eb3a0c20d2e35c2cc842e67e6d9df12f3bf0389050ae706e2a86ce"
     },
     {
       "file": "docs/screenshots/14-lock-light.png",
       "route": "lock",
       "mode": "standard",
       "appearance": "light",
-      "readyMarker": "process-stable",
+      "readyMarker": "screenshot.route.lock",
+      "shell": "AppLockGate",
+      "presentation": "gate",
+      "selectedTab": null,
+      "tabBarExpected": false,
+      "featureMarker": "m8.lock.screen",
+      "resolvedAppearance": "light",
       "width": 1179,
       "height": 2556,
-      "sha256": "50e9caa46182dfdef54ab0797290ba6982ff3cdfe58587872ba54c79c6f8b056"
+      "sha256": "8a2729344f46a88754565f5e0b4c4b911e7e7065a0a4f47b548c83585b3e5086"
     },
     {
       "file": "docs/screenshots/14-lock-dark.png",
       "route": "lock",
       "mode": "standard",
       "appearance": "dark",
-      "readyMarker": "process-stable",
+      "readyMarker": "screenshot.route.lock",
+      "shell": "AppLockGate",
+      "presentation": "gate",
+      "selectedTab": null,
+      "tabBarExpected": false,
+      "featureMarker": "m8.lock.screen",
+      "resolvedAppearance": "dark",
       "width": 1179,
       "height": 2556,
-      "sha256": "a42202f6d5b761c6296b18ccfb65a2b13f11dfafea6ed4b49bf87bd2607160ee"
+      "sha256": "5e407e883ee5e6ddc6c764579eb8510f1491cf33ca91ae249cf72db54d2a1fd1"
     },
     {
       "file": "docs/screenshots/15-elder-today-light.png",
@@ -300,9 +476,15 @@
       "mode": "elder",
       "appearance": "light",
       "readyMarker": "screenshot.route.elder-today",
+      "shell": "ElderRootView",
+      "presentation": "tab",
+      "selectedTab": 0,
+      "tabBarExpected": true,
+      "featureMarker": "elder.today",
+      "resolvedAppearance": "light",
       "width": 1179,
       "height": 2556,
-      "sha256": "7cda502713782cf8bb077fddec28249ef184a3b60ae30e16888bec0031f90c83"
+      "sha256": "b10176462376194eb252162795f4d12175c2096d9e26eebd85931599a9eafbbe"
     },
     {
       "file": "docs/screenshots/15-elder-today-dark.png",
@@ -310,9 +492,15 @@
       "mode": "elder",
       "appearance": "dark",
       "readyMarker": "screenshot.route.elder-today",
+      "shell": "ElderRootView",
+      "presentation": "tab",
+      "selectedTab": 0,
+      "tabBarExpected": true,
+      "featureMarker": "elder.today",
+      "resolvedAppearance": "dark",
       "width": 1179,
       "height": 2556,
-      "sha256": "97fff56068eef73fbcea7f24ebdbf4631b7991ef8c9afc14f44e5260edf7d18e"
+      "sha256": "9a7564db9d739d74e86907ec014f520e71554c3db4200c565c0f7f752ae1a6d7"
     },
     {
       "file": "docs/screenshots/16-elder-capture-question-light.png",
@@ -320,9 +508,15 @@
       "mode": "elder",
       "appearance": "light",
       "readyMarker": "screenshot.route.elder-capture-question",
+      "shell": "ElderRootView",
+      "presentation": "sheet",
+      "selectedTab": 0,
+      "tabBarExpected": false,
+      "featureMarker": "elder.capture.typeQuestion",
+      "resolvedAppearance": "light",
       "width": 1179,
       "height": 2556,
-      "sha256": "889fadcaf76caf9a89bb339e6a9384850d19e6622a9215f19c3248366874a5be"
+      "sha256": "a3d4debdb784615ef502a3f816cf77d53fd3fd3c93e70b17aec8e816f8d48a7f"
     },
     {
       "file": "docs/screenshots/16-elder-capture-question-dark.png",
@@ -330,9 +524,15 @@
       "mode": "elder",
       "appearance": "dark",
       "readyMarker": "screenshot.route.elder-capture-question",
+      "shell": "ElderRootView",
+      "presentation": "sheet",
+      "selectedTab": 0,
+      "tabBarExpected": false,
+      "featureMarker": "elder.capture.typeQuestion",
+      "resolvedAppearance": "dark",
       "width": 1179,
       "height": 2556,
-      "sha256": "58b5432654aa66ce5543c6b0fb14586a1983f09fe45f9f8bba536e9d9f87dda0"
+      "sha256": "7422c1ce61582675b40e41e6adeeee1682b4377f35fefaf3a6f4738ef1a51974"
     },
     {
       "file": "docs/screenshots/17-elder-records-light.png",
@@ -340,9 +540,15 @@
       "mode": "elder",
       "appearance": "light",
       "readyMarker": "screenshot.route.elder-records",
+      "shell": "ElderRootView",
+      "presentation": "tab",
+      "selectedTab": 2,
+      "tabBarExpected": true,
+      "featureMarker": "elder.records",
+      "resolvedAppearance": "light",
       "width": 1179,
       "height": 2556,
-      "sha256": "32e162ea1739f4acee2b9ba9b61cd9d40378d1cf0af6afa0d650a7d543b72ffc"
+      "sha256": "6261c0ba4125ed81e1d2e429d6ce81952b449ccdfaa10e481e1b214f2241178d"
     },
     {
       "file": "docs/screenshots/17-elder-records-dark.png",
@@ -350,9 +556,15 @@
       "mode": "elder",
       "appearance": "dark",
       "readyMarker": "screenshot.route.elder-records",
+      "shell": "ElderRootView",
+      "presentation": "tab",
+      "selectedTab": 2,
+      "tabBarExpected": true,
+      "featureMarker": "elder.records",
+      "resolvedAppearance": "dark",
       "width": 1179,
       "height": 2556,
-      "sha256": "b95ebbfd9eebf37f956dfc7c6b7ff022e52ae40630131a8a942aaaae351a7128"
+      "sha256": "b7f5b889a141412f475e0f51193553521199e9490c965c7a882284af070fcce7"
     },
     {
       "file": "docs/screenshots/18-elder-brief-light.png",
@@ -360,9 +572,15 @@
       "mode": "elder",
       "appearance": "light",
       "readyMarker": "screenshot.route.elder-brief",
+      "shell": "ElderRootView",
+      "presentation": "sheet",
+      "selectedTab": 0,
+      "tabBarExpected": false,
+      "featureMarker": "elder.brief",
+      "resolvedAppearance": "light",
       "width": 1179,
       "height": 2556,
-      "sha256": "3c7ae088db7252711cf0b74ad0a1ecec0361aaafc6d6c2f502b8fb6dd63c8e4b"
+      "sha256": "d7a147a3369da1adf79715da3f55503697a6617f7b15cc65ad671cafbe01e172"
     },
     {
       "file": "docs/screenshots/18-elder-brief-dark.png",
@@ -370,9 +588,175 @@
       "mode": "elder",
       "appearance": "dark",
       "readyMarker": "screenshot.route.elder-brief",
+      "shell": "ElderRootView",
+      "presentation": "sheet",
+      "selectedTab": 0,
+      "tabBarExpected": false,
+      "featureMarker": "elder.brief",
+      "resolvedAppearance": "dark",
       "width": 1179,
       "height": 2556,
-      "sha256": "9c72d4dcb0c67843c34b0e890ccff02120f4e8980dc0f1d9b1be90b60fd7ef1c"
+      "sha256": "042299217198beb41cf87eb9a3b48ac2f47fd2c76b302a1a54de7c0d6cea448f"
+    },
+    {
+      "file": "docs/screenshots/19-member-management-light.png",
+      "route": "member-management",
+      "mode": "standard",
+      "appearance": "light",
+      "readyMarker": "screenshot.route.member-management",
+      "shell": "StandardRootTabView",
+      "presentation": "push",
+      "selectedTab": 4,
+      "tabBarExpected": true,
+      "featureMarker": "member.management",
+      "resolvedAppearance": "light",
+      "width": 1179,
+      "height": 2556,
+      "sha256": "d817f1ee1828d0adfaabaf68202071e117eee8fe74e4b6f4a23f4da6393aab1e"
+    },
+    {
+      "file": "docs/screenshots/19-member-management-dark.png",
+      "route": "member-management",
+      "mode": "standard",
+      "appearance": "dark",
+      "readyMarker": "screenshot.route.member-management",
+      "shell": "StandardRootTabView",
+      "presentation": "push",
+      "selectedTab": 4,
+      "tabBarExpected": true,
+      "featureMarker": "member.management",
+      "resolvedAppearance": "dark",
+      "width": 1179,
+      "height": 2556,
+      "sha256": "2d6e6d5a92a68494f3e0073354ad7b7240f07dca823701a74de140c74183e2ed"
+    },
+    {
+      "file": "docs/screenshots/20-comparison-light.png",
+      "route": "comparison",
+      "mode": "standard",
+      "appearance": "light",
+      "readyMarker": "screenshot.route.comparison",
+      "shell": "StandardRootTabView",
+      "presentation": "sheet",
+      "selectedTab": 0,
+      "tabBarExpected": false,
+      "featureMarker": "m7.compare",
+      "resolvedAppearance": "light",
+      "width": 1179,
+      "height": 2556,
+      "sha256": "aadbeca46e6daa3e778997595f062c53040868d19baf9781d2be38a5156974b6"
+    },
+    {
+      "file": "docs/screenshots/20-comparison-dark.png",
+      "route": "comparison",
+      "mode": "standard",
+      "appearance": "dark",
+      "readyMarker": "screenshot.route.comparison",
+      "shell": "StandardRootTabView",
+      "presentation": "sheet",
+      "selectedTab": 0,
+      "tabBarExpected": false,
+      "featureMarker": "m7.compare",
+      "resolvedAppearance": "dark",
+      "width": 1179,
+      "height": 2556,
+      "sha256": "a375ef785834fd5c808c601f5ae877e76b1ee6388248440bc81b4a93e8675ad8"
+    },
+    {
+      "file": "docs/screenshots/21-export-light.png",
+      "route": "export",
+      "mode": "standard",
+      "appearance": "light",
+      "readyMarker": "screenshot.route.export",
+      "shell": "StandardRootTabView",
+      "presentation": "sheet",
+      "selectedTab": 0,
+      "tabBarExpected": false,
+      "featureMarker": "m7.brief",
+      "resolvedAppearance": "light",
+      "width": 1179,
+      "height": 2556,
+      "sha256": "6ac2d1d5112816b4d5394678c6347b795f657809dc124d02e065c04ce9401df4"
+    },
+    {
+      "file": "docs/screenshots/21-export-dark.png",
+      "route": "export",
+      "mode": "standard",
+      "appearance": "dark",
+      "readyMarker": "screenshot.route.export",
+      "shell": "StandardRootTabView",
+      "presentation": "sheet",
+      "selectedTab": 0,
+      "tabBarExpected": false,
+      "featureMarker": "m7.brief",
+      "resolvedAppearance": "dark",
+      "width": 1179,
+      "height": 2556,
+      "sha256": "02cb458d629d74903ebe6ddc79ca587faa978fea2c9c423251d00ff7dc0df870"
+    },
+    {
+      "file": "docs/screenshots/22-nearby-sync-light.png",
+      "route": "nearby-sync",
+      "mode": "standard",
+      "appearance": "light",
+      "readyMarker": "screenshot.route.nearby-sync",
+      "shell": "StandardRootTabView",
+      "presentation": "sheet",
+      "selectedTab": 0,
+      "tabBarExpected": false,
+      "featureMarker": "nearbySync.root",
+      "resolvedAppearance": "light",
+      "width": 1179,
+      "height": 2556,
+      "sha256": "0592ca65a422dd5b1e63a52e0292adf5f6de29144c88483e4cd2f7f10f8ae918"
+    },
+    {
+      "file": "docs/screenshots/22-nearby-sync-dark.png",
+      "route": "nearby-sync",
+      "mode": "standard",
+      "appearance": "dark",
+      "readyMarker": "screenshot.route.nearby-sync",
+      "shell": "StandardRootTabView",
+      "presentation": "sheet",
+      "selectedTab": 0,
+      "tabBarExpected": false,
+      "featureMarker": "nearbySync.root",
+      "resolvedAppearance": "dark",
+      "width": 1179,
+      "height": 2556,
+      "sha256": "6ee43344412f510a6bcf4c598b7028ccca62237c1c23ba085f9196e48bc5e492"
+    },
+    {
+      "file": "docs/screenshots/23-more-light.png",
+      "route": "more",
+      "mode": "standard",
+      "appearance": "light",
+      "readyMarker": "screenshot.route.more",
+      "shell": "StandardRootTabView",
+      "presentation": "sheet",
+      "selectedTab": 0,
+      "tabBarExpected": false,
+      "featureMarker": "m45.more",
+      "resolvedAppearance": "light",
+      "width": 1179,
+      "height": 2556,
+      "sha256": "c7f7c530bbaf9475d7c5d8c8d6ef0fba4d12ba02c85400c787d9104da4b76f9d"
+    },
+    {
+      "file": "docs/screenshots/23-more-dark.png",
+      "route": "more",
+      "mode": "standard",
+      "appearance": "dark",
+      "readyMarker": "screenshot.route.more",
+      "shell": "StandardRootTabView",
+      "presentation": "sheet",
+      "selectedTab": 0,
+      "tabBarExpected": false,
+      "featureMarker": "m45.more",
+      "resolvedAppearance": "dark",
+      "width": 1179,
+      "height": 2556,
+      "sha256": "dfe9f2ea513796520983700811c27c1af0e8913c0424978343a75bb8259cbca9"
     }
   ]
 }
