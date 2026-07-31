@@ -231,7 +231,7 @@
 ### 全量回归
 
 - `Scripts/verify.sh`：退出码 0。
-- Swift Testing：607/607；XCUITest：39/39；零失败、零跳过。
+- Swift Testing：608/608；XCUITest：39/39；零失败、零跳过。
 - 构建目标：iPhone 16 / iOS 18.6；结果包：本地 `DerivedData/Verify.xcresult`。
 - 边界矩阵：23/23 项均由 `Scripts/acceptance.sh` 绑定到真实测试方法。
 
@@ -252,7 +252,7 @@
 ### 最终查漏
 
 - [x] M0–M9 独立提交并推送
-- [x] 607 单元/集成测试与 39 UI 测试全绿
+- [x] 608 单元/集成测试与 39 UI 测试全绿
 - [x] 23 项边界矩阵自动化
 - [x] 36 张截图与可复核 manifest
 - [x] 13 项设计/边界走查证据

@@ -7,7 +7,7 @@
 - [x] `A01` 读取 04 开头规定的 01/02/05 必读顺序，02 §15 老人版规范纳入设计。
 - [x] `A02` 仓库在 `careThread`，初始化于 `main`，Git 作者 `AMortalsOdyssey`，提交不含 `Co-Authored-By`。
 - [x] `A03` M0–M9 均形成独立、可审查并已推送的提交轨迹；OCR 与后续修复另有独立提交。
-- [x] `A04` `Scripts/verify.sh` 全绿，单元/集成测试 607/607。
+- [x] `A04` `Scripts/verify.sh` 全绿，单元/集成测试 608/608。
 - [x] `A05` XCUITest 39/39，超过 16 条最低要求。
 - [x] `A06` `Scripts/acceptance.sh` 全部 PASS。
 - [x] `A07` 23 项边界矩阵均有自动化落点。
