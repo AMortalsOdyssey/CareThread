@@ -23,7 +23,7 @@ runtime_diagnostics() {
 
 for required in xcodegen jq xcrun xcodebuild; do
   command -v "$required" >/dev/null ||
-    fail "缺少工具 $required。请先完成 README“环境要求”。"
+    fail "缺少工具 ${required}。请先完成 README“环境要求”。"
 done
 
 simulator_devices_json() {

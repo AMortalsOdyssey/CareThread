@@ -280,6 +280,7 @@ vendored_artifacts="$(
   find . \
     -path './.git' -prune -o \
     -path './DerivedData' -prune -o \
+    -path './.build' -prune -o \
     \( \
       -type d \( -name '*.framework' -o -name '*.xcframework' \) -o \
       -type f \( -name '*.a' -o -name '*.dylib' \) \
@@ -331,6 +332,7 @@ if rg -n --hidden -i \
   . \
   --glob '!.git/**' \
   --glob '!DerivedData/**' \
+  --glob '!.build/**' \
   --glob '!docs/screenshots/**' \
   --glob '!Benchmarks/OCRBench/results/**' \
   --glob '!Scripts/acceptance.sh'; then
@@ -343,6 +345,7 @@ if rg -n '/Users/[A-Za-z0-9._-]+' \
   --hidden \
   --glob '!.git/**' \
   --glob '!DerivedData/**' \
+  --glob '!.build/**' \
   --glob '!docs/screenshots/**' \
   --glob '!Benchmarks/OCRBench/results/**' \
   --glob '!Scripts/acceptance.sh'; then
@@ -354,6 +357,7 @@ credential_files="$(
   find . \
     -path './.git' -prune -o \
     -path './DerivedData' -prune -o \
+    -path './.build' -prune -o \
     -type f \
     \( -name '.env' -o -name '.env.*' -o -name '*.p12' -o \
       -name '*.mobileprovision' -o -name '*.cer' -o -name '*.key' -o \
@@ -541,7 +545,7 @@ if [[ "${#screenshots[@]}" -eq "$CARETHREAD_SCREENSHOT_COUNT" &&
   "$dimension_rows" -eq "$CARETHREAD_SCREENSHOT_COUNT" &&
   "$dimension_count" -eq 1 &&
   "$unique_hashes" -eq "$CARETHREAD_SCREENSHOT_COUNT" ]]; then
-  pass "截图 $CARETHREAD_SCREENSHOT_COUNT（标准 $CARETHREAD_SCREENSHOT_STANDARD_COUNT / 老人 $CARETHREAD_SCREENSHOT_ELDER_COUNT），命名/非空/尺寸/去重均通过"
+  pass "截图 ${CARETHREAD_SCREENSHOT_COUNT}（标准 ${CARETHREAD_SCREENSHOT_STANDARD_COUNT} / 老人 ${CARETHREAD_SCREENSHOT_ELDER_COUNT}），命名/非空/尺寸/去重均通过"
 else
   fail "截图验收（总 ${#screenshots[@]} / 标准 ${#standard_screenshots[@]} / 老人 ${#elder_screenshots[@]} / 缺失 ${missing_screenshots} / 有效尺寸 ${dimension_rows} / 尺寸种类 ${dimension_count} / 唯一 ${unique_hashes}）"
 fi

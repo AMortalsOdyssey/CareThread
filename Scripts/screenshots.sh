@@ -124,11 +124,11 @@ validate_pngs() {
   done
 
   [[ "$total" == "$CARETHREAD_SCREENSHOT_COUNT" ]] ||
-    fail "PNG 数量应为 $CARETHREAD_SCREENSHOT_COUNT，实际 $total"
+    fail "PNG 数量应为 ${CARETHREAD_SCREENSHOT_COUNT}，实际 ${total}"
   [[ "$standard" == "$CARETHREAD_SCREENSHOT_STANDARD_COUNT" ]] ||
-    fail "标准版应为 $CARETHREAD_SCREENSHOT_STANDARD_COUNT，实际 $standard"
+    fail "标准版应为 ${CARETHREAD_SCREENSHOT_STANDARD_COUNT}，实际 ${standard}"
   [[ "$elder" == "$CARETHREAD_SCREENSHOT_ELDER_COUNT" ]] ||
-    fail "老人版应为 $CARETHREAD_SCREENSHOT_ELDER_COUNT，实际 $elder"
+    fail "老人版应为 ${CARETHREAD_SCREENSHOT_ELDER_COUNT}，实际 ${elder}"
 
   dimensions=""
   while IFS= read -r file_path; do
@@ -188,7 +188,7 @@ IFS=$'\t' read -r DEVICE_NAME RUNTIME_IDENTIFIER < <(
 )
 [[ "$DEVICE_NAME" == "$EXPECTED_DEVICE_NAME" &&
   -n "$RUNTIME_IDENTIFIER" ]] ||
-  fail "截图设备必须是可用的 $EXPECTED_DEVICE_NAME，当前 UDID 不符合"
+  fail "截图设备必须是可用的 ${EXPECTED_DEVICE_NAME}，当前 UDID 不符合"
 OS_VERSION="$(
   xcrun simctl list runtimes -j |
     jq -r --arg runtime "$RUNTIME_IDENTIFIER" '
@@ -198,7 +198,7 @@ OS_VERSION="$(
     '
 )"
 [[ "$OS_VERSION" == "$EXPECTED_OS_VERSION" ]] ||
-  fail "截图 runtime 必须是 iOS $EXPECTED_OS_VERSION，实际为 ${OS_VERSION:-未知}"
+  fail "截图 runtime 必须是 iOS ${EXPECTED_OS_VERSION}，实际为 ${OS_VERSION:-未知}"
 
 log "生成工程并构建一次，$CARETHREAD_SCREENSHOT_COUNT 张图全部复用该构建"
 xcodegen generate --quiet
