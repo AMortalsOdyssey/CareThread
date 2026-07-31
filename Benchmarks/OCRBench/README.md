@@ -32,8 +32,9 @@ following `testset/real/README.md`, then run:
 Benchmarks/OCRBench/run_real.sh
 ```
 
-The real-set v2 gate switches away from Vision only when the same candidate
-achieves both at least 50% relative CER improvement and at least 5 percentage
-points higher field-hit rate. Raw OCR and extracted values live only in a
-permission-restricted temporary directory and are deleted on exit. Repository
-results contain only SHA-256 hashes and scores.
+The real-set gate follows the fixed task protocol: a challenger must improve
+handwriting CER by at least 10 percentage points versus Vision while degrading
+print CER by no more than 1 percentage point. Print and handwriting field-hit
+rates are reported separately but do not replace either gate. Raw OCR and
+extracted values live only in a permission-restricted temporary directory and
+are deleted on exit. Repository results contain only SHA-256 hashes and scores.

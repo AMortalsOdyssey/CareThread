@@ -9,6 +9,8 @@
   医院或病种。
 - 图片放在 `images/`，逐页人工校对文本放在 `references/`。
 - 多页报告按页标注；续页没有的字段不要写入 `expected`，不会被算作识别失败。
+- 每页必须由人工标注 `document_style`：打印件写 `print`，医生手写/手填页写
+  `handwriting`；两类都至少一页，评分器才会运行。
 - `reference_normalized` 可省略；评分器会读取 `reference` 文件并执行 NFKC
   归一化、移除空白。
 
@@ -22,6 +24,7 @@
       "id": "r001",
       "group": "R",
       "subgroup": "real",
+      "document_style": "print",
       "image": "images/r001.jpg",
       "reference": "references/r001.txt",
       "scored": true,
@@ -43,3 +46,7 @@ Benchmarks/OCRBench/run_real.sh
 含 OCR 原文的所有中间结果只写入权限为 `0700` 的临时目录，命令退出即清理。
 仓库内只会生成 `results/real/results.json` 与 `RESULTS.md`，其中只有不可逆
 SHA-256、字符/字段计数、CER、延迟和换引擎判定。
+
+换引擎严格执行任务书 §5：挑战者手写 CER 相对 Vision 改善至少 10 个百分点，
+并且打印 CER 相对 Vision 最多恶化 1 个百分点；字段命中率分列报告，但不能
+替代这两条硬门槛。
