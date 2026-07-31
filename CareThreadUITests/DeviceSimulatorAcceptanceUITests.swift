@@ -6,6 +6,73 @@ final class DeviceSimulatorAcceptanceUITests: XCTestCase {
         continueAfterFailure = false
     }
 
+    func testNearbyRouteIsActuallyVisibleOnThisSimulator() {
+        let app = XCUIApplication()
+        app.launchArguments = [
+            "-uiTestMode",
+            "-displayMode", "standard",
+            "-M8ResetLock",
+            "-screenshotRoute", "nearby-sync"
+        ]
+        app.launch()
+
+        XCTAssertTrue(
+            element("nearbySync.root", in: app)
+                .waitForExistence(timeout: 12)
+        )
+        XCTAssertTrue(element("nearbySync.privacy", in: app).exists)
+        XCTAssertTrue(app.buttons["nearbySync.begin"].exists)
+    }
+
+    func testMissingNotificationMemberFailsClosedAndCanDismiss() {
+        let app = XCUIApplication()
+        app.launchArguments = [
+            "-uiTestMode",
+            "-displayMode", "standard",
+            "-M8ResetLock",
+            "-DeviceSimOpenNotificationRoute", "medication",
+            "-DeviceSimOpenNotificationPatient",
+            "00000000-0000-0000-0000-000000000099"
+        ]
+        app.launch()
+
+        XCTAssertTrue(
+            element("notification.route.missingMember", in: app)
+                .waitForExistence(timeout: 12)
+        )
+        XCTAssertFalse(element("m45.medication.list", in: app).exists)
+        let close = app.buttons["notification.route.close"]
+        XCTAssertTrue(close.exists)
+        close.tap()
+        XCTAssertTrue(
+            element("standardRoot", in: app).waitForExistence(timeout: 8)
+        )
+    }
+
+    func testNotificationRouteWaitsBehindAppLockUntilUnlock() {
+        let app = XCUIApplication()
+        app.launchArguments = [
+            "-uiTestMode",
+            "-displayMode", "standard",
+            "-M8LockEnabled",
+            "-M8LockResult", "failure",
+            "-DeviceSimOpenNotificationRoute", "medication",
+            "-DeviceSimOpenNotificationPatient",
+            "28C19EF0-37C8-4B1F-B2DF-9CCFD2ED0DD4"
+        ]
+        app.launch()
+
+        let retry = element("m8.lock.retry", in: app)
+        XCTAssertTrue(retry.waitForExistence(timeout: 12))
+        XCTAssertFalse(element("standardRoot", in: app).exists)
+        XCTAssertFalse(element("m45.medication.list", in: app).exists)
+        retry.tap()
+        XCTAssertTrue(
+            element("m45.medication.list", in: app)
+                .waitForExistence(timeout: 15)
+        )
+    }
+
     func testBackupSystemShareSheetOpensAndCancels() {
         let app = XCUIApplication()
         app.launchArguments = [
@@ -209,6 +276,16 @@ final class DeviceSimulatorAcceptanceUITests: XCTestCase {
         )
     }
 
+    func testElderFollowUpNotificationColdLaunchRoutesToToday() throws {
+        try exerciseNotification(
+            mode: "elder",
+            kind: "followUp",
+            body: "虚构验收 · 大字版 · 复查",
+            destination: "elder.today",
+            terminateBeforeTap: true
+        )
+    }
+
     func test48MPPhotoCompletesImportSurvivesMemoryWarningAndRestoresDraft()
         throws {
         let app = XCUIApplication()
@@ -276,7 +353,8 @@ final class DeviceSimulatorAcceptanceUITests: XCTestCase {
         mode: String,
         kind: String,
         body: String,
-        destination: String
+        destination: String,
+        terminateBeforeTap: Bool = false
     ) throws {
         let permissionMonitor = addUIInterruptionMonitor(
             withDescription: "系统通知授权"
@@ -370,6 +448,10 @@ final class DeviceSimulatorAcceptanceUITests: XCTestCase {
             "DEVICE_SIM_NOTIFICATION_CONTAINER_FRAME="
                 + "\(notificationContainer.frame)"
         )
+        if terminateBeforeTap {
+            app.terminate()
+            XCTAssertEqual(app.state, .notRunning)
+        }
         notificationContainer.tap()
         XCTAssertEqual(
             app.wait(for: .runningForeground, timeout: 15),

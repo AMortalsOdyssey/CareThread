@@ -1,6 +1,25 @@
 import SwiftData
 import SwiftUI
 
+enum ElderInitialPatientSelection {
+    static func resolve(
+        initialPatientID: UUID?,
+        storedPatientID: UUID?,
+        availablePatientIDs: [UUID]
+    ) -> UUID? {
+        if let initialPatientID {
+            return availablePatientIDs.contains(initialPatientID)
+                ? initialPatientID
+                : nil
+        }
+        if let storedPatientID,
+           availablePatientIDs.contains(storedPatientID) {
+            return storedPatientID
+        }
+        return availablePatientIDs.first
+    }
+}
+
 struct ElderRootView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \Patient.createdAt) private var patients: [Patient]
@@ -11,15 +30,21 @@ struct ElderRootView: View {
     @State private var showCapture = false
     @State private var showSettings = false
     @State private var showDoctorBrief = false
+    @State private var showLocalAsk = false
     @State private var showSwitchConfirmation = false
     @State private var recordsRefreshToken = 0
     #if DEBUG
     @State private var didApplyScreenshotRoute = false
     #endif
 
+    let initialPatientID: UUID?
     let onSwitchToStandard: () -> Void
 
-    init(onSwitchToStandard: @escaping () -> Void) {
+    init(
+        initialPatientID: UUID? = nil,
+        onSwitchToStandard: @escaping () -> Void
+    ) {
+        self.initialPatientID = initialPatientID
         self.onSwitchToStandard = onSwitchToStandard
     }
 
@@ -33,6 +58,7 @@ struct ElderRootView: View {
                         selectedPatientID: $selectedPatientID,
                         onSettings: { showSettings = true },
                         onDoctorBrief: { showDoctorBrief = true },
+                        onAsk: { showLocalAsk = true },
                         onCapture: { showCapture = true }
                     )
                 } else {
@@ -113,6 +139,15 @@ struct ElderRootView: View {
                 }
             }
         }
+        .sheet(isPresented: $showLocalAsk) {
+            NavigationStack {
+                if let patientID = selectedPatient?.id {
+                    LocalAskView(patientID: patientID, mode: .elder)
+                } else {
+                    elderMissingMember
+                }
+            }
+        }
         .fullScreenCover(isPresented: $showSwitchConfirmation) {
             ElderModeSwitchConfirmationView(
                 targetMode: .standard,
@@ -134,8 +169,13 @@ struct ElderRootView: View {
     }
 
     private var selectedPatient: Patient? {
-        patients.first(where: { $0.id == selectedPatientID })
-            ?? patients.first
+        if let selectedPatientID {
+            return patients.first(where: { $0.id == selectedPatientID })
+        }
+        if let initialPatientID {
+            return patients.first(where: { $0.id == initialPatientID })
+        }
+        return patients.first
     }
 
     private var elderMissingMember: some View {
@@ -184,12 +224,11 @@ struct ElderRootView: View {
         let refreshed = (try? modelContext.fetch(
             FetchDescriptor<Patient>(sortBy: [SortDescriptor(\.createdAt)])
         )) ?? patients
-        if let stored = UUID(uuidString: storedPatientID),
-           refreshed.contains(where: { $0.id == stored }) {
-            selectedPatientID = stored
-        } else {
-            selectedPatientID = refreshed.first?.id
-        }
+        selectedPatientID = ElderInitialPatientSelection.resolve(
+            initialPatientID: initialPatientID,
+            storedPatientID: UUID(uuidString: storedPatientID),
+            availablePatientIDs: refreshed.map(\.id)
+        )
         if ProcessInfo.processInfo.arguments.contains("-M9OpenCapture") {
             showCapture = true
         }

@@ -11,6 +11,7 @@ struct ElderTodayView: View {
     @Binding var selectedPatientID: UUID?
     let onSettings: () -> Void
     let onDoctorBrief: () -> Void
+    let onAsk: () -> Void
     let onCapture: () -> Void
 
     @State private var showPendingExplanation = false
@@ -21,6 +22,7 @@ struct ElderTodayView: View {
         selectedPatientID: Binding<UUID?>,
         onSettings: @escaping () -> Void,
         onDoctorBrief: @escaping () -> Void,
+        onAsk: @escaping () -> Void = {},
         onCapture: @escaping () -> Void
     ) {
         self.patientID = patientID
@@ -28,6 +30,7 @@ struct ElderTodayView: View {
         _selectedPatientID = selectedPatientID
         self.onSettings = onSettings
         self.onDoctorBrief = onDoctorBrief
+        self.onAsk = onAsk
         self.onCapture = onCapture
         _medications = Query(
             filter: #Predicate<Medication> { $0.patientId == patientID },
@@ -58,6 +61,11 @@ struct ElderTodayView: View {
             VStack(alignment: .leading, spacing: CT.Space.s6) {
                 dateHeader
                 memberSwitcher
+                Button(action: onAsk) {
+                    Label("问我的资料", systemImage: "magnifyingglass")
+                }
+                .buttonStyle(ElderPrimaryButtonStyle())
+                .accessibilityIdentifier("elder.today.ask")
                 medicationSection
                 if let followUp = snapshot.nextFollowUp {
                     followUpCard(followUp)

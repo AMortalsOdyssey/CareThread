@@ -332,7 +332,9 @@ enum AppLockRuntime {
             )
         }
         let enabled = arguments.contains("-M8LockEnabled") ? true : nil
-        if arguments.contains("-DeviceSimRealFaceID") {
+        #if targetEnvironment(simulator)
+        if arguments.contains("-uiTestMode"),
+           arguments.contains("-DeviceSimRealFaceID") {
             return AppLockController(
                 authenticator:
                     DeviceSimulatorBiometricAuthenticationAdapter(),
@@ -340,6 +342,7 @@ enum AppLockRuntime {
                 enabledOverride: enabled
             )
         }
+        #endif
         if let index = arguments.firstIndex(of: "-M8LockResult"),
            arguments.indices.contains(index + 1) {
             let raw = arguments[index + 1]

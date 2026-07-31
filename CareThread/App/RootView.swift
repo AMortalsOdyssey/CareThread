@@ -126,6 +126,7 @@ private struct StandardRootTabView: View {
     @State private var showBrief = false
     @State private var showComparison = false
     @State private var showNearbySync = false
+    @State private var showLocalAsk = false
     @State private var showElderModeConfirmation = false
     @State private var recordsRefreshToken = 0
     @State private var managementPath: [ManagementRoute] = []
@@ -156,6 +157,7 @@ private struct StandardRootTabView: View {
                     onCapture: { showCapture = true },
                     onTimeline: { selectedTab = 1 },
                     onBrief: { showBrief = true },
+                    onAsk: { showLocalAsk = true },
                     onPendingRecords: { selectedTab = 3 },
                     onFollowUp: { _ in openManagement(.followUps) },
                     onMedication: { _ in openManagement(.medications) }
@@ -362,6 +364,18 @@ private struct StandardRootTabView: View {
             NavigationStack {
                 if let patientID = selectedPatient?.id {
                     LocalComparisonView(patientID: patientID)
+                } else {
+                    ContentUnavailableView(
+                        Copy.Records.addMemberFirst,
+                        systemImage: "person.crop.circle.badge.plus"
+                    )
+                }
+            }
+        }
+        .sheet(isPresented: $showLocalAsk) {
+            NavigationStack {
+                if let patientID = selectedPatient?.id {
+                    LocalAskView(patientID: patientID, mode: .standard)
                 } else {
                     ContentUnavailableView(
                         Copy.Records.addMemberFirst,

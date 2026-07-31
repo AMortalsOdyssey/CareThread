@@ -17,6 +17,7 @@ fail() {
   FAILURES=$((FAILURES + 1))
 }
 residual() { printf 'RESIDUAL %s\n' "$1"; }
+boundary() { printf 'BOUNDARY %s\n' "$1"; }
 
 require_command() {
   if command -v "$1" >/dev/null 2>&1; then
@@ -237,7 +238,7 @@ if set_face_enrollment 1; then
     /tmp/carethread-device-face-retry.log; then
     pass "Face ID nomatch 后 LAContext 返回失败，应用保持锁定"
   else
-    residual "iOS 26.5 Simulator 的 pearl.nomatch 保持系统鉴权进行中、不会回调 LAContext；受保护内容保持锁定，应用级失败/重试由 2 条 UI 回归覆盖"
+    boundary "iOS 26.5 Simulator 的 pearl.nomatch 保持系统鉴权进行中、不会回调 LAContext；受保护内容保持锁定，应用级失败/重试由 2 条 UI 回归覆盖"
   fi
 else
   fail "Face ID 模拟器录入或读回失败"
@@ -269,6 +270,19 @@ if xcodebuild "${xcodebuild_base[@]}" \
 else
   tail -120 /tmp/carethread-device-app-lock.log
   fail "应用锁调试回归成功/失败路径"
+fi
+
+ROUTING_RESULT="$DERIVED_DATA/DeviceSimNotificationSecurity.xcresult"
+if xcodebuild "${device_xcodebuild_base[@]}" \
+  -resultBundlePath "$ROUTING_RESULT" test \
+  -only-testing:CareThreadDeviceSimUITests/DeviceSimulatorAcceptanceUITests/testMissingNotificationMemberFailsClosedAndCanDismiss \
+  -only-testing:CareThreadDeviceSimUITests/DeviceSimulatorAcceptanceUITests/testNotificationRouteWaitsBehindAppLockUntilUnlock \
+  >/tmp/carethread-device-notification-security.log 2>&1; then
+  xcresult_all_pass "$ROUTING_RESULT" 2 \
+    "通知成员失效关闭与应用锁前置门控"
+else
+  tail -120 /tmp/carethread-device-notification-security.log
+  fail "通知成员失效关闭与应用锁前置门控"
 fi
 
 permission_failures_before="$FAILURES"
@@ -348,7 +362,7 @@ if [[ "$FAILURES" -eq "$permission_failures_before" \
   pass "photos / photos-add / calendar grant→revoke→reset 九态完成；calendar grant 含真实 EventKit 写入读回"
 elif [[ "$FAILURES" -eq "$permission_failures_before" \
   && "$permission_residuals" -eq 1 ]]; then
-  residual "权限矩阵 8/9 PASS + 1 环境残留；photos-add 与 calendar 九态中的其余八态均由 App 实值断言通过"
+  boundary "权限矩阵 8/9 PASS + 1 环境残留；photos-add 与 calendar 九态中的其余八态均由 App 实值断言通过"
 else
   printf 'FAIL photos / photos-add / calendar 九态存在失败；不输出汇总 PASS\n'
 fi
@@ -392,6 +406,37 @@ else
   else
     tail -160 /tmp/carethread-device-notifications.log
     fail "四条本地通知真实到达与落点"
+  fi
+fi
+
+COLD_NOTIFICATION_RESULT="$DERIVED_DATA/DeviceSimNotificationColdLaunch.xcresult"
+if xcodebuild "${device_xcodebuild_base[@]}" \
+  -resultBundlePath "$COLD_NOTIFICATION_RESULT" test \
+  -only-testing:CareThreadDeviceSimUITests/DeviceSimulatorAcceptanceUITests/testElderFollowUpNotificationColdLaunchRoutesToToday \
+  >/tmp/carethread-device-notification-cold-launch.log 2>&1; then
+  xcresult_all_pass "$COLD_NOTIFICATION_RESULT" 1 \
+    "App 终止后本地通知冷启动与落点"
+else
+  cold_route_errors="$(
+    rg -c 'Notification tap did not foreground CareThread' \
+      /tmp/carethread-device-notification-cold-launch.log 2>/dev/null || true
+  )"
+  cold_total_errors="$(
+    rg -c 'DeviceSimulatorAcceptanceUITests.swift:[0-9]+: error:' \
+      /tmp/carethread-device-notification-cold-launch.log 2>/dev/null || true
+  )"
+  cold_container_hits="$(
+    rg -c 'DEVICE_SIM_NOTIFICATION_CONTAINER_FRAME=' \
+      /tmp/carethread-device-notification-cold-launch.log 2>/dev/null || true
+  )"
+  if [[ "$cold_container_hits" -eq 1 \
+    && "$cold_route_errors" -eq 1 \
+    && "$cold_total_errors" -eq 1 ]]; then
+    residual "iOS 26.5 Simulator：通知真实到达后终止 App，点击通知中心容器仍未冷启动 App；生产冷启动代理与应用锁队列已静态/聚焦覆盖，系统唤起不冒充 PASS"
+    RESIDUALS=$((RESIDUALS + 1))
+  else
+    tail -120 /tmp/carethread-device-notification-cold-launch.log
+    fail "App 终止后本地通知冷启动与落点"
   fi
 fi
 
@@ -517,29 +562,60 @@ else
   fail "未找到 PDF 验收附件"
 fi
 
-APP_PATH="$DERIVED_DATA/Build/Products/Debug-iphonesimulator/CareThread.app"
 SECOND_SIMULATOR_UDID="${CARETHREAD_SECOND_SIMULATOR_UDID:-}"
 if [[ -z "$SECOND_SIMULATOR_UDID" ]]; then
   fail "换机双模拟器探针要求显式设置 CARETHREAD_SECOND_SIMULATOR_UDID，以免干扰其他模拟器任务"
 elif [[ "$SECOND_SIMULATOR_UDID" == "$SIMULATOR_UDID" ]]; then
   fail "第二模拟器不能与主模拟器相同"
-elif printf '%s' "$simulator_devices_json" | jq -e \
+elif ! printf '%s' "$simulator_devices_json" | jq -e \
   --arg udid "$SECOND_SIMULATOR_UDID" '
     any(.devices | to_entries[] | .value[]; .udid == $udid and .isAvailable == true and .state == "Booted")
-  ' >/dev/null 2>&1 \
-  && xcrun simctl install "$SECOND_SIMULATOR_UDID" "$APP_PATH" >/dev/null 2>&1 \
-  && xcrun simctl launch --terminate-running-process \
-    "$SECOND_SIMULATOR_UDID" "$BUNDLE_ID" \
-    -uiTestMode -displayMode standard -screenshotRoute nearby-sync \
-    >/dev/null 2>&1; then
-  pass "显式指定的两台模拟器均可进入换机界面"
-  xcrun simctl terminate "$SECOND_SIMULATOR_UDID" "$BUNDLE_ID" \
-    >/dev/null 2>&1 || true
+  ' >/dev/null 2>&1; then
+  fail "显式第二模拟器不可用或未启动"
 else
-  fail "显式第二模拟器未启动、安装失败或无法进入换机界面"
+  nearby_test="CareThreadDeviceSimUITests/DeviceSimulatorAcceptanceUITests/testNearbyRouteIsActuallyVisibleOnThisSimulator"
+  PRIMARY_NEARBY_RESULT="$DERIVED_DATA/DeviceSimNearbyPrimary.xcresult"
+  if xcodebuild "${device_xcodebuild_base[@]}" \
+    -resultBundlePath "$PRIMARY_NEARBY_RESULT" test \
+    -only-testing:"$nearby_test" \
+    >/tmp/carethread-device-nearby-primary.log 2>&1; then
+    xcresult_all_pass "$PRIMARY_NEARBY_RESULT" 1 \
+      "主模拟器换机页面真实元素"
+  else
+    tail -120 /tmp/carethread-device-nearby-primary.log
+    fail "主模拟器换机页面真实元素"
+  fi
+
+  second_device_xcodebuild_base=(
+    -project CareThread.xcodeproj
+    -scheme DeviceSimAcceptance
+    -destination "platform=iOS Simulator,id=$SECOND_SIMULATOR_UDID"
+    -derivedDataPath "$DERIVED_DATA"
+    -parallel-testing-enabled NO
+    CODE_SIGNING_ALLOWED=YES
+    CODE_SIGNING_REQUIRED=YES
+    CODE_SIGN_IDENTITY=-
+  )
+  if [[ -d "$SOURCE_PACKAGES/checkouts/ZIPFoundation" ]]; then
+    second_device_xcodebuild_base+=(
+      -clonedSourcePackagesDirPath "$SOURCE_PACKAGES"
+      -disableAutomaticPackageResolution
+    )
+  fi
+  SECOND_NEARBY_RESULT="$DERIVED_DATA/DeviceSimNearbySecondary.xcresult"
+  if xcodebuild "${second_device_xcodebuild_base[@]}" \
+    -resultBundlePath "$SECOND_NEARBY_RESULT" test \
+    -only-testing:"$nearby_test" \
+    >/tmp/carethread-device-nearby-secondary.log 2>&1; then
+    xcresult_all_pass "$SECOND_NEARBY_RESULT" 1 \
+      "第二模拟器换机页面真实元素"
+  else
+    tail -120 /tmp/carethread-device-nearby-secondary.log
+    fail "第二模拟器换机页面真实元素"
+  fi
 fi
 pass "换机可行性结论：Simulator 无 AWDL 点对点链路；协议、加密、配对码、断线与网络错误由本轮聚焦传输测试覆盖"
-residual "真机双机 AWDL 发现、微信分享、锁屏通知观感、真实 Jetsam/发热和长辈真人试用不冒充模拟器结论"
+boundary "真机双机 AWDL 发现、微信分享、锁屏通知观感、真实 Jetsam/发热和大字版真人试用不冒充模拟器结论"
 
 if [[ "$FAILURES" -eq 0 ]]; then
   printf 'SUMMARY PASS FAIL=0 RESIDUAL=%d\n' "$RESIDUALS"

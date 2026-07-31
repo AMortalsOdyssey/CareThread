@@ -34,6 +34,23 @@ struct CareThreadNotificationDestination: Identifiable, Equatable {
     }
 }
 
+enum CareThreadNotificationPatientResolver {
+    /// Notification routes are member-scoped evidence. A missing or stale
+    /// member identifier must never fall back to whichever family member is
+    /// currently selected, because that could present the wrong person's
+    /// medication or follow-up information.
+    static func resolve(
+        requestedID: UUID?,
+        availablePatientIDs: Set<UUID>
+    ) -> UUID? {
+        guard let requestedID,
+              availablePatientIDs.contains(requestedID) else {
+            return nil
+        }
+        return requestedID
+    }
+}
+
 @MainActor
 final class CareThreadNotificationRouter: ObservableObject {
     static let shared = CareThreadNotificationRouter()
@@ -63,6 +80,9 @@ final class CareThreadAppDelegate: NSObject, UIApplicationDelegate,
         ]? = nil
     ) -> Bool {
         UNUserNotificationCenter.current().delegate = self
+        #if DEBUG
+        primeAcceptanceRouteIfRequested()
+        #endif
         return true
     }
 
@@ -87,6 +107,36 @@ final class CareThreadAppDelegate: NSObject, UIApplicationDelegate,
             completionHandler()
         }
     }
+
+    #if DEBUG
+    private func primeAcceptanceRouteIfRequested() {
+        let arguments = ProcessInfo.processInfo.arguments
+        guard arguments.contains("-uiTestMode"),
+              let marker = arguments.firstIndex(
+                of: "-DeviceSimOpenNotificationRoute"
+              ),
+              arguments.indices.contains(marker + 1),
+              let kind = CareThreadNotificationDestination.Kind(
+                rawValue: arguments[marker + 1]
+              ) else {
+            return
+        }
+        var userInfo: [AnyHashable: Any] = [
+            "carethread.kind": kind.rawValue,
+            "carethread.acceptance.mode":
+                DisplayMode.launchOverride?.rawValue
+                    ?? DisplayMode.standard.rawValue
+        ]
+        if let patientMarker = arguments.firstIndex(
+            of: "-DeviceSimOpenNotificationPatient"
+        ), arguments.indices.contains(patientMarker + 1) {
+            userInfo["carethread.patient"] = arguments[patientMarker + 1]
+        }
+        Task { @MainActor in
+            CareThreadNotificationRouter.shared.receive(userInfo: userInfo)
+        }
+    }
+    #endif
 }
 
 /// Keeps notification routing outside feature views so a response received
@@ -142,47 +192,51 @@ struct CareThreadNotificationRoutingHost<Content: View>: View {
     private func notificationDestination(
         _ destination: CareThreadNotificationDestination
     ) -> some View {
-        if destination.displayMode == .elder {
-            ElderRootView {
-                UserDefaults.standard.set(
-                    DisplayMode.standard.rawValue,
-                    forKey: DisplayMode.storageKey
-                )
-                router.destination = nil
-            }
-            .environment(\.displayMode, DisplayMode.elder)
-            .overlay(alignment: .topTrailing) {
-                Button(Copy.Common.close) {
+        if let patientID = resolvedPatientID(destination.patientID) {
+            if destination.displayMode == .elder {
+                ElderRootView(initialPatientID: patientID) {
+                    UserDefaults.standard.set(
+                        DisplayMode.standard.rawValue,
+                        forKey: DisplayMode.storageKey
+                    )
                     router.destination = nil
                 }
-                .buttonStyle(.bordered)
-                .padding(CT.Space.s4)
-                .accessibilityIdentifier("notification.route.close")
-            }
-        } else if let patientID = resolvedPatientID(destination.patientID) {
-            NavigationStack {
-                switch destination.kind {
-                case .medication:
-                    MedicationAndOrdersView(patientID: patientID)
-                case .followUp:
-                    FollowUpsView(patientID: patientID)
-                }
-            }
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
+                .environment(\.displayMode, DisplayMode.elder)
+                .overlay(alignment: .topTrailing) {
                     Button(Copy.Common.close) {
                         router.destination = nil
                     }
+                    .buttonStyle(.bordered)
+                    .padding(CT.Space.s4)
                     .accessibilityIdentifier("notification.route.close")
                 }
+            } else {
+                NavigationStack {
+                    switch destination.kind {
+                    case .medication:
+                        MedicationAndOrdersView(patientID: patientID)
+                    case .followUp:
+                        FollowUpsView(patientID: patientID)
+                    }
+                }
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button(Copy.Common.close) {
+                            router.destination = nil
+                        }
+                        .accessibilityIdentifier("notification.route.close")
+                    }
+                }
+                .environment(\.displayMode, DisplayMode.standard)
             }
-            .environment(\.displayMode, DisplayMode.standard)
         } else {
             NavigationStack {
                 ContentUnavailableView(
-                    Copy.Records.addMemberFirst,
-                    systemImage: "person.crop.circle.badge.plus"
+                    "找不到提醒对应的家人",
+                    systemImage: "person.crop.circle.badge.exclamationmark",
+                    description: Text("这条提醒可能来自已经删除的资料。CareThread 不会改为显示其他家人的内容。")
                 )
+                .accessibilityIdentifier("notification.route.missingMember")
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) {
                         Button(Copy.Common.close) {
@@ -196,11 +250,10 @@ struct CareThreadNotificationRoutingHost<Content: View>: View {
     }
 
     private func resolvedPatientID(_ requestedID: UUID?) -> UUID? {
-        if let requestedID,
-           patients.contains(where: { $0.id == requestedID }) {
-            return requestedID
-        }
-        return patients.first?.id
+        CareThreadNotificationPatientResolver.resolve(
+            requestedID: requestedID,
+            availablePatientIDs: Set(patients.map(\.id))
+        )
     }
 
     #if DEBUG

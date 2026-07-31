@@ -47,6 +47,61 @@ final class DeviceSimulatorArtifactTests: XCTestCase {
         )
     }
 
+    func testNotificationPatientResolverNeverFallsBackAcrossMembers() {
+        let memberA = UUID()
+        let memberB = UUID()
+        let available: Set<UUID> = [memberA, memberB]
+
+        XCTAssertEqual(
+            CareThreadNotificationPatientResolver.resolve(
+                requestedID: memberB,
+                availablePatientIDs: available
+            ),
+            memberB
+        )
+        XCTAssertNil(
+            CareThreadNotificationPatientResolver.resolve(
+                requestedID: UUID(),
+                availablePatientIDs: available
+            )
+        )
+        XCTAssertNil(
+            CareThreadNotificationPatientResolver.resolve(
+                requestedID: nil,
+                availablePatientIDs: available
+            )
+        )
+    }
+
+    func testElderNotificationSelectionPrefersExactMemberAndFailsClosed() {
+        let memberA = UUID()
+        let memberB = UUID()
+
+        XCTAssertEqual(
+            ElderInitialPatientSelection.resolve(
+                initialPatientID: memberA,
+                storedPatientID: memberB,
+                availablePatientIDs: [memberB, memberA]
+            ),
+            memberA
+        )
+        XCTAssertNil(
+            ElderInitialPatientSelection.resolve(
+                initialPatientID: UUID(),
+                storedPatientID: memberB,
+                availablePatientIDs: [memberA, memberB]
+            )
+        )
+        XCTAssertEqual(
+            ElderInitialPatientSelection.resolve(
+                initialPatientID: nil,
+                storedPatientID: memberB,
+                availablePatientIDs: [memberA, memberB]
+            ),
+            memberB
+        )
+    }
+
     func testExportsInspectableBackupAndPDFArtifacts() throws {
         let root = try TestSupport.temporaryDirectory()
         defer { try? FileManager.default.removeItem(at: root) }

@@ -303,10 +303,12 @@ struct ExtractionEngine {
     }
 
     private func extractMedicationHints(_ text: String) -> [MedicationHint] {
-        let knownNames = [
-            "左甲状腺素钠片", "二甲双胍缓释片", "阿司匹林肠溶片", "阿托伐他汀钙片",
-            "优甲乐", "二甲双胍", "阿司匹林"
-        ]
+        let knownNames = MedicalSynonymLexicon.entries(in: .medication)
+            .flatMap(\.allTerms)
+            .sorted {
+                if $0.count != $1.count { return $0.count > $1.count }
+                return $0 < $1
+            }
         var highSection = false
         var results: [MedicationHint] = []
         for rawLine in text.split(separator: "\n") {

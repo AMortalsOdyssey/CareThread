@@ -7,20 +7,41 @@ struct FollowUpsView: View {
     @Environment(\.openURL) private var openURL
 
     let patientID: UUID
-    var notificationCenter: any LocalNotificationCenterAdapting =
-        M4M5RuntimeAdapters.localNotificationCenter()
-    var calendarStore: any CalendarEventStoreAdapting =
-        SystemCalendarEventStore()
-    var now: () -> Date = Date.init
-    var onCaptureReport: (UUID) -> Void = { _ in }
+    let initialFollowUpID: UUID?
+    var notificationCenter: any LocalNotificationCenterAdapting
+    var calendarStore: any CalendarEventStoreAdapting
+    var now: () -> Date
+    var onCaptureReport: (UUID) -> Void
+    var onChanged: () -> Void
 
     @State private var followUps: [FollowUp] = []
     @State private var records: [MedicalRecord] = []
     @State private var showEditor = false
     @State private var editingFollowUp: FollowUp?
+    @State private var didConsumeInitialRoute = false
     @State private var completingFollowUp: FollowUp?
     @State private var feedback: M4M5SystemFeedback?
     @State private var loadFailed = false
+
+    init(
+        patientID: UUID,
+        initialFollowUpID: UUID? = nil,
+        notificationCenter: any LocalNotificationCenterAdapting =
+            M4M5RuntimeAdapters.localNotificationCenter(),
+        calendarStore: any CalendarEventStoreAdapting =
+            SystemCalendarEventStore(),
+        now: @escaping () -> Date = Date.init,
+        onCaptureReport: @escaping (UUID) -> Void = { _ in },
+        onChanged: @escaping () -> Void = {}
+    ) {
+        self.patientID = patientID
+        self.initialFollowUpID = initialFollowUpID
+        self.notificationCenter = notificationCenter
+        self.calendarStore = calendarStore
+        self.now = now
+        self.onCaptureReport = onCaptureReport
+        self.onChanged = onChanged
+    }
 
     var body: some View {
         List {
@@ -95,6 +116,7 @@ struct FollowUpsView: View {
             ) { value in
                 feedback = value
                 reload()
+                onChanged()
             }
         }
         .sheet(item: $editingFollowUp) { followUp in
@@ -106,6 +128,7 @@ struct FollowUpsView: View {
             ) { value in
                 feedback = value
                 reload()
+                onChanged()
             }
         }
         .confirmationDialog(
@@ -181,11 +204,31 @@ struct FollowUpsView: View {
             )
             followUps = try repository.fetch(patientID: patientID)
             records = try repository.fetchRecords(patientID: patientID)
+            try consumeInitialRouteIfNeeded()
             loadFailed = false
         } catch {
             loadFailed = true
             AppLog.data.error("Follow-up list load failed")
         }
+    }
+
+    @MainActor
+    private func consumeInitialRouteIfNeeded() throws {
+        guard !didConsumeInitialRoute else { return }
+        guard let initialFollowUpID else {
+            didConsumeInitialRoute = true
+            return
+        }
+        guard let followUp = try M4M5InitialRouteLookup.followUp(
+            context: modelContext,
+            patientID: patientID,
+            followUpID: initialFollowUpID
+        ) else {
+            // Keep the route pending when import/sync has not inserted it yet.
+            return
+        }
+        editingFollowUp = followUp
+        didConsumeInitialRoute = true
     }
 
     @MainActor
@@ -205,6 +248,7 @@ struct FollowUpsView: View {
             }
             completingFollowUp = nil
             reload()
+            onChanged()
             if thenCapture {
                 onCaptureReport(followUp.id)
             }

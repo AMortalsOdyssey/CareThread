@@ -185,6 +185,7 @@ struct HomeDashboardView: View {
     var onCapture: () -> Void = {}
     var onTimeline: () -> Void = {}
     var onBrief: () -> Void = {}
+    var onAsk: () -> Void = {}
     var onPendingRecords: () -> Void = {}
     var onFollowUp: (UUID) -> Void = { _ in }
     var onMedication: (UUID) -> Void = { _ in }
@@ -228,6 +229,14 @@ struct HomeDashboardView: View {
         }
         .background(CT.Color.bgBase)
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                Button(action: onAsk) {
+                    Label("问资料", systemImage: "magnifyingglass")
+                }
+                .accessibilityIdentifier("m45.home.ask")
+            }
+        }
         .task(id: patientID) {
             load()
         }

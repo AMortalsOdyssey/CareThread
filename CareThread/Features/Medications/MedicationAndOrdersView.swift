@@ -18,19 +18,37 @@ struct MedicationAndOrdersView: View {
     @Environment(\.openURL) private var openURL
 
     let patientID: UUID
-    var notificationCenter: any LocalNotificationCenterAdapting =
-        M4M5RuntimeAdapters.localNotificationCenter()
-    var onFollowUpCreated: (UUID) -> Void = { _ in }
+    let initialMedicationID: UUID?
+    var notificationCenter: any LocalNotificationCenterAdapting
+    var onFollowUpCreated: (UUID) -> Void
+    var onChanged: () -> Void
 
     @State private var segment = MedicationOrderSegment.medications
     @State private var medications: [Medication] = []
     @State private var orders: [MedicalOrder] = []
     @State private var showMedicationEditor = false
+    @State private var presentedMedication: Medication?
+    @State private var didConsumeInitialRoute = false
     @State private var showOrderEditor = false
     @State private var editingOrder: MedicalOrder?
     @State private var followUpOrder: MedicalOrder?
     @State private var feedback: M4M5SystemFeedback?
     @State private var loadFailed = false
+
+    init(
+        patientID: UUID,
+        initialMedicationID: UUID? = nil,
+        notificationCenter: any LocalNotificationCenterAdapting =
+            M4M5RuntimeAdapters.localNotificationCenter(),
+        onFollowUpCreated: @escaping (UUID) -> Void = { _ in },
+        onChanged: @escaping () -> Void = {}
+    ) {
+        self.patientID = patientID
+        self.initialMedicationID = initialMedicationID
+        self.notificationCenter = notificationCenter
+        self.onFollowUpCreated = onFollowUpCreated
+        self.onChanged = onChanged
+    }
 
     var body: some View {
         VStack(spacing: CT.Space.s4) {
@@ -101,6 +119,27 @@ struct MedicationAndOrdersView: View {
             ) { _, value in
                 feedback = value
                 reload()
+                onChanged()
+            }
+        }
+        .navigationDestination(
+            isPresented: Binding(
+                get: { presentedMedication != nil },
+                set: {
+                    if !$0 {
+                        presentedMedication = nil
+                    }
+                }
+            )
+        ) {
+            if let presentedMedication {
+                MedicationDetailView(
+                    medication: presentedMedication,
+                    notificationCenter: notificationCenter
+                ) {
+                    reload()
+                    onChanged()
+                }
             }
         }
         .sheet(isPresented: $showOrderEditor) {
@@ -169,6 +208,7 @@ struct MedicationAndOrdersView: View {
                                 notificationCenter: notificationCenter
                             ) {
                                 reload()
+                                onChanged()
                             }
                         } label: {
                             MedicationCardView(medication: medication)
@@ -264,6 +304,7 @@ struct MedicationAndOrdersView: View {
             )
             medicationDescriptor.fetchLimit = M4M5QueryLimit.standard
             medications = try modelContext.fetch(medicationDescriptor)
+            try consumeInitialRouteIfNeeded()
 
             var orderDescriptor = FetchDescriptor<MedicalOrder>(
                 predicate: #Predicate { $0.patientId == patientID },
@@ -276,6 +317,25 @@ struct MedicationAndOrdersView: View {
             loadFailed = true
             AppLog.data.error("Medication and medical order list load failed")
         }
+    }
+
+    @MainActor
+    private func consumeInitialRouteIfNeeded() throws {
+        guard !didConsumeInitialRoute else { return }
+        guard let initialMedicationID else {
+            didConsumeInitialRoute = true
+            return
+        }
+        guard let medication = try M4M5InitialRouteLookup.medication(
+            context: modelContext,
+            patientID: patientID,
+            medicationID: initialMedicationID
+        ) else {
+            // Import/sync may make the exact target available on a later reload.
+            return
+        }
+        presentedMedication = medication
+        didConsumeInitialRoute = true
     }
 }
 
@@ -391,6 +451,7 @@ private struct MedicationDetailView: View {
         .scrollContentBackground(.hidden)
         .background(CT.Color.bgBase)
         .navigationTitle(Copy.Medication.detail)
+        .accessibilityIdentifier("m45.medication.detail")
         .sheet(isPresented: $showEditor) {
             MedicationEditorView(
                 patientID: medication.patientId,
@@ -714,4 +775,35 @@ private struct OrderFollowUpEditorView: View {
 
 enum M4M5QueryLimit {
     static let standard = 500
+}
+
+@MainActor
+enum M4M5InitialRouteLookup {
+    static func medication(
+        context: ModelContext,
+        patientID: UUID,
+        medicationID: UUID
+    ) throws -> Medication? {
+        var descriptor = FetchDescriptor<Medication>(
+            predicate: #Predicate {
+                $0.patientId == patientID && $0.id == medicationID
+            }
+        )
+        descriptor.fetchLimit = 1
+        return try context.fetch(descriptor).first
+    }
+
+    static func followUp(
+        context: ModelContext,
+        patientID: UUID,
+        followUpID: UUID
+    ) throws -> FollowUp? {
+        var descriptor = FetchDescriptor<FollowUp>(
+            predicate: #Predicate {
+                $0.patientId == patientID && $0.id == followUpID
+            }
+        )
+        descriptor.fetchLimit = 1
+        return try context.fetch(descriptor).first
+    }
 }
