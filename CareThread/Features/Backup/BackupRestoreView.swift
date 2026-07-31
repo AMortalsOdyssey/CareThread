@@ -264,7 +264,7 @@ struct BackupRestoreView: View {
             } catch {
                 let failure = error as NSError
                 AppLog.data.error(
-                    "Backup export UI failed; domain=\(failure.domain, privacy: .public) code=\(failure.code)"
+                    "Backup export UI failed; domain=\(failure.domain) code=\(failure.code)"
                 )
                 errorMessage = (error as? LocalizedError)?.errorDescription
                     ?? "备份生成失败，请稍后重试。"
