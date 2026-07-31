@@ -17,12 +17,8 @@ enum CareThreadPDFBranding {
     static let headerHeight: CGFloat = 30
     static let standardClosingHeight: CGFloat = 78
 
-    private static let brandColor = UIColor(
-        red: 22 / 255,
-        green: 128 / 255,
-        blue: 119 / 255,
-        alpha: 1
-    )
+    /// UIKit renderer bridge for the same semantic token used by SwiftUI.
+    private static let brandColor = UIColor(CT.Color.primary)
 
     static func drawHeader(in rect: CGRect) {
         guard rect.width > 0, rect.height >= headerHeight else { return }
@@ -122,7 +118,7 @@ enum CareThreadPDFBranding {
             )
         )
         drawText(
-            "扫码访问官网",
+            "扫码了解这个工具",
             font: .systemFont(
                 ofSize: isCompact ? 6.5 : 7.5,
                 weight: .regular

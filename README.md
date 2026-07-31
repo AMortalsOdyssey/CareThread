@@ -1,6 +1,6 @@
 # CareThread
 
-CareThread 是一款纯原生 iOS 本地病程资料整理工具。它把病历、处方、化验单、发票、用药和复查事项整理成按成员隔离的时间线，提供标准版与老人版两种完整交互模式。
+CareThread 是一款纯原生 iOS 本地病程资料整理工具。它把病历、处方、化验单、发票、用药和复查事项整理成按成员隔离的时间线，提供标准版与大字版两种完整交互模式。
 
 > 一期 M0–M9 已完成并通过模拟器总验收。App 不提供诊断或治疗建议；当前代码不连接服务器、不上传病历，也不包含真实医疗测试数据。
 
@@ -17,19 +17,19 @@ CareThread 是一款纯原生 iOS 本地病程资料整理工具。它把病历�
 | 原件 Vault | 不可变原件、高清查看、完整性校验、安全副本与恢复 | 完成 |
 | 提醒 | 用药/复查本地通知；可选、独立授权的系统日历写入 | 完成 |
 | 导出与分享 | 单成员按 1/6 月、1/2/5/10 年或全部生成 PDF，经系统分享面板发送 | 完成 |
-| PDF 品牌钩子 | 页首横线/Logo/产品名，末段介绍与可扫描官网二维码，URL 单点可替换 | 完成 |
+| PDF 品牌钩子 | 页首横线/Logo/产品名，末段介绍与可扫描产品页二维码，URL 单点可替换 | 完成 |
 | 本地对比 | 同成员两个阶段的指标和事实对比，不做诊断推断 | 完成 |
 | 附近同步/换机 | 两台 iPhone 近场加密传输，支持单成员或全部成员 | 完成；无线发现真机待验 |
 | 手动编辑与修订 | 所有业务内容可更正、查看修订并撤销；原件/OCR 证据不被覆盖 | 完成 |
 | 就诊准备 | 一页准备卡、问题清单/笔记、重要置顶、补药与复查提醒 | 完成 |
-| 双模式 | 标准版五槽导航与老人版三槽导航，关键能力完整可达 | 完成 |
-| 外观主题 | 跟随系统、浅色、深色三档，标准版与老人版共享并持久化 | 完成 |
+| 双模式 | 标准版五槽导航与大字版三槽导航，关键能力完整可达 | 完成 |
+| 外观主题 | 跟随系统、浅色、深色三档，标准版与大字版共享并持久化 | 完成 |
 
 ### 界面预览
 
-| 资料记录 | 家人档案 | 老人版今天 | 附近同步 |
+| 资料记录 | 家人档案 | 大字版今天 | 附近同步 |
 |---|---|---|---|
-| ![资料记录](docs/screenshots/05-records-light.png) | ![家人档案](docs/screenshots/19-member-management-light.png) | ![老人版今天](docs/screenshots/15-elder-today-light.png) | ![附近同步](docs/screenshots/22-nearby-sync-light.png) |
+| ![资料记录](docs/screenshots/05-records-light.png) | ![家人档案](docs/screenshots/19-member-management-light.png) | ![大字版今天](docs/screenshots/15-elder-today-light.png) | ![附近同步](docs/screenshots/22-nearby-sync-light.png) |
 
 ## 核心边界
 
@@ -50,6 +50,7 @@ CareThread/
 ├── App/                 # App 入口、根导航与模式切换
 ├── Core/
 │   ├── Models/          # SwiftData 模型与稳定领域类型
+│   ├── Capabilities/    # 版本与设备能力的唯一门禁
 │   ├── Services/        # Vault、OCR、提取、查询等能力
 │   └── DesignSystem/    # 颜色、字号、间距等设计 token
 ├── Features/            # 按业务流程拆分的 SwiftUI 功能
@@ -90,13 +91,13 @@ Benchmarks/OCRBench/run.sh
 
 | 里程碑 | 内容 | 状态 |
 |---|---|---|
-| M0 | 工程骨架、设计 token、标准版/老人版根导航 | 完成 |
+| M0 | 工程骨架、设计 token、标准版/大字版根导航 | 完成 |
 | M1 | 数据层、Vault 基线、种子与压测数据 | 完成 |
 | M2 | Apple Vision 离线 OCR 与规则提取 | 完成 |
 | OCR 选型 | 31 张虚构样张、双引擎基准、唯一决策 | 完成 |
 | M3–M7 | 多成员、录入、时间线、用药、提醒、导出、对比 | 完成 |
 | Nearby | 单人/全员近场加密换机 | 完成；双真机无线待验 |
-| M8–M9 | 备份、应用锁、完整老人版、无障碍、截图与总验收 | 完成 |
+| M8–M9 | 备份、应用锁、完整大字版、无障碍、截图与总验收 | 完成 |
 
 当前证据见 [实施进度](docs/PROGRESS.md)、[实施日志](docs/IMPLEMENTATION_LOG.md)、[截图清单](docs/SCREENSHOT_MANIFEST.json)和[人工走查证据](docs/MANUAL_WALKTHROUGH_EVIDENCE.json)。
 

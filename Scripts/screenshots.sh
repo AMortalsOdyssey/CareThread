@@ -128,7 +128,7 @@ validate_pngs() {
   [[ "$standard" == "$CARETHREAD_SCREENSHOT_STANDARD_COUNT" ]] ||
     fail "标准版应为 ${CARETHREAD_SCREENSHOT_STANDARD_COUNT}，实际 ${standard}"
   [[ "$elder" == "$CARETHREAD_SCREENSHOT_ELDER_COUNT" ]] ||
-    fail "老人版应为 ${CARETHREAD_SCREENSHOT_ELDER_COUNT}，实际 ${elder}"
+    fail "大字版应为 ${CARETHREAD_SCREENSHOT_ELDER_COUNT}，实际 ${elder}"
 
   dimensions=""
   while IFS= read -r file_path; do
@@ -155,7 +155,7 @@ validate_pngs() {
   [[ "$unique_hashes" == "$CARETHREAD_SCREENSHOT_COUNT" ]] ||
     fail "$CARETHREAD_SCREENSHOT_COUNT 张截图中仅有 $unique_hashes 个不同 SHA-256"
 
-  log "PASS ${CARETHREAD_SCREENSHOT_COUNT} PNG（标准 ${CARETHREAD_SCREENSHOT_STANDARD_COUNT} / 老人 ${CARETHREAD_SCREENSHOT_ELDER_COUNT}），尺寸 $(printf '%s' "$dimensions" | head -1)，SHA-256 去重 ${CARETHREAD_SCREENSHOT_COUNT}"
+  log "PASS ${CARETHREAD_SCREENSHOT_COUNT} PNG（标准 ${CARETHREAD_SCREENSHOT_STANDARD_COUNT} / 长辈 ${CARETHREAD_SCREENSHOT_ELDER_COUNT}），尺寸 $(printf '%s' "$dimensions" | head -1)，SHA-256 去重 ${CARETHREAD_SCREENSHOT_COUNT}"
 }
 
 cd "$ROOT_DIR"

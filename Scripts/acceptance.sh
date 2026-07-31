@@ -545,9 +545,9 @@ if [[ "${#screenshots[@]}" -eq "$CARETHREAD_SCREENSHOT_COUNT" &&
   "$dimension_rows" -eq "$CARETHREAD_SCREENSHOT_COUNT" &&
   "$dimension_count" -eq 1 &&
   "$unique_hashes" -eq "$CARETHREAD_SCREENSHOT_COUNT" ]]; then
-  pass "截图 ${CARETHREAD_SCREENSHOT_COUNT}（标准 ${CARETHREAD_SCREENSHOT_STANDARD_COUNT} / 老人 ${CARETHREAD_SCREENSHOT_ELDER_COUNT}），命名/非空/尺寸/去重均通过"
+  pass "截图 ${CARETHREAD_SCREENSHOT_COUNT}（标准 ${CARETHREAD_SCREENSHOT_STANDARD_COUNT} / 长辈 ${CARETHREAD_SCREENSHOT_ELDER_COUNT}），命名/非空/尺寸/去重均通过"
 else
-  fail "截图验收（总 ${#screenshots[@]} / 标准 ${#standard_screenshots[@]} / 老人 ${#elder_screenshots[@]} / 缺失 ${missing_screenshots} / 有效尺寸 ${dimension_rows} / 尺寸种类 ${dimension_count} / 唯一 ${unique_hashes}）"
+  fail "截图验收（总 ${#screenshots[@]} / 标准 ${#standard_screenshots[@]} / 长辈 ${#elder_screenshots[@]} / 缺失 ${missing_screenshots} / 有效尺寸 ${dimension_rows} / 尺寸种类 ${dimension_count} / 唯一 ${unique_hashes}）"
 fi
 if Scripts/validate-screenshot-manifest.sh; then
   pass "截图 manifest 来源与内容可复查"
@@ -611,9 +611,9 @@ if [[ "$elder_tests" -eq 4 ]] &&
   rg -q 'enum Elder|struct Elder' CareThread/DesignSystem \
     CareThread/Features --glob '*.swift' &&
   [[ "${#elder_screenshots[@]}" -eq "$CARETHREAD_SCREENSHOT_ELDER_COUNT" ]]; then
-  pass "老人版文案命名空间、启动截图、U13–U16 全绿"
+  pass "大字版文案命名空间、启动截图、U13–U16 全绿"
 else
-  fail "老人版专项（U13–U16 $elder_tests/4）"
+  fail "大字版专项（U13–U16 $elder_tests/4）"
 fi
 
 boundary_total=0

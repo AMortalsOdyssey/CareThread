@@ -30,7 +30,7 @@
 
 - 修复前：FAIL。旧 DESIGN-04 只证明代码入口存在，没有核对演示数据中是否可见，也没有保留反例。
 - 修复后：FIXED。`DESIGN-04-original-access.md` 明确保留修复前 FAIL，并同时要求截图可见性、种子附件断言与直接入口三类证据。本文件对 B1–B7 逐项记录 FAIL → FIXED。
-- 诚实边界：模拟器不能替代相机、FaceID、真实通知/日历、微信、双机无线、锁屏文件保护和老人真人试用；这些项目仍留在 `PROGRESS.md` 真机清单。
+- 诚实边界：模拟器不能替代相机、FaceID、真实通知/日历、微信、双机无线、锁屏文件保护和长辈真人试用；这些项目仍留在 `PROGRESS.md` 真机清单。
 
 ## B6 UI 测试污染持久库
 
@@ -46,6 +46,6 @@
 
 ## 本轮视觉结论
 
-- 46/46 PNG 均为 1179×2556，46 个唯一 SHA-256；标准版 38、老人版 8，Light/Dark 各 23。
-- 接触表逐屏检查通过：没有空白或错误路由，老人版四屏无裁剪，Sheet/Push/Tab 层级和选中状态合理。
+- 46/46 PNG 均为 1179×2556，46 个唯一 SHA-256；标准版 38、大字版 8，Light/Dark 各 23。
+- 接触表逐屏检查通过：没有空白或错误路由，大字版四屏无裁剪，Sheet/Push/Tab 层级和选中状态合理。
 - `Scripts/validate-screenshot-manifest.sh` 通过，manifest 的 `sourceTreeDirty=false`，并绑定生产源码提交、runtime、就绪标记与每图哈希。

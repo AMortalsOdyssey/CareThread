@@ -108,7 +108,7 @@
     {
       "id": "DESIGN-02",
       "status": "passed",
-      "notes": "抽样 10 处间距并核对 4pt 网格和老人版触达尺寸。",
+      "notes": "抽样 10 处间距并核对 4pt 网格和大字版触达尺寸。",
       "evidence": [
         {
           "path": "docs/walkthrough/DESIGN-02-spacing.md",
@@ -152,7 +152,7 @@
     {
       "id": "DESIGN-06",
       "status": "passed",
-      "notes": "标准版 AX3 与老人版 AX2 的关键操作均保持可达可点。",
+      "notes": "标准版 AX3 与大字版 AX2 的关键操作均保持可达可点。",
       "evidence": [
         {
           "path": "docs/walkthrough/DESIGN-06-dynamic-type.md",
@@ -174,7 +174,7 @@
     {
       "id": "DESIGN-08",
       "status": "passed",
-      "notes": "老人版三槽、显式按钮、60pt 主操作和关键流程均通过。",
+      "notes": "大字版三槽、显式按钮、60pt 主操作和关键流程均通过。",
       "evidence": [
         {
           "path": "docs/walkthrough/DESIGN-08-elder.md",
@@ -185,7 +185,7 @@
     {
       "id": "B9",
       "status": "passed",
-      "notes": "原件缺失时标准版与老人版均显示错误和备份恢复入口。",
+      "notes": "原件缺失时标准版与大字版均显示错误和备份恢复入口。",
       "evidence": [
         {
           "path": "docs/walkthrough/B9-missing-original.md",
@@ -229,7 +229,7 @@
     {
       "id": "B23",
       "status": "passed",
-      "notes": "标准版可恢复持久化草稿，老人版隐藏复杂草稿入口。",
+      "notes": "标准版可恢复持久化草稿，大字版隐藏复杂草稿入口。",
       "evidence": [
         {
           "path": "docs/walkthrough/B23-draft-resume.md",

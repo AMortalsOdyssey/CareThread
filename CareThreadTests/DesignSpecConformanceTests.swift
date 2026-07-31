@@ -45,7 +45,7 @@ struct DesignSpecConformanceTests {
         )
     }
 
-    @Test("§15.8 老人版关键微文案逐字一致")
+    @Test("§15.8 大字版关键微文案逐字一致")
     func elderCopyMatchesDesignSpecification() {
         #expect(Copy.Elder.noMedication == "还没有记录用药，请家人帮忙添加。")
         #expect(Copy.Elder.captureDescription == "拍下报告单，存进手机里")
@@ -65,7 +65,7 @@ struct DesignSpecConformanceTests {
         )
     }
 
-    @Test("§15 老人版最小触达尺寸满足规范")
+    @Test("§15 大字版最小触达尺寸满足规范")
     func elderTouchTargetsMeetMinimums() {
         #expect(CT.Size.elderPrimaryButtonHeight >= 60)
         #expect(CT.Size.elderTouchTarget >= 56)
@@ -84,7 +84,7 @@ struct DesignSpecConformanceTests {
         #expect(!source.contains("SwiftUI.Font.system(size:"))
     }
 
-    @Test("老人版无隐藏手势且无缩放或循环动画")
+    @Test("大字版无隐藏手势且无缩放或循环动画")
     func elderSourcesAvoidHiddenGesturesAndMotionResidue() throws {
         let root = repositoryRoot()
             .appendingPathComponent("CareThread/Features/Elder")
@@ -124,7 +124,7 @@ struct DesignSpecConformanceTests {
         #expect(confirmation.contains("selectedOriginalPage = page"))
     }
 
-    @Test("原件缺失时标准版与老人版均提供备份恢复入口")
+    @Test("原件缺失时标准版与大字版均提供备份恢复入口")
     func missingOriginalProvidesBackupRecoveryEntry() throws {
         let standard = try sourceText(
             "CareThread/Features/Records/OriginalViewer.swift"

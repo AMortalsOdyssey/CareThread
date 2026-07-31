@@ -38,7 +38,7 @@ struct ScreenshotRouteContractTests {
         )
     }
 
-    @Test("23 条生产路由严格生成 46 张标准与老人双外观证据")
+    @Test("23 条生产路由严格生成 46 张标准与长辈双外观证据")
     func routeInventoryIsCompleteAndUnique() {
         let routes = ScreenshotRoute.allCases
         #expect(routes.count == 23)

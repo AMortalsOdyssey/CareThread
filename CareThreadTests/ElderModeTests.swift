@@ -19,7 +19,7 @@ struct ElderModeTests {
         #expect(value.listRowHeight == 52)
     }
 
-    @Test("老人版 token 覆盖标题正文与元信息")
+    @Test("大字版 token 覆盖标题正文与元信息")
     func elderTypographyTokens() {
         let value = ElderTypographyValues.resolve(mode: .elder)
         #expect(value.display == 40)
@@ -28,7 +28,7 @@ struct ElderModeTests {
         #expect(value.footnote == 16)
     }
 
-    @Test("老人版按钮行高与触达满足规范")
+    @Test("大字版按钮行高与触达满足规范")
     func elderComponentSizeTokens() {
         let value = ElderTypographyValues.resolve(mode: .elder)
         #expect(value.primaryButtonHeight == 60)
@@ -37,7 +37,7 @@ struct ElderModeTests {
         #expect(CT.Size.elderChoiceButtonHeight == 88)
     }
 
-    @Test("老人版应用内三档字号单调且正文不低于20")
+    @Test("大字版应用内三档字号单调且正文不低于20")
     func elderFontScaleTokens() {
         let standard = ElderTypographyValues.resolve(
             mode: .elder,
@@ -138,7 +138,7 @@ struct ElderModeTests {
         )
     }
 
-    @Test("老人选择化验单可明确归为检验")
+    @Test("长辈选择化验单可明确归为检验")
     func explicitLabChoice() {
         #expect(
             ElderCaptureTypePolicy.resolvedType(
@@ -148,7 +148,7 @@ struct ElderModeTests {
         )
     }
 
-    @Test("老人版不显示标准版草稿续录入口")
+    @Test("大字版不显示标准版草稿续录入口")
     func elderHidesStandardDraftResume() {
         #expect(
             !ElderDraftVisibilityPolicy
@@ -160,7 +160,7 @@ struct ElderModeTests {
         )
     }
 
-    @Test("老人版用药通知使用直白命名空间")
+    @Test("大字版用药通知使用直白命名空间")
     func elderMedicationNotificationCopy() {
         let value = ElderNotificationCopyBuilder.medication(
             name: "优甲乐",
@@ -170,7 +170,7 @@ struct ElderModeTests {
         #expect(value.body == "该吃药了：优甲乐 75µg（早上空腹）")
     }
 
-    @Test("老人版复查通知提醒带旧报告")
+    @Test("大字版复查通知提醒带旧报告")
     func elderFollowUpNotificationCopy() {
         let value = ElderNotificationCopyBuilder.followUp(
             item: "甲状腺功能"
@@ -181,7 +181,7 @@ struct ElderModeTests {
         )
     }
 
-    @Test("老人通知点击一律落今天页")
+    @Test("长辈通知点击一律落今天页")
     func elderNotificationDestination() {
         #expect(
             ElderNotificationDestinationPolicy.destination(for: .elder)
@@ -345,7 +345,7 @@ struct ElderModeTests {
     func emptyOCRStillSavesPendingImmutableOriginal() async throws {
         let container = try TestSupport.container()
         let context = container.mainContext
-        let patient = Patient(displayName: "虚构老人")
+        let patient = Patient(displayName: "虚构长辈")
         context.insert(patient)
         try context.save()
         let temporary = try TestSupport.temporaryDirectory()
@@ -366,7 +366,7 @@ struct ElderModeTests {
         let staged = try vault.stagePhotoData(
             try #require(blank.pngData()),
             batchID: batchID,
-            displayName: "虚构老人版空白报告.png",
+            displayName: "虚构大字版空白报告.png",
             preferredExtension: "png",
             uniformTypeIdentifier: "public.png"
         )
@@ -398,11 +398,11 @@ struct ElderModeTests {
         #expect(attributes[.immutable] as? Bool == true)
     }
 
-    @Test("老人版命中历史精确重复时保留可恢复草稿与原件")
+    @Test("大字版命中历史精确重复时保留可恢复草稿与原件")
     func duplicateMatchRetainsRecoverableDraftAndStaging() async throws {
         let container = try TestSupport.container()
         let context = container.mainContext
-        let patient = Patient(displayName: "虚构老人甲")
+        let patient = Patient(displayName: "虚构长辈甲")
         context.insert(patient)
         let temporary = try TestSupport.temporaryDirectory()
         defer { try? FileManager.default.removeItem(at: temporary) }
@@ -496,12 +496,12 @@ struct ElderModeTests {
         )
     }
 
-    @Test("老人版重复检测异常时保留可恢复草稿与原件")
+    @Test("大字版重复检测异常时保留可恢复草稿与原件")
     func duplicateDetectionFailureRetainsRecoverableDraftAndStaging()
         async throws {
         let container = try TestSupport.container()
         let context = container.mainContext
-        let patient = Patient(displayName: "虚构老人乙")
+        let patient = Patient(displayName: "虚构长辈乙")
         context.insert(patient)
         try context.save()
         let temporary = try TestSupport.temporaryDirectory()
