@@ -137,7 +137,20 @@ p { margin: 0; }
   border-radius: 30px; padding: 9px; box-shadow: var(--shadow-e1);
   max-width: 300px; margin: 0 auto;
 }
-.phone img { display: block; width: 100%; border-radius: 22px; }
+/* 截图自带 iPhone 状态栏与灵动岛（黑色药丸），在网页上是干扰元素，裁掉。
+   实测原图 415×900，药丸底边在 y=50，故取 54px 保险 → 保留 415×846。
+   用 aspect-ratio + object-position 精确裁切，不用负 margin：
+   margin 的百分比按「宽度」解析而非高度，极易算错。
+   这样做也不必重新处理图片，明暗两版自动一致，原始截图无损。 */
+.phone picture,
+.phone .screen {
+  display: block; overflow: hidden; border-radius: 22px;
+  aspect-ratio: 415 / 846;
+}
+.phone img {
+  display: block; width: 100%; height: 100%;
+  object-fit: cover; object-position: center bottom;
+}
 
 /* ── 卡片网格 ───────────────────────────── */
 .grid { display: grid; gap: var(--sp-4); }
@@ -258,3 +271,8 @@ details.faq p { margin-top: var(--sp-3); color: var(--ink-secondary); font-size:
 
 /* <picture> 包裹后需保持与 img 相同的布局行为 */
 .phone picture { display: block; }
+
+/* 带图标的链接：图标与文字基线对齐 */
+.ico-link { display: inline-flex; align-items: center; gap: 6px; }
+.ico-link svg { flex: none; }
+.btn svg { flex: none; }
