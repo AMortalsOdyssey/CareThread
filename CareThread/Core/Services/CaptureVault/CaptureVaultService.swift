@@ -839,6 +839,47 @@ final class CaptureVaultService {
         try resolve(relativePath)
     }
 
+    /// Finds finalized Vault files that are no longer referenced by SwiftData.
+    ///
+    /// Staging files and journals are deliberately excluded because their
+    /// lifecycle is owned by the batch journal and crash reconciler.
+    func orphanFinalizedAttachmentRelativePaths(
+        referencedPaths: Set<String>
+    ) throws -> [String] {
+        let membersURL = try resolve("members")
+        guard fileManager.fileExists(atPath: membersURL.path) else {
+            return []
+        }
+        let keys: Set<URLResourceKey> = [
+            .isRegularFileKey,
+            .isSymbolicLinkKey
+        ]
+        guard let enumerator = fileManager.enumerator(
+            at: membersURL,
+            includingPropertiesForKeys: Array(keys),
+            options: [.skipsHiddenFiles]
+        ) else {
+            return []
+        }
+        let rootPath = rootURL.standardizedFileURL.path + "/"
+        var orphans: [String] = []
+        for case let fileURL as URL in enumerator {
+            let values = try fileURL.resourceValues(forKeys: keys)
+            guard values.isRegularFile == true,
+                  values.isSymbolicLink != true,
+                  fileURL.standardizedFileURL.path.hasPrefix(rootPath) else {
+                continue
+            }
+            let relativePath = String(
+                fileURL.standardizedFileURL.path.dropFirst(rootPath.count)
+            )
+            if !referencedPaths.contains(relativePath) {
+                orphans.append(relativePath)
+            }
+        }
+        return orphans.sorted()
+    }
+
     private func appendToJournal(_ asset: StagedCaptureAsset) throws {
         var value = try journal(batchID: asset.batchID)
         value.assets.append(asset)

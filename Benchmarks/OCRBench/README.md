@@ -22,3 +22,18 @@ Benchmarks/OCRBench/run.sh
 No patient data is used. The benchmark may download candidate weights only into
 its isolated development environment; the shipping App contains no download or
 network code.
+
+## Private real-photo regression (R group)
+
+Real photos are never committed. Prepare the ignored local directory by
+following `testset/real/README.md`, then run:
+
+```sh
+Benchmarks/OCRBench/run_real.sh
+```
+
+The real-set v2 gate switches away from Vision only when the same candidate
+achieves both at least 50% relative CER improvement and at least 5 percentage
+points higher field-hit rate. Raw OCR and extracted values live only in a
+permission-restricted temporary directory and are deleted on exit. Repository
+results contain only SHA-256 hashes and scores.

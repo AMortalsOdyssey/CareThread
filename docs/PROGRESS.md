@@ -88,7 +88,11 @@
 - 外观主题：新增跟随系统/浅色/深色三档，共享 `@AppStorage("appearanceMode")` 并在根视图应用 `preferredColorScheme`；标准版管理页和老人版大按钮均可达。两条主题 UI 测试全绿，覆盖即时选择、重启保持及老人版三入口。
 - 键盘加固：所有 UI 测试 `typeText` 收口到最多 3 次的焦点等待/重试助手。`RecordOrderFullEditUITests` 整套两条连续 3 轮通过，耗时分别为 70.351 秒、87.278 秒、71.507 秒。
 - 本批验证：Xcode 26.6 + iPhone 16 / iOS 18.6 精确 UDID `build-for-testing` 成功；新增/相关 Swift Testing 57 条全绿；主题 UI 2/2、隔离 UI 1/1、完整编辑 UI 3×(2/2) 全绿。
-- 下一批：合并 `VaultStore`、领域化文件名、OCR 真实集换引擎门槛 v2、真实导航壳 46 张双外观截图、B1–B7 走查证据重做与最终 `verify.sh`/`acceptance.sh`。
+- Vault 单一权威：删除生产零调用且重复写原件的旧 Vault 层，`CaptureVaultService` 统一负责 staging、事务落盘、完整性、成员隔离、清理与最终文件孤儿扫描；旧 9 条契约完整迁移并扩展为 11 条安全测试。
+- 领域化命名：8 个生产、11 个单测、4 个 UI 测试文件共 23 个 `M3/M4/M7/M8` 里程碑前缀改为 Capture、CarePlan、Brief、Backup 等领域名；只改文件名、不扩大到跨仓类型重构。
+- OCR 真实集 v2：新增 Git 默认忽略的 `testset/real/`、隐私临时目录一键脚本与独立评分器。换引擎必须同时达到相对 CER 改善 ≥50% 和字段命中率提升 ≥5pp；续页字段分母只统计实际标注项，仓库结果只允许 SHA-256 与分数。当前无真实照片，不伪造得分，唯一发布结论仍为 Apple Vision。
+- 本批验证：Vault/模型聚焦 Swift Testing 42/42 全绿；OCR v2 纯虚构评分器 6/6 全绿；真实集缺失时一键命令按设计以退出码 2 和中文准备指引停止；真实集图片、文本与清单 `git check-ignore` 均命中。
+- 下一批：把截图入口接回真实生产 Root/Tab 导航壳，扩容并替换为 46 张双外观截图；随后重做 B1–B7 走查证据并执行最终 `verify.sh`/`acceptance.sh`。
 
 ## 最终模拟器证据
 

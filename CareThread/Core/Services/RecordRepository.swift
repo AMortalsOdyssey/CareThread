@@ -32,11 +32,6 @@ final class RecordRepository {
         self.fileDeletion = fileDeletion
     }
 
-    /// Compatibility-only bridge for legacy VaultStore tests.
-    convenience init(context: ModelContext, vaultStore: VaultStore) {
-        self.init(context: context, fileDeletion: vaultStore)
-    }
-
     func insert(_ record: MedicalRecord) throws {
         guard record.sourceType == .manual else {
             AppLog.data.warning("Rejected non-manual record through manual repository")

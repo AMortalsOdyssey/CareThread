@@ -94,6 +94,12 @@ struct ExtractionScore {
             let expectedIndicator = expected["indicator"] as? String
 
             let date = extraction.eventDate.map { CTDateFormatter.iso.string(from: $0) }
+            let expectedFieldCount = [
+                expectedDate,
+                expectedHospital,
+                expectedType,
+                expectedIndicator,
+            ].compactMap { $0 }.count
             let hits: [String: Bool] = [
                 "date": expectedDate.map { $0 == date } ?? false,
                 "hospital": expectedHospital.map { $0 == extraction.hospital } ?? false,
@@ -104,6 +110,7 @@ struct ExtractionScore {
             ]
             output["field_hits"] = hits
             output["field_hit_count"] = hits.values.filter { $0 }.count
+            output["field_total_count"] = expectedFieldCount
             output["extraction"] = [
                 "type": extraction.type.rawValue,
                 "date": date as Any,
