@@ -59,6 +59,12 @@ struct LocalComparisonView: View {
             load()
         }
         .accessibilityIdentifier("m7.compare")
+        #if DEBUG
+        .screenshotReady(
+            .comparison,
+            when: input != nil && !loadFailed
+        )
+        #endif
     }
 
     private func periodCard(

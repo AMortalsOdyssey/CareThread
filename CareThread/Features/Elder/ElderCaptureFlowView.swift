@@ -237,6 +237,12 @@ struct ElderCaptureFlowView: View {
                 }
             }
         }
+        #if DEBUG
+        .screenshotReady(
+            .elderCaptureQuestion,
+            when: !stagedAssets.isEmpty
+        )
+        #endif
     }
 
     private var dateStep: some View {
@@ -523,6 +529,16 @@ struct ElderCaptureFlowView: View {
                 stagedAssets = []
                 self.captureBatchID = nil
                 errorMessage = Copy.Elder.identityReviewNeeded
+                step = .source
+            } catch ElderCaptureError.duplicateRequiresStandardReview {
+                stagedAssets = []
+                self.captureBatchID = nil
+                errorMessage = Copy.Elder.duplicateReviewNeeded
+                step = .source
+            } catch ElderCaptureError.safetyReviewRequiresStandard {
+                stagedAssets = []
+                self.captureBatchID = nil
+                errorMessage = Copy.Elder.safetyReviewNeeded
                 step = .source
             } catch {
                 stagedAssets = []

@@ -28,15 +28,7 @@ struct CareThreadApp: App {
                     skipsRecovery: skipsStartupRecovery
                 ) {
                     AppLockGate {
-                        #if DEBUG
-                        if let route = ScreenshotRoute.current {
-                            ScreenshotRouteView(route: route)
-                        } else {
-                            RootView()
-                        }
-                        #else
                         RootView()
-                        #endif
                     }
                 }
                 .modelContainer(container)

@@ -1,5 +1,8 @@
+import CoreImage
 import Foundation
+import PDFKit
 import Testing
+import UIKit
 import XCTest
 @testable import CareThread
 
@@ -27,6 +30,54 @@ struct M7PDFExportTests {
         #expect(result.fileURL.pathExtension.lowercased() == "pdf")
         #expect(result.byteCount > 4_096)
         #expect(result.pageCount >= 2)
+        let text = extractedText(from: result.fileURL)
+        #expect(text.contains(CareThreadPDFBranding.productName))
+        #expect(text.containsIgnoringLayoutWhitespace("把家人的病程资料"))
+        #expect(text.containsIgnoringLayoutWhitespace("安全地串成一条线"))
+        #expect(text.contains("扫码访问官网"))
+        #expect(
+            decodedQRCode(from: result.fileURL)
+                == CareThreadPDFBranding.officialWebsiteURL.absoluteString
+        )
+    }
+
+    @Test("PDF 品牌二维码离线编码临时官网地址")
+    func brandQRCodeEncodesCentralWebsiteHook() throws {
+        #expect(
+            CareThreadPDFBranding.officialWebsiteURL.scheme == "https"
+        )
+        #expect(
+            CareThreadPDFBranding.officialWebsiteURL.host == "github.com"
+        )
+        #expect(
+            CareThreadPDFBranding.officialWebsiteURL.path
+                == "/AMortalsOdyssey/CareThread"
+        )
+        let image = try #require(
+            CareThreadPDFBranding.makeQRCode(side: 240)
+        )
+        let ciImage = try #require(CIImage(image: image))
+        let detector = try #require(
+            CIDetector(
+                ofType: CIDetectorTypeQRCode,
+                context: CIContext(options: [
+                    .useSoftwareRenderer: true
+                ]),
+                options: [
+                    CIDetectorAccuracy: CIDetectorAccuracyHigh
+                ]
+            )
+        )
+        let feature = try #require(
+            detector.features(in: ciImage)
+                .compactMap { $0 as? CIQRCodeFeature }
+                .first
+        )
+
+        #expect(
+            feature.messageString
+                == CareThreadPDFBranding.officialWebsiteURL.absoluteString
+        )
     }
 
     @Test("PDF 临时副本设置完全保护并排除备份")
@@ -212,6 +263,47 @@ struct M7PDFExportTests {
                 800 + suffix
             )
         )!
+    }
+
+    private func extractedText(from fileURL: URL) -> String {
+        guard let document = PDFDocument(url: fileURL) else { return "" }
+        return (0..<document.pageCount)
+            .compactMap { document.page(at: $0)?.string }
+            .joined(separator: "\n")
+    }
+
+    private func decodedQRCode(from fileURL: URL) -> String? {
+        guard let document = PDFDocument(url: fileURL),
+              let page = document.page(at: document.pageCount - 1) else {
+            return nil
+        }
+        let image = page.thumbnail(
+            of: CGSize(width: 1_190, height: 1_684),
+            for: .mediaBox
+        )
+        guard let ciImage = CIImage(image: image),
+              let detector = CIDetector(
+                  ofType: CIDetectorTypeQRCode,
+                  context: CIContext(options: [
+                      .useSoftwareRenderer: true
+                  ]),
+                  options: [
+                      CIDetectorAccuracy: CIDetectorAccuracyHigh
+                  ]
+              ) else {
+            return nil
+        }
+        return detector.features(in: ciImage)
+            .compactMap { ($0 as? CIQRCodeFeature)?.messageString }
+            .first
+    }
+}
+
+private extension String {
+    func containsIgnoringLayoutWhitespace(_ expected: String) -> Bool {
+        let compactSelf = filter { !$0.isWhitespace }
+        let compactExpected = expected.filter { !$0.isWhitespace }
+        return compactSelf.contains(compactExpected)
     }
 }
 

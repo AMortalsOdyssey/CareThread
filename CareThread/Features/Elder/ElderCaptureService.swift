@@ -7,6 +7,8 @@ enum ElderCaptureError: Error, Equatable {
     case invalidImage
     case memberMissing
     case identityRequiresStandardReview
+    case duplicateRequiresStandardReview
+    case safetyReviewRequiresStandard
     case persistenceFailed
 }
 
@@ -35,6 +37,7 @@ final class ElderCaptureService {
     }
 
     func save(_ request: ElderCaptureRequest) async throws -> ElderCaptureResult {
+        var hasRecoverableDraft = false
         do {
             guard !request.stagedAssets.isEmpty else {
                 throw ElderCaptureError.noPages
@@ -60,13 +63,35 @@ final class ElderCaptureService {
                 batchID: request.batchID,
                 assets: request.stagedAssets
             )
+            hasRecoverableDraft = true
             let outputs = try await recognize(
                 draft: persistent.draft,
                 pages: persistent.pages,
                 assets: request.stagedAssets,
                 source: request.source
             )
+            // Persist the OCR draft before either identity or duplicate review.
+            // Elder mode never destroys a user's only captured copy merely
+            // because a higher-risk decision belongs in standard mode.
             try context.save()
+            let textByAssetID = Dictionary(
+                uniqueKeysWithValues: zip(request.stagedAssets, outputs).map {
+                    ($0.id, $1.text)
+                }
+            )
+            if try await CaptureDuplicateDetectionService(
+                context: context,
+                vault: vault
+            ).scan(
+                patientID: request.patientID,
+                stagedAssets: request.stagedAssets,
+                ocrTextByAssetID: textByAssetID
+            ) != nil {
+                AppLog.userAction.warning(
+                    "Elder capture retained as draft because duplicate review is required"
+                )
+                throw ElderCaptureError.duplicateRequiresStandardReview
+            }
             let evidence = try CaptureNameEvidenceAggregator.evaluate(
                 draft: persistent.draft,
                 frozenPatient: persistent.patient
@@ -86,13 +111,35 @@ final class ElderCaptureService {
             )
         } catch ElderCaptureError.identityRequiresStandardReview {
             throw ElderCaptureError.identityRequiresStandardReview
+        } catch ElderCaptureError.duplicateRequiresStandardReview {
+            throw ElderCaptureError.duplicateRequiresStandardReview
+        } catch ElderCaptureError.safetyReviewRequiresStandard {
+            throw ElderCaptureError.safetyReviewRequiresStandard
         } catch is CancellationError {
+            guard !hasRecoverableDraft else {
+                AppLog.vault.warning(
+                    "Cancelled elder capture retained as a recoverable draft"
+                )
+                throw ElderCaptureError.safetyReviewRequiresStandard
+            }
             cleanupFailedRequest(request)
             throw CancellationError()
         } catch let error as ElderCaptureError {
+            guard !hasRecoverableDraft else {
+                AppLog.vault.warning(
+                    "Elder capture safety check failed; draft retained for standard review"
+                )
+                throw ElderCaptureError.safetyReviewRequiresStandard
+            }
             cleanupFailedRequest(request)
             throw error
         } catch {
+            guard !hasRecoverableDraft else {
+                AppLog.vault.error(
+                    "Elder capture failed after draft persistence; original retained"
+                )
+                throw ElderCaptureError.safetyReviewRequiresStandard
+            }
             cleanupFailedRequest(request)
             AppLog.vault.error(
                 "Elder capture failed: \(error.localizedDescription)"

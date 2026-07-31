@@ -97,6 +97,7 @@ enum CaptureCommitError: Error, Equatable {
     case invalidAssignedMember
     case invalidRecordSource
     case graphInvalid
+    case duplicateAttachmentSHA
     case databaseSaveFailed
 }
 
@@ -182,6 +183,10 @@ final class CaptureCommitService {
         } catch {
             throw CaptureCommitError.graphInvalid
         }
+        try validateNoExactAttachmentDuplicate(
+            record: request.record,
+            patientID: assignedPatient.id
+        )
 
         let audit = RecordAssignmentAudit(
             capturedForPatientId: draft.patientId,
@@ -213,6 +218,45 @@ final class CaptureCommitService {
             "Committed captured record \(request.record.id.uuidString, privacy: .private(mask: .hash))"
         )
         return audit
+    }
+
+    /// This transaction-boundary guard prevents a future capture UI, a second
+    /// window, or an elder-mode path from bypassing the preflight duplicate
+    /// check. Only the final assigned member is queried; another member's
+    /// attachment hashes are intentionally invisible here.
+    private func validateNoExactAttachmentDuplicate(
+        record: MedicalRecord,
+        patientID: UUID
+    ) throws {
+        let incomingHashes = record.attachments.map {
+            $0.sha256.lowercased()
+        }
+        guard Set(incomingHashes).count == incomingHashes.count else {
+            throw CaptureCommitError.duplicateAttachmentSHA
+        }
+        guard !incomingHashes.isEmpty else { return }
+        var descriptor = FetchDescriptor<Attachment>(
+            predicate: #Predicate { $0.patientId == patientID }
+        )
+        descriptor.includePendingChanges = true
+        let currentContextHashes = Set(
+            try context.fetch(descriptor).map {
+                $0.sha256.lowercased()
+            }
+        )
+        // Probe persisted state through a fresh context so another scene's
+        // committed attachment cannot be hidden by this context's cache.
+        let probeContext = ModelContext(context.container)
+        descriptor.includePendingChanges = false
+        let persistedHashes = Set(
+            try probeContext.fetch(descriptor).map {
+                $0.sha256.lowercased()
+            }
+        )
+        let existingHashes = currentContextHashes.union(persistedHashes)
+        guard incomingHashes.allSatisfy({ !existingHashes.contains($0) }) else {
+            throw CaptureCommitError.duplicateAttachmentSHA
+        }
     }
 
     private func validateAssignment(

@@ -81,6 +81,35 @@ extension Copy {
         static let futureDateBody = "仍可保存；记录会标记为待核对。"
         static let ocrEmptyTitle = "没认出文字"
         static let ocrEmptyBody = "可以换张更清晰的照片，或直接手动填写。"
+        static let checkingDuplicate = "正在检查是否重复"
+        static let duplicateExactTitle = "这份资料已经存在"
+        static let duplicatePossibleTitle = "发现可能重复的资料"
+        static let duplicateExactCurrentImport =
+            "本次导入里包含原图完全相同的页面。为避免重复脏数据，CareThread 没有保存；请返回整理并删除重复页。"
+        static func duplicateExactSavedRecord(
+            fileName: String,
+            recordDescription: String
+        ) -> String {
+            "“\(fileName)”与\(recordDescription)的原图 SHA-256 完全一致。为避免重复脏数据，本次不会再次保存。"
+        }
+        static func duplicateVisualMessage(
+            fileName: String,
+            recordDescription: String?
+        ) -> String {
+            let target = recordDescription.map { "与\($0)" } ?? "与本次导入的另一页"
+            return "“\(fileName)”\(target)的视觉内容指纹高度相似。系统默认不保存；如果只是版式相似或重新拍摄了不同资料，请在核对后继续。"
+        }
+        static func duplicateOCRMessage(
+            fileName: String,
+            recordDescription: String?,
+            similarityPercent: Int
+        ) -> String {
+            let target = recordDescription.map { "与\($0)" } ?? "与本次导入的另一页"
+            return "“\(fileName)”\(target)的文字内容高度重叠（\(similarityPercent)%）。系统默认不保存；OCR 可能误判，请核对后再决定。"
+        }
+        static let duplicateOverride = "确认不是重复，继续添加"
+        static let duplicateCheckFailed =
+            "重复检查没有完成。为了避免产生脏数据，本次尚未保存，请稍后重试。"
         static let abnormalItems = "异常项"
         static let abnormalPlaceholder = "例如：TSH 偏高"
         static let addAbnormal = "添加异常项"

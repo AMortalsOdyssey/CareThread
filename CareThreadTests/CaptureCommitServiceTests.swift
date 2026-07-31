@@ -3,6 +3,8 @@ import SwiftData
 import Testing
 @testable import CareThread
 
+private typealias Attachment = CareThread.Attachment
+
 @MainActor
 struct CaptureCommitServiceTests {
     @Test("成员称呼不能冒充报告姓名证据")
@@ -325,6 +327,132 @@ struct CaptureCommitServiceTests {
             )
         )
         #expect(audit.overrideReason == "用户二次确认 OCR 姓名识别错误")
+    }
+
+    @Test("提交边界再次拦截同成员精确 SHA 且不泄漏其他成员")
+    func exactSHACommitGuardIsPatientScoped() throws {
+        let container = try TestSupport.container()
+        let context = container.mainContext
+        let patient = Patient(name: "虚构成员甲")
+        let otherPatient = Patient(name: "虚构成员乙")
+        let hash = String(repeating: "e", count: 64)
+        let otherRecordID = UUID()
+        let otherRecord = MedicalRecord(
+            id: otherRecordID,
+            patientId: otherPatient.id,
+            title: "乙的同哈希虚构记录",
+            eventDate: Date(),
+            sourceType: .photo,
+            attachments: [
+                try verifiedAttachment(
+                    patientID: otherPatient.id,
+                    recordID: otherRecordID,
+                    sha256: hash
+                )
+            ]
+        )
+        context.insert(patient)
+        context.insert(otherPatient)
+        context.insert(otherRecord)
+        try context.save()
+
+        let firstBatch = ImportBatch(patientId: patient.id, sourceType: .photo)
+        let firstDraft = try makeDraft(
+            batch: firstBatch,
+            documentIndex: 0,
+            pageCandidates: [[]]
+        )
+        context.insert(firstBatch)
+        try context.save()
+        let firstRecordID = UUID()
+        _ = try CaptureCommitService(context: context).commit(
+            CaptureCommitRequest(
+                draftId: firstDraft.id,
+                expectedGeneration: firstDraft.generation,
+                expectedOutcome: .noEvidence,
+                decision: .acceptedWithoutNameEvidence,
+                assignedPatientId: patient.id,
+                record: MedicalRecord(
+                    id: firstRecordID,
+                    patientId: patient.id,
+                    title: "甲第一次添加",
+                    eventDate: Date(),
+                    sourceType: .photo,
+                    attachments: [
+                        try verifiedAttachment(
+                            patientID: patient.id,
+                            recordID: firstRecordID,
+                            sha256: hash
+                        )
+                    ]
+                ),
+                engineIdentifier: "vision"
+            )
+        )
+
+        let secondBatch = ImportBatch(patientId: patient.id, sourceType: .photo)
+        let secondDraft = try makeDraft(
+            batch: secondBatch,
+            documentIndex: 0,
+            pageCandidates: [[]]
+        )
+        context.insert(secondBatch)
+        try context.save()
+        let secondRecordID = UUID()
+        #expect(throws: CaptureCommitError.duplicateAttachmentSHA) {
+            try CaptureCommitService(context: context).commit(
+                CaptureCommitRequest(
+                    draftId: secondDraft.id,
+                    expectedGeneration: secondDraft.generation,
+                    expectedOutcome: .noEvidence,
+                    decision: .acceptedWithoutNameEvidence,
+                    assignedPatientId: patient.id,
+                    record: MedicalRecord(
+                        id: secondRecordID,
+                        patientId: patient.id,
+                        title: "甲重复添加",
+                        eventDate: Date(),
+                        sourceType: .photo,
+                        attachments: [
+                            try verifiedAttachment(
+                                patientID: patient.id,
+                                recordID: secondRecordID,
+                                sha256: hash
+                            )
+                        ]
+                    ),
+                    engineIdentifier: "vision"
+                )
+            )
+        }
+        #expect(
+            try context.fetchCount(FetchDescriptor<MedicalRecord>()) == 2
+        )
+    }
+
+    private func verifiedAttachment(
+        patientID: UUID,
+        recordID: UUID,
+        sha256: String
+    ) throws -> Attachment {
+        let attachmentID = UUID()
+        return try Attachment.verified(
+            id: attachmentID,
+            patientId: patientID,
+            recordId: recordID,
+            originalRelativePath:
+                "members/\(patientID.uuidString)/records/\(recordID.uuidString)"
+                + "/attachments/\(attachmentID.uuidString)/original.jpg",
+            displayFileName: "虚构报告.jpg",
+            kind: .image,
+            pageIndex: 0,
+            uniformTypeIdentifier: "public.jpeg",
+            byteCount: 128,
+            sha256: sha256,
+            importSource: .fixture,
+            pixelWidth: 1_200,
+            pixelHeight: 1_600
+        )
     }
 
     private func makeDraft(

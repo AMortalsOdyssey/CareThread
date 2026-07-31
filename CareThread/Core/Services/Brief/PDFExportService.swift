@@ -183,7 +183,7 @@ private final class M7PDFRenderer {
         )
         static let margin = 18 * pointsPerMillimeter
         static let contentWidth = page.width - margin * 2
-        static let headerHeight: CGFloat = 28
+        static let headerHeight: CGFloat = 50
         static let footerHeight: CGFloat = 32
         static let sectionSpacing: CGFloat = 12
         static let itemSpacing: CGFloat = 5
@@ -248,6 +248,8 @@ private final class M7PDFRenderer {
             drawRecordAppendix()
             guard !stopIfCancelled() else { return }
             drawSources()
+            guard !stopIfCancelled() else { return }
+            drawBrandClosingBlock()
             if !stopIfCancelled() {
                 finishPage()
             }
@@ -259,10 +261,21 @@ private final class M7PDFRenderer {
     private func beginPage() {
         context?.beginPage()
         pageNumber += 1
+        CareThreadPDFBranding.drawHeader(
+            in: CGRect(
+                x: Layout.margin,
+                y: Layout.margin,
+                width: Layout.contentWidth,
+                height: CareThreadPDFBranding.headerHeight
+            )
+        )
         let header = "CareThread 就诊摘要 · \(payload.memberName) · 生成于 \(payloadDateFormatter.string(from: payload.generatedAt))"
         draw(
             header,
-            at: CGPoint(x: Layout.margin, y: Layout.margin),
+            at: CGPoint(
+                x: Layout.margin,
+                y: Layout.margin + CareThreadPDFBranding.headerHeight
+            ),
             width: Layout.contentWidth,
             font: headerFont,
             color: .darkGray,
@@ -442,6 +455,20 @@ private final class M7PDFRenderer {
             let value = "\(BriefSource.marker(source.number)) \(payloadDateFormatter.string(from: source.eventDate)) \(source.title) \(source.recordType.displayName)\n记录 ID：\(source.recordID.uuidString)"
             drawBodyItem(value)
         }
+    }
+
+    private func drawBrandClosingBlock() {
+        let height = CareThreadPDFBranding.standardClosingHeight
+        ensureSpace(height + Layout.sectionSpacing)
+        CareThreadPDFBranding.drawClosingBlock(
+            in: CGRect(
+                x: Layout.margin,
+                y: cursorY,
+                width: Layout.contentWidth,
+                height: height
+            )
+        )
+        cursorY += height
     }
 
     private func drawSectionHeading(_ title: String) {

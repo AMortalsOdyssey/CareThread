@@ -18,6 +18,18 @@ struct BriefWorkspaceView: View {
     @State private var loadFailed = false
     @State private var exportTask: Task<Void, Never>?
 
+    init(
+        patientID: UUID,
+        initialRangePreset: DateRangePreset = .sixMonths,
+        now: @escaping () -> Date = Date.init,
+        onPDFExported: @escaping (URL) -> Void = { _ in }
+    ) {
+        self.patientID = patientID
+        self.now = now
+        self.onPDFExported = onPDFExported
+        _rangePreset = State(initialValue: initialRangePreset)
+    }
+
     private var document: BriefDocument? {
         input.map {
             BriefBuilder.build(
@@ -164,6 +176,12 @@ struct BriefWorkspaceView: View {
             discardPendingExport()
         }
         .accessibilityIdentifier("m7.brief")
+        #if DEBUG
+        .screenshotReady(
+            ScreenshotRoute.current == .export ? .export : .brief,
+            when: input != nil && document?.hasExportableContent == true
+        )
+        #endif
     }
 
     private var controls: some View {

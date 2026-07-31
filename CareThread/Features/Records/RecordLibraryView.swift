@@ -106,6 +106,9 @@ struct RecordLibraryView: View {
             viewModel.reload(patientID: patientID)
         }
         .accessibilityIdentifier("m3.records.library")
+        #if DEBUG
+        .screenshotReady(.records, when: !viewModel.records.isEmpty)
+        #endif
     }
 
     @ViewBuilder

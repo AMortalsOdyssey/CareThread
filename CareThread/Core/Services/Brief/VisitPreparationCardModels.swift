@@ -78,7 +78,9 @@ struct VisitPreparationCardDocument: Equatable, Sendable {
 }
 
 enum VisitPreparationCardPolicy {
-    static let maximumVisibleItems = 18
+    /// Worst-case 2-line items plus all eight section headings must leave
+    /// room for omission notes, the disclaimer, and compact PDF branding.
+    static let maximumVisibleItems = 14
     static let maximumItemCharacters = 96
 
     static func itemLimit(for section: VisitPreparationSectionID) -> Int {

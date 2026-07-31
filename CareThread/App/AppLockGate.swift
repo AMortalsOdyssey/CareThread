@@ -94,6 +94,9 @@ private struct AppLockScreen: View {
         .padding(CT.Space.s6)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(CT.Color.bgBase)
+        #if DEBUG
+        .screenshotReady(.lock, when: controller.phase == .failed)
+        #endif
         .task {
             guard controller.phase == .locked else { return }
             _ = await controller.unlock()

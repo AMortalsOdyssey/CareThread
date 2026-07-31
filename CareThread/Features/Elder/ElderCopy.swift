@@ -21,6 +21,10 @@ extension Copy.Elder {
     static let saving = "正在本机存好"
     static let saveFailed = "这次没有存好，原有资料没有被修改。请重试。"
     static let identityReviewNeeded = "识别到的姓名需要家人核对。原件和草稿已安全保留，请切回标准版处理。"
+    static let duplicateReviewNeeded =
+        "发现可能重复的资料，原件和草稿已安全保留。请切回标准版核对；确认不是重复后再添加。"
+    static let safetyReviewNeeded =
+        "自动核对没有完成，原件和草稿已安全保留。请切回标准版继续处理，不需要重新拍照。"
     static let noRecords = "还没有报告。点中间的“拍照存报告”就能开始。"
     static let viewOriginal = "看原件"
     static let editRecord = "更正这份资料"

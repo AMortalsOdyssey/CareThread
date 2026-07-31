@@ -216,20 +216,35 @@ else
   fail "CareThreadTests/CareThreadUITests 失败或跳过 $failed_or_skipped"
 fi
 
-network_matches="$(
+network_api_matches="$(
   rg -n -i \
-    'URLSession|NSURLSession|URLRequest|NSURLConnection|Alamofire|WebSocket|WKWebView|WebKit|CFNetwork|https?://|wss?://|CloudKit|CKContainer|NSUbiquitous|socket[[:space:]]*\(|connect[[:space:]]*\(|getaddrinfo|\bcurl\b|\bwget\b' \
+    'URLSession|NSURLSession|URLRequest|NSURLConnection|Alamofire|WebSocket|WKWebView|WebKit|CFNetwork|CloudKit|CKContainer|NSUbiquitous|socket[[:space:]]*\(|connect[[:space:]]*\(|getaddrinfo|\bcurl\b|\bwget\b' \
     CareThread CareThreadTests CareThreadUITests Scripts \
     --glob '*.{swift,m,mm,h,c,cc,cpp,js,jsx,ts,tsx,py,rb,go,rs,kt,kts,java,sh}' \
     --glob '!acceptance.sh' \
     2>/dev/null || true
 )"
-unsafe_network_matches="$(
-  printf '%s\n' "$network_matches" |
+unsafe_network_api_matches="$(
+  printf '%s\n' "$network_api_matches" |
     rg -v 'cloudKitDatabase:[[:space:]]*\.none' || true
 )"
-if [[ -n "$unsafe_network_matches" ]]; then
-  printf '%s\n' "$unsafe_network_matches"
+url_literal_matches="$(
+  rg -n -i 'https?://|wss?://' \
+    CareThread CareThreadTests CareThreadUITests Scripts \
+    --glob '*.{swift,m,mm,h,c,cc,cpp,js,jsx,ts,tsx,py,rb,go,rs,kt,kts,java,sh}' \
+    --glob '!acceptance.sh' \
+    2>/dev/null || true
+)"
+unsafe_url_literal_matches="$(
+  printf '%s\n' "$url_literal_matches" |
+    rg -v \
+      '^CareThread/Core/Services/Brief/CareThreadPDFBranding\.swift:[0-9]+:[[:space:]]*string: "https://github\.com/AMortalsOdyssey/CareThread"$' \
+      || true
+)"
+if [[ -n "$unsafe_network_api_matches" ||
+  -n "$unsafe_url_literal_matches" ]]; then
+  printf '%s\n' "$unsafe_network_api_matches"
+  printf '%s\n' "$unsafe_url_literal_matches"
   fail "多语言源码与脚本互联网 API 扫描"
 else
   pass "多语言源码与脚本互联网 API 扫描"
@@ -304,7 +319,6 @@ else
 fi
 if rg -n \
   '\\\((relativePath|path),\s*privacy:\s*\.public' \
-  CareThread/Core/Services/VaultStore.swift \
   CareThread/Core/Services/CaptureVault \
   CareThread/Core/Services/NearbyTransfer \
   --glob '*.swift'; then
@@ -480,37 +494,27 @@ else
 fi
 
 shopt -s nullglob
+source "$ROOT_DIR/Scripts/screenshot-routes.sh"
 screenshots=(docs/screenshots/*.png)
+standard_screenshots=()
+elder_screenshots=()
 missing_screenshots=0
-for number in $(seq -w 1 18); do
-  case "$number" in
-    01) slug="onboarding" ;;
-    02) slug="home" ;;
-    03) slug="capture-source" ;;
-    04) slug="capture-confirmation" ;;
-    05) slug="records" ;;
-    06) slug="record-detail" ;;
-    07) slug="original-ocr" ;;
-    08) slug="medications" ;;
-    09) slug="followups" ;;
-    10) slug="timeline" ;;
-    11) slug="brief" ;;
-    12) slug="manage" ;;
-    13) slug="backup" ;;
-    14) slug="lock" ;;
-    15) slug="elder-today" ;;
-    16) slug="elder-capture-question" ;;
-    17) slug="elder-records" ;;
-    18) slug="elder-brief" ;;
-  esac
+for entry in "${CARETHREAD_SCREENSHOT_ROUTES[@]}"; do
+  IFS='|' read -r number slug _ mode _ <<<"$entry"
   for appearance in light dark; do
     file="docs/screenshots/$number-$slug-$appearance.png"
-    [[ -s "$file" ]] || missing_screenshots=$((missing_screenshots + 1))
+    if [[ -s "$file" ]]; then
+      if [[ "$mode" == "standard" ]]; then
+        standard_screenshots+=("$file")
+      else
+        elder_screenshots+=("$file")
+      fi
+    else
+      missing_screenshots=$((missing_screenshots + 1))
+    fi
   done
 done
 
-standard_screenshots=(docs/screenshots/0[1-9]-*.png docs/screenshots/1[0-4]-*.png)
-elder_screenshots=(docs/screenshots/1[5-8]-elder-*.png)
 dimension_count=0
 dimension_rows=0
 unique_hashes=0
@@ -530,14 +534,14 @@ if [[ "${#screenshots[@]}" -gt 0 ]]; then
       awk '{print $1}' | sort -u | wc -l | tr -d ' '
   )
 fi
-if [[ "${#screenshots[@]}" -eq 36 &&
-  "${#standard_screenshots[@]}" -eq 28 &&
-  "${#elder_screenshots[@]}" -eq 8 &&
+if [[ "${#screenshots[@]}" -eq "$CARETHREAD_SCREENSHOT_COUNT" &&
+  "${#standard_screenshots[@]}" -eq "$CARETHREAD_SCREENSHOT_STANDARD_COUNT" &&
+  "${#elder_screenshots[@]}" -eq "$CARETHREAD_SCREENSHOT_ELDER_COUNT" &&
   "$missing_screenshots" -eq 0 &&
-  "$dimension_rows" -eq 36 &&
+  "$dimension_rows" -eq "$CARETHREAD_SCREENSHOT_COUNT" &&
   "$dimension_count" -eq 1 &&
-  "$unique_hashes" -eq 36 ]]; then
-  pass "截图 36（标准 28 / 老人 8），命名/非空/尺寸/去重均通过"
+  "$unique_hashes" -eq "$CARETHREAD_SCREENSHOT_COUNT" ]]; then
+  pass "截图 $CARETHREAD_SCREENSHOT_COUNT（标准 $CARETHREAD_SCREENSHOT_STANDARD_COUNT / 老人 $CARETHREAD_SCREENSHOT_ELDER_COUNT），命名/非空/尺寸/去重均通过"
 else
   fail "截图验收（总 ${#screenshots[@]} / 标准 ${#standard_screenshots[@]} / 老人 ${#elder_screenshots[@]} / 缺失 ${missing_screenshots} / 有效尺寸 ${dimension_rows} / 尺寸种类 ${dimension_count} / 唯一 ${unique_hashes}）"
 fi
@@ -602,7 +606,7 @@ done
 if [[ "$elder_tests" -eq 4 ]] &&
   rg -q 'enum Elder|struct Elder' CareThread/DesignSystem \
     CareThread/Features --glob '*.swift' &&
-  [[ "${#elder_screenshots[@]}" -eq 8 ]]; then
+  [[ "${#elder_screenshots[@]}" -eq "$CARETHREAD_SCREENSHOT_ELDER_COUNT" ]]; then
   pass "老人版文案命名空间、启动截图、U13–U16 全绿"
 else
   fail "老人版专项（U13–U16 $elder_tests/4）"
@@ -643,7 +647,7 @@ boundary_check B7 'test_longText_whenTenThousandCharacters_completesQuickly'
 boundary_check B8 \
   'test_specialCharacters_whenEmojiAndFullWidthParentheses_remainsStable' \
   'roundTripRestoresCountsAndSpecialCharacters'
-boundary_check B9 'test_data_whenFileMissing_throwsMissing'
+boundary_check B9 'missingStagedOriginal_isRejected'
 boundary_check B10 'importingSamePackageTwiceIsIdempotent'
 boundary_check B11 \
   'truncatedArchiveIsRejected' \

@@ -14,6 +14,11 @@ struct RootView: View {
     }
 
     private var shouldPresentOnboarding: Bool {
+        #if DEBUG
+        if ScreenshotRoute.current == .onboarding {
+            return true
+        }
+        #endif
         let policy = CareThreadOnboardingLaunchPolicy()
         if policy.resetOnboarding {
             return !completedResetOnboardingThisLaunch
@@ -25,7 +30,7 @@ struct RootView: View {
     }
 
     private var appearance: AppearanceMode {
-        AppearanceMode(rawValue: storedAppearance) ?? .system
+        AppearanceMode.effective(storedRawValue: storedAppearance)
     }
 
     var body: some View {
@@ -50,6 +55,13 @@ struct RootView: View {
         .environment(\.locale, Locale(identifier: "zh_CN"))
         .preferredColorScheme(appearance.colorScheme)
         .tint(CT.Color.primary)
+        #if DEBUG
+        .overlay(alignment: .topLeading) {
+            if ScreenshotRoute.current == .onboarding {
+                ScreenshotReadyMarker(route: .onboarding)
+            }
+        }
+        #endif
     }
 }
 
@@ -61,6 +73,16 @@ private struct StandardRootTabView: View {
         case backup
         case appLock
         case appearance
+    }
+
+    private enum RecordRoute: Hashable {
+        case detail(UUID)
+    }
+
+    private struct OriginalViewerRoute: Identifiable {
+        let recordID: UUID
+        let attachmentID: UUID
+        var id: UUID { attachmentID }
     }
 
     @Environment(\.modelContext) private var modelContext
@@ -79,6 +101,12 @@ private struct StandardRootTabView: View {
     @State private var showElderModeConfirmation = false
     @State private var recordsRefreshToken = 0
     @State private var managementPath: [ManagementRoute] = []
+    @State private var recordPath: [RecordRoute] = []
+    @State private var originalViewerRoute: OriginalViewerRoute?
+    @State private var briefInitialRange: DateRangePreset = .sixMonths
+    #if DEBUG
+    @State private var didApplyScreenshotRoute = false
+    #endif
 
     private var notificationCenter:
         any LocalNotificationCenterAdapting {
@@ -104,6 +132,9 @@ private struct StandardRootTabView: View {
                     onFollowUp: { _ in openManagement(.followUps) },
                     onMedication: { _ in openManagement(.medications) }
                 )
+                #if DEBUG
+                .screenshotReady(.home)
+                #endif
             }
             .tabItem { Label(Copy.Tab.home, systemImage: "house") }
             .tag(0)
@@ -116,6 +147,9 @@ private struct StandardRootTabView: View {
                             openTimelineDestination(destination)
                         }
                     )
+                    #if DEBUG
+                    .screenshotReady(.timeline)
+                    #endif
                 } else {
                     ContentUnavailableView(
                         Copy.Records.addMemberFirst,
@@ -130,12 +164,27 @@ private struct StandardRootTabView: View {
             .tabItem { Label(Copy.Tab.capture, systemImage: "plus.circle.fill") }
             .tag(2)
 
-            NavigationStack {
+            NavigationStack(path: $recordPath) {
                 RecordLibraryView(
                     patientID: $selectedPatientID,
                     patients: patients,
                     refreshToken: recordsRefreshToken
                 )
+                .navigationDestination(for: RecordRoute.self) { route in
+                    switch route {
+                    case let .detail(recordID):
+                        if let record = fetchRecord(id: recordID) {
+                            RecordDetailView(record: record) {
+                                recordsRefreshToken += 1
+                            }
+                            #if DEBUG
+                            .screenshotReady(.recordDetail)
+                            #endif
+                        } else {
+                            ProgressView(Copy.Records.loading)
+                        }
+                    }
+                }
             }
             .tabItem { Label(Copy.Tab.records, systemImage: "tray.full") }
             .tag(3)
@@ -158,6 +207,9 @@ private struct StandardRootTabView: View {
                             showCapture = true
                         }
                     )
+                    #if DEBUG
+                    .screenshotReady(.manage)
+                    #endif
                     .navigationDestination(for: ManagementRoute.self) { route in
                         switch route {
                         case .medications:
@@ -165,6 +217,9 @@ private struct StandardRootTabView: View {
                                 patientID: patientID,
                                 notificationCenter: notificationCenter
                             )
+                            #if DEBUG
+                            .screenshotReady(.medications)
+                            #endif
                         case .followUps:
                             FollowUpsView(
                                 patientID: patientID,
@@ -173,12 +228,21 @@ private struct StandardRootTabView: View {
                                     showCapture = true
                                 }
                             )
+                            #if DEBUG
+                            .screenshotReady(.followups)
+                            #endif
                         case .memberManagement:
                             MemberManagementView(
                                 selectedPatientID: $selectedPatientID
                             )
+                            #if DEBUG
+                            .screenshotReady(.memberManagement)
+                            #endif
                         case .backup:
                             BackupRestoreView(patientID: patientID)
+                            #if DEBUG
+                            .screenshotReady(.backup)
+                            #endif
                         case .appLock:
                             AppLockSettingsView()
                         case .appearance:
@@ -244,11 +308,17 @@ private struct StandardRootTabView: View {
                 onCompare: { showComparison = true },
                 onTransfer: { showNearbySync = true }
             )
+            #if DEBUG
+            .screenshotReady(.more)
+            #endif
         }
         .sheet(isPresented: $showBrief) {
             NavigationStack {
                 if let patientID = selectedPatient?.id {
-                    BriefWorkspaceView(patientID: patientID)
+                    BriefWorkspaceView(
+                        patientID: patientID,
+                        initialRangePreset: briefInitialRange
+                    )
                 } else {
                     ContentUnavailableView(
                         Copy.Records.addMemberFirst,
@@ -278,6 +348,26 @@ private struct StandardRootTabView: View {
                     bootstrapM3IfNeeded()
                 }
             )
+            #if DEBUG
+            .screenshotReady(.nearbySync)
+            #endif
+        }
+        .fullScreenCover(item: $originalViewerRoute) { target in
+            if let record = fetchRecord(id: target.recordID) {
+                OriginalViewer(
+                    record: record,
+                    initialAttachmentID: target.attachmentID,
+                    initialSegment: .ocr
+                )
+                #if DEBUG
+                .screenshotReady(.originalOCR)
+                #endif
+            } else {
+                ContentUnavailableView(
+                    Copy.Records.missingOriginal,
+                    systemImage: "doc.questionmark"
+                )
+            }
         }
         .fullScreenCover(isPresented: $showElderModeConfirmation) {
             ElderModeSwitchConfirmationView(
@@ -390,6 +480,9 @@ private struct StandardRootTabView: View {
         if arguments.contains("-M7OpenBrief") {
             showBrief = true
         }
+        #if DEBUG
+        applyScreenshotRouteIfNeeded()
+        #endif
     }
 
     private func openManagement(_ route: ManagementRoute) {
@@ -411,6 +504,111 @@ private struct StandardRootTabView: View {
             openManagement(.followUps)
         }
     }
+
+    @MainActor
+    private func fetchRecord(id: UUID) -> MedicalRecord? {
+        var descriptor = FetchDescriptor<MedicalRecord>(
+            predicate: #Predicate { $0.id == id }
+        )
+        descriptor.fetchLimit = 1
+        return try? modelContext.fetch(descriptor).first
+    }
+
+    #if DEBUG
+    @MainActor
+    private func applyScreenshotRouteIfNeeded() {
+        guard !didApplyScreenshotRoute,
+              let route = ScreenshotRoute.current,
+              !route.isElder,
+              route != .onboarding,
+              route != .lock else {
+            return
+        }
+        didApplyScreenshotRoute = true
+        switch route {
+        case .home:
+            selectedTab = 0
+            previousContentTab = 0
+        case .timeline:
+            selectedTab = 1
+            previousContentTab = 1
+        case .records:
+            selectedTab = 3
+            previousContentTab = 3
+        case .manage:
+            selectedTab = 4
+            previousContentTab = 4
+            managementPath = []
+        case .captureSource:
+            captureInitialSource = nil
+            showCapture = true
+        case .captureConfirmation:
+            captureInitialSource = .manual
+            showCapture = true
+        case .medications:
+            openManagement(.medications)
+        case .followups:
+            openManagement(.followUps)
+        case .backup:
+            openManagement(.backup)
+        case .memberManagement:
+            openManagement(.memberManagement)
+        case .brief:
+            briefInitialRange = .sixMonths
+            showBrief = true
+        case .export:
+            briefInitialRange = .all
+            showBrief = true
+        case .comparison:
+            showComparison = true
+        case .nearbySync:
+            showNearbySync = true
+        case .more:
+            selectedTab = 0
+            previousContentTab = 0
+            showMoreTools = true
+        case .recordDetail:
+            if let record = screenshotLabRecord() {
+                selectedTab = 3
+                previousContentTab = 3
+                recordPath = [.detail(record.id)]
+            }
+        case .originalOCR:
+            if let record = screenshotLabRecord(),
+               let attachment = record.attachments
+                .sorted(by: { $0.pageIndex < $1.pageIndex })
+                .first {
+                selectedTab = 3
+                previousContentTab = 3
+                originalViewerRoute = OriginalViewerRoute(
+                    recordID: record.id,
+                    attachmentID: attachment.id
+                )
+            }
+        case .onboarding, .lock, .elderToday, .elderCaptureQuestion,
+             .elderRecords, .elderBrief:
+            return
+        }
+    }
+
+    @MainActor
+    private func screenshotLabRecord() -> MedicalRecord? {
+        let patientID = selectedPatientID ?? SeedService.patientID
+        let descriptor = FetchDescriptor<MedicalRecord>(
+            predicate: #Predicate { $0.patientId == patientID },
+            sortBy: [
+                SortDescriptor(\.eventDate, order: .reverse),
+                SortDescriptor(\.id)
+            ]
+        )
+        let records = (try? modelContext.fetch(descriptor)) ?? []
+        return records.first {
+            $0.type == .lab
+                && $0.ocrText?.isEmpty == false
+                && !$0.attachments.isEmpty
+        } ?? records.first
+    }
+    #endif
 
     @MainActor
     private func seedM3MachineRecordIfNeeded(patientID: UUID) {

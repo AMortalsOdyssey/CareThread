@@ -95,6 +95,9 @@ struct ElderRecordsView: View {
         .navigationTitle(Copy.Elder.records)
         .id(refreshToken)
         .accessibilityIdentifier("elder.records")
+        #if DEBUG
+        .screenshotReady(.elderRecords, when: !records.isEmpty)
+        #endif
     }
 
     private var monthGroups: [(month: String, records: [MedicalRecord])] {

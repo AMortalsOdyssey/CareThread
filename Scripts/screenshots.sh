@@ -6,29 +6,12 @@ OUTPUT_DIR="$ROOT_DIR/docs/screenshots"
 MANIFEST_PATH="$ROOT_DIR/docs/SCREENSHOT_MANIFEST.json"
 DERIVED_DATA="${CARETHREAD_SCREENSHOT_DERIVED_DATA:-/tmp/carethread-screenshots-derived}"
 BUNDLE_ID="me.multiego.carethread"
+EXPECTED_DEVICE_NAME="iPhone 16"
+EXPECTED_OS_VERSION="26.5"
 MANIFEST_ROWS="$(mktemp "${TMPDIR:-/tmp}/carethread-screenshot-rows.XXXXXX")"
 trap 'rm -f "$MANIFEST_ROWS"' EXIT
-
-routes=(
-  "01|onboarding|onboarding|standard"
-  "02|home|home|standard"
-  "03|capture-source|capture-source|standard"
-  "04|capture-confirmation|capture-confirmation|standard"
-  "05|records|records|standard"
-  "06|record-detail|record-detail|standard"
-  "07|original-ocr|original-ocr|standard"
-  "08|medications|medications|standard"
-  "09|followups|followups|standard"
-  "10|timeline|timeline|standard"
-  "11|brief|brief|standard"
-  "12|manage|manage|standard"
-  "13|backup|backup|standard"
-  "14|lock|lock|standard"
-  "15|elder-today|elder-today|elder"
-  "16|elder-capture-question|elder-capture-question|elder"
-  "17|elder-records|elder-records|elder"
-  "18|elder-brief|elder-brief|elder"
-)
+source "$ROOT_DIR/Scripts/screenshot-routes.sh"
+routes=("${CARETHREAD_SCREENSHOT_ROUTES[@]}")
 
 log() {
   printf '[screenshots] %s\n' "$1"
@@ -39,17 +22,45 @@ fail() {
   exit 1
 }
 
-find_device() {
-  xcrun simctl list devices available -j |
-    /usr/bin/jq -r '
-      .devices
-      | to_entries[]
-      | select(.key | contains("iOS-18-6"))
-      | .value[]
-      | select(.name == "iPhone 16")
-      | .udid
-    ' |
-    head -1
+find_or_create_device() {
+  local runtime device
+  runtime="$(
+    xcrun simctl list runtimes -j |
+      /usr/bin/jq -r --arg version "$EXPECTED_OS_VERSION" '
+        [
+          .runtimes[]
+          | select(
+              .isAvailable == true
+              and .platform == "iOS"
+              and .version == $version
+            )
+        ]
+        | first
+        | select(. != null)
+        | .identifier
+      '
+  )"
+  [[ -n "$runtime" ]] || return 1
+  device="$(
+    xcrun simctl list devices available -j |
+      /usr/bin/jq -r --arg runtime "$runtime" '
+        [
+          .devices[$runtime][]
+          | select(.isAvailable == true and .name == "iPhone 16")
+        ]
+        | first
+        | select(. != null)
+        | .udid
+      '
+  )"
+  if [[ -n "$device" ]]; then
+    printf '%s\n' "$device"
+    return
+  fi
+  xcrun simctl create \
+    "iPhone 16" \
+    "com.apple.CoreSimulator.SimDeviceType.iPhone-16" \
+    "$runtime"
 }
 
 process_is_running() {
@@ -82,7 +93,7 @@ wait_for_ready_marker() {
   local device="$2"
   local pid="$3"
   local attempt
-  for attempt in {1..24}; do
+  for attempt in {1..40}; do
     if [[ -s "$marker_path" ]]; then
       return 0
     fi
@@ -97,16 +108,27 @@ wait_for_ready_marker() {
 validate_pngs() {
   local total standard elder dimensions unique_hashes file_path width height
   total="$(find "$OUTPUT_DIR" -maxdepth 1 -type f -name '*.png' | wc -l | tr -d ' ')"
-  standard="$(find "$OUTPUT_DIR" -maxdepth 1 -type f \
-    \( -name '0[1-9]-*.png' -o -name '1[0-4]-*.png' \) |
-    wc -l | tr -d ' ')"
-  elder="$(find "$OUTPUT_DIR" -maxdepth 1 -type f \
-    \( -name '1[5-8]-*.png' \) |
-    wc -l | tr -d ' ')"
+  standard=0
+  elder=0
+  for entry in "${routes[@]}"; do
+    IFS='|' read -r number slug _ mode _ <<<"$entry"
+    for appearance in light dark; do
+      file_path="$OUTPUT_DIR/$number-$slug-$appearance.png"
+      [[ -s "$file_path" ]] || continue
+      if [[ "$mode" == "standard" ]]; then
+        standard=$((standard + 1))
+      else
+        elder=$((elder + 1))
+      fi
+    done
+  done
 
-  [[ "$total" == "36" ]] || fail "PNG 数量应为 36，实际 $total"
-  [[ "$standard" == "28" ]] || fail "标准版应为 28，实际 $standard"
-  [[ "$elder" == "8" ]] || fail "老人版应为 8，实际 $elder"
+  [[ "$total" == "$CARETHREAD_SCREENSHOT_COUNT" ]] ||
+    fail "PNG 数量应为 $CARETHREAD_SCREENSHOT_COUNT，实际 $total"
+  [[ "$standard" == "$CARETHREAD_SCREENSHOT_STANDARD_COUNT" ]] ||
+    fail "标准版应为 $CARETHREAD_SCREENSHOT_STANDARD_COUNT，实际 $standard"
+  [[ "$elder" == "$CARETHREAD_SCREENSHOT_ELDER_COUNT" ]] ||
+    fail "老人版应为 $CARETHREAD_SCREENSHOT_ELDER_COUNT，实际 $elder"
 
   dimensions=""
   while IFS= read -r file_path; do
@@ -130,25 +152,55 @@ validate_pngs() {
       wc -l |
       tr -d ' '
   )"
-  [[ "$unique_hashes" == "36" ]] ||
-    fail "36 张截图中仅有 $unique_hashes 个不同 SHA-256"
+  [[ "$unique_hashes" == "$CARETHREAD_SCREENSHOT_COUNT" ]] ||
+    fail "$CARETHREAD_SCREENSHOT_COUNT 张截图中仅有 $unique_hashes 个不同 SHA-256"
 
-  log "PASS 36 PNG（标准 28 / 老人 8），尺寸 $(printf '%s' "$dimensions" | head -1)，SHA-256 去重 36"
+  log "PASS $CARETHREAD_SCREENSHOT_COUNT PNG（标准 $CARETHREAD_SCREENSHOT_STANDARD_COUNT / 老人 $CARETHREAD_SCREENSHOT_ELDER_COUNT），尺寸 $(printf '%s' "$dimensions" | head -1)，SHA-256 去重 $CARETHREAD_SCREENSHOT_COUNT"
 }
 
 cd "$ROOT_DIR"
 command -v xcodegen >/dev/null || fail "缺少 xcodegen"
 command -v jq >/dev/null || fail "缺少 jq"
 
-DEVICE_UDID="${CARETHREAD_SIMULATOR_UDID:-$(find_device)}"
+if [[ -n "${CARETHREAD_SIMULATOR_UDID:-}" ]]; then
+  DEVICE_UDID="$CARETHREAD_SIMULATOR_UDID"
+elif ! DEVICE_UDID="$(find_or_create_device)"; then
+  fail "无法为 iOS $EXPECTED_OS_VERSION 找到或创建 iPhone 16；请确认平台组件完整并重启 Xcode/CoreSimulator"
+fi
 [[ -n "$DEVICE_UDID" ]] ||
-  fail "找不到 iPhone 16 / iOS 18.6 模拟器"
+  fail "iOS $EXPECTED_OS_VERSION 的 iPhone 16 设备标识为空"
 
 log "使用模拟器 $DEVICE_UDID"
 xcrun simctl boot "$DEVICE_UDID" >/dev/null 2>&1 || true
 xcrun simctl bootstatus "$DEVICE_UDID" -b
 
-log "生成工程并构建一次，36 张图全部复用该构建"
+IFS=$'\t' read -r DEVICE_NAME RUNTIME_IDENTIFIER < <(
+  xcrun simctl list devices available -j |
+    jq -r --arg udid "$DEVICE_UDID" '
+      .devices
+      | to_entries[]
+      | .key as $runtime
+      | .value[]
+      | select(.udid == $udid)
+      | [.name, $runtime]
+      | @tsv
+    '
+)
+[[ "$DEVICE_NAME" == "$EXPECTED_DEVICE_NAME" &&
+  -n "$RUNTIME_IDENTIFIER" ]] ||
+  fail "截图设备必须是可用的 $EXPECTED_DEVICE_NAME，当前 UDID 不符合"
+OS_VERSION="$(
+  xcrun simctl list runtimes -j |
+    jq -r --arg runtime "$RUNTIME_IDENTIFIER" '
+      .runtimes[]
+      | select(.identifier == $runtime)
+      | .version
+    '
+)"
+[[ "$OS_VERSION" == "$EXPECTED_OS_VERSION" ]] ||
+  fail "截图 runtime 必须是 iOS $EXPECTED_OS_VERSION，实际为 ${OS_VERSION:-未知}"
+
+log "生成工程并构建一次，$CARETHREAD_SCREENSHOT_COUNT 张图全部复用该构建"
 xcodegen generate --quiet
 xcodebuild \
   -project CareThread.xcodeproj \
@@ -174,7 +226,9 @@ find "$OUTPUT_DIR" -maxdepth 1 -type f -name '*.png' -delete
 : >"$MANIFEST_ROWS"
 
 for entry in "${routes[@]}"; do
-  IFS='|' read -r number slug route mode <<<"$entry"
+  IFS='|' read -r number slug route mode expected_shell \
+    expected_presentation expected_selected_tab expected_tab_bar \
+    expected_feature_marker <<<"$entry"
   for appearance in light dark; do
     output="$OUTPUT_DIR/$number-$slug-$appearance.png"
     ready_marker="$DATA_CONTAINER/tmp/carethread-screenshot-ready-$route"
@@ -187,11 +241,12 @@ for entry in "${routes[@]}"; do
       "-uiTestMode"
       "-displayMode" "$mode"
       "-screenshotRoute" "$route"
+      "-screenshotAppearance" "$appearance"
       "-AppleLanguages" "(zh-Hans)"
       "-AppleLocale" "zh_CN"
     )
-    if [[ "$route" == "capture-confirmation" ]]; then
-      args+=("-ScreenshotCaptureConfirmation")
+    if [[ "$route" == "onboarding" ]]; then
+      args+=("-resetOnboarding")
     elif [[ "$route" == "elder-capture-question" ]]; then
       args+=("-ScreenshotElderCaptureQuestion")
     elif [[ "$route" == "lock" ]]; then
@@ -207,24 +262,31 @@ for entry in "${routes[@]}"; do
     wait_for_process "$DEVICE_UDID" "$pid" ||
       fail "$route/$appearance 启动后进程退出"
 
-    if [[ "$route" == "lock" ]]; then
-      # The real privacy gate intentionally prevents its routed content from
-      # mounting. Use bounded process polls while its failed-auth state settles.
-      for _ in {1..4}; do
-        process_is_running "$DEVICE_UDID" "$pid" ||
-          fail "lock/$appearance 截图前进程退出"
-        sleep 0.25
-      done
-    else
-      wait_for_ready_marker "$ready_marker" "$DEVICE_UDID" "$pid" ||
-        fail "$route/$appearance 未发布 AX 就绪标记 screenshot.route.$route"
-    fi
+    wait_for_ready_marker "$ready_marker" "$DEVICE_UDID" "$pid" ||
+      fail "$route/$appearance 未发布真实功能就绪标记 screenshot.route.$route"
+    jq -e \
+      --arg route "$route" \
+      --arg shell "$expected_shell" \
+      --arg presentation "$expected_presentation" \
+      --argjson selectedTab "${expected_selected_tab:-null}" \
+      --argjson tabBarExpected "$expected_tab_bar" \
+      --arg featureMarker "$expected_feature_marker" \
+      --arg resolvedAppearance "$appearance" '
+        .route == $route
+        and .shell == $shell
+        and .presentation == $presentation
+        and .selectedTab == $selectedTab
+        and .tabBarExpected == $tabBarExpected
+        and .featureMarker == $featureMarker
+        and .resolvedAppearance == $resolvedAppearance
+      ' "$ready_marker" >/dev/null ||
+      fail "$route/$appearance 就绪载荷与真实导航壳合同不一致"
+    ready_payload="$(jq -c . "$ready_marker")"
 
     xcrun simctl io "$DEVICE_UDID" screenshot --type=png "$output"
     [[ -s "$output" ]] || fail "截图为空：$output"
     file_path="docs/screenshots/$(basename "$output")"
     ready_marker_name="screenshot.route.$route"
-    [[ "$route" == "lock" ]] && ready_marker_name="process-stable"
     width="$(sips -g pixelWidth "$output" | awk '/pixelWidth/{print $2}')"
     height="$(sips -g pixelHeight "$output" | awk '/pixelHeight/{print $2}')"
     sha256="$(shasum -a 256 "$output" | awk '{print $1}')"
@@ -235,6 +297,7 @@ for entry in "${routes[@]}"; do
       --arg appearance "$appearance" \
       --arg readyMarker "$ready_marker_name" \
       --arg sha256 "$sha256" \
+      --argjson ready "$ready_payload" \
       --argjson width "$width" \
       --argjson height "$height" '
         {
@@ -243,6 +306,12 @@ for entry in "${routes[@]}"; do
           mode: $mode,
           appearance: $appearance,
           readyMarker: $readyMarker,
+          shell: $ready.shell,
+          presentation: $ready.presentation,
+          selectedTab: $ready.selectedTab,
+          tabBarExpected: $ready.tabBarExpected,
+          featureMarker: $ready.featureMarker,
+          resolvedAppearance: $ready.resolvedAppearance,
           width: $width,
           height: $height,
           sha256: $sha256
@@ -254,31 +323,6 @@ done
 
 xcrun simctl terminate "$DEVICE_UDID" "$BUNDLE_ID" >/dev/null 2>&1 || true
 validate_pngs
-
-IFS=$'\t' read -r DEVICE_NAME RUNTIME_IDENTIFIER < <(
-  xcrun simctl list devices available -j |
-    jq -r --arg udid "$DEVICE_UDID" '
-      .devices
-      | to_entries[]
-      | .key as $runtime
-      | .value[]
-      | select(.udid == $udid)
-      | [.name, $runtime]
-      | @tsv
-    '
-)
-[[ -n "$DEVICE_NAME" && -n "$RUNTIME_IDENTIFIER" ]] ||
-  fail "无法读取模拟器设备与 runtime 元数据"
-OS_VERSION="$(
-  xcrun simctl list runtimes -j |
-    jq -r --arg runtime "$RUNTIME_IDENTIFIER" '
-      .runtimes[]
-      | select(.identifier == $runtime)
-      | .version
-    '
-)"
-[[ -n "$OS_VERSION" && "$OS_VERSION" != "null" ]] ||
-  fail "无法读取模拟器 OS 版本"
 
 SOURCE_COMMIT="$(git rev-parse HEAD)"
 SOURCE_TREE_DIRTY=false
@@ -301,9 +345,13 @@ jq -s \
   --arg deviceName "$DEVICE_NAME" \
   --arg osVersion "$OS_VERSION" \
   --arg runtimeIdentifier "$RUNTIME_IDENTIFIER" \
-  --arg bundleID "$BUNDLE_ID" '
+  --arg bundleID "$BUNDLE_ID" \
+  --argjson routeCount "$CARETHREAD_SCREENSHOT_ROUTE_COUNT" \
+  --argjson screenshotCount "$CARETHREAD_SCREENSHOT_COUNT" \
+  --argjson standardCount "$CARETHREAD_SCREENSHOT_STANDARD_COUNT" \
+  --argjson elderCount "$CARETHREAD_SCREENSHOT_ELDER_COUNT" '
     {
-      schemaVersion: 1,
+      schemaVersion: 2,
       generator: "Scripts/screenshots.sh",
       generatedAtUTC: $generatedAtUTC,
       sourceCommit: $sourceCommit,
@@ -317,10 +365,19 @@ jq -s \
       configuration: "Debug",
       language: "zh-Hans",
       locale: "zh_CN",
+      expectedCounts: {
+        routes: $routeCount,
+        screenshots: $screenshotCount,
+        standard: $standardCount,
+        elder: $elderCount,
+        light: $routeCount,
+        dark: $routeCount
+      },
       screenshots: .
     }
   ' "$MANIFEST_ROWS" >"$MANIFEST_PATH"
 
-jq -e '.screenshots | length == 36' "$MANIFEST_PATH" >/dev/null ||
-  fail "截图 manifest 条目数不是 36"
+jq -e --argjson expected "$CARETHREAD_SCREENSHOT_COUNT" \
+  '.screenshots | length == $expected' "$MANIFEST_PATH" >/dev/null ||
+  fail "截图 manifest 条目数不是 $CARETHREAD_SCREENSHOT_COUNT"
 log "已生成 docs/SCREENSHOT_MANIFEST.json（sourceTreeDirty=${SOURCE_TREE_DIRTY}）"

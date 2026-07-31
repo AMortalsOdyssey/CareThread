@@ -398,6 +398,233 @@ struct ElderModeTests {
         #expect(attributes[.immutable] as? Bool == true)
     }
 
+    @Test("老人版命中历史精确重复时保留可恢复草稿与原件")
+    func duplicateMatchRetainsRecoverableDraftAndStaging() async throws {
+        let container = try TestSupport.container()
+        let context = container.mainContext
+        let patient = Patient(displayName: "虚构老人甲")
+        context.insert(patient)
+        let temporary = try TestSupport.temporaryDirectory()
+        defer { try? FileManager.default.removeItem(at: temporary) }
+        let vault = try CaptureVaultService(
+            rootURL: temporary.appendingPathComponent("Vault")
+        )
+        let batchID = UUID()
+        let staged = try vault.stagePhotoData(
+            try fictionalBlankReportData(),
+            batchID: batchID,
+            displayName: "虚构重复报告.png",
+            preferredExtension: "png",
+            uniformTypeIdentifier: "public.png"
+        )
+        let existingRecordID = UUID()
+        let existingRecord = MedicalRecord(
+            id: existingRecordID,
+            patientId: patient.id,
+            title: "既有虚构报告",
+            eventDate: CTDate.make(2026, 7, 1),
+            sourceType: .photo,
+            attachments: [
+                try verifiedAttachment(
+                    patientID: patient.id,
+                    recordID: existingRecordID,
+                    sha256: staged.sha256
+                )
+            ]
+        )
+        context.insert(existingRecord)
+        try context.save()
+        let baselineRecordCount = try context.fetchCount(
+            FetchDescriptor<MedicalRecord>()
+        )
+
+        await #expect(
+            throws: ElderCaptureError.duplicateRequiresStandardReview
+        ) {
+            try await ElderCaptureService(
+                context: context,
+                vault: vault
+            ).save(
+                ElderCaptureRequest(
+                    patientID: patient.id,
+                    batchID: batchID,
+                    stagedAssets: [staged],
+                    source: .fixture,
+                    typeChoice: .other,
+                    eventDate: CTDate.make(2026, 7, 31)
+                )
+            )
+        }
+
+        try expectRecoverableElderCapture(
+            context: context,
+            vault: vault,
+            batchID: batchID,
+            stagedAsset: staged,
+            expectedPatientID: patient.id,
+            expectedMedicalRecordCount: baselineRecordCount
+        )
+    }
+
+    @Test("老人版重复检测异常时保留可恢复草稿与原件")
+    func duplicateDetectionFailureRetainsRecoverableDraftAndStaging()
+        async throws {
+        let container = try TestSupport.container()
+        let context = container.mainContext
+        let patient = Patient(displayName: "虚构老人乙")
+        context.insert(patient)
+        try context.save()
+        let temporary = try TestSupport.temporaryDirectory()
+        defer { try? FileManager.default.removeItem(at: temporary) }
+        let vaultRoot = temporary.appendingPathComponent("Vault")
+        let vault = try CaptureVaultService(rootURL: vaultRoot)
+        let batchID = UUID()
+        let staged = try vault.stagePhotoData(
+            try fictionalBlankReportData(),
+            batchID: batchID,
+            displayName: "虚构待检测报告.png",
+            preferredExtension: "png",
+            uniformTypeIdentifier: "public.png"
+        )
+        let poisoned = StagedCaptureAsset(
+            id: staged.id,
+            batchID: staged.batchID,
+            originalRelativePath: staged.originalRelativePath,
+            previewRelativePath: "../无效预览路径.jpg",
+            displayName: staged.displayName,
+            fileExtension: staged.fileExtension,
+            uniformTypeIdentifier: staged.uniformTypeIdentifier,
+            kind: staged.kind,
+            byteCount: staged.byteCount,
+            sha256: staged.sha256,
+            pixelWidth: staged.pixelWidth,
+            pixelHeight: staged.pixelHeight,
+            pageCount: staged.pageCount,
+            createdAt: staged.createdAt
+        )
+        try replaceJournalAssets(
+            [poisoned],
+            batchID: batchID,
+            vaultRoot: vaultRoot,
+            vault: vault
+        )
+        let baselineRecordCount = try context.fetchCount(
+            FetchDescriptor<MedicalRecord>()
+        )
+
+        await #expect(
+            throws: ElderCaptureError.safetyReviewRequiresStandard
+        ) {
+            try await ElderCaptureService(
+                context: context,
+                vault: vault
+            ).save(
+                ElderCaptureRequest(
+                    patientID: patient.id,
+                    batchID: batchID,
+                    stagedAssets: [poisoned],
+                    source: .fixture,
+                    typeChoice: .other,
+                    eventDate: CTDate.make(2026, 7, 31)
+                )
+            )
+        }
+
+        try expectRecoverableElderCapture(
+            context: context,
+            vault: vault,
+            batchID: batchID,
+            stagedAsset: poisoned,
+            expectedPatientID: patient.id,
+            expectedMedicalRecordCount: baselineRecordCount
+        )
+    }
+
+    private func fictionalBlankReportData() throws -> Data {
+        let renderer = UIGraphicsImageRenderer(
+            size: CGSize(width: 320, height: 240)
+        )
+        let image = renderer.image { graphics in
+            UIColor.white.setFill()
+            graphics.fill(
+                CGRect(x: 0, y: 0, width: 320, height: 240)
+            )
+        }
+        return try #require(image.pngData())
+    }
+
+    private func verifiedAttachment(
+        patientID: UUID,
+        recordID: UUID,
+        sha256: String
+    ) throws -> Attachment {
+        let attachmentID = UUID()
+        return try Attachment.verified(
+            id: attachmentID,
+            patientId: patientID,
+            recordId: recordID,
+            originalRelativePath:
+                "members/\(patientID.uuidString)/records/\(recordID.uuidString)"
+                + "/attachments/\(attachmentID.uuidString)/original.png",
+            displayFileName: "既有虚构报告.png",
+            kind: .image,
+            pageIndex: 0,
+            uniformTypeIdentifier: "public.png",
+            byteCount: 128,
+            sha256: sha256,
+            importSource: .fixture,
+            pixelWidth: 320,
+            pixelHeight: 240
+        )
+    }
+
+    private func replaceJournalAssets(
+        _ assets: [StagedCaptureAsset],
+        batchID: UUID,
+        vaultRoot: URL,
+        vault: CaptureVaultService
+    ) throws {
+        var journal = try vault.journal(batchID: batchID)
+        journal.assets = assets
+        journal.updatedAt = Date()
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        encoder.outputFormatting = [.sortedKeys]
+        let journalURL = vaultRoot
+            .appendingPathComponent("staging")
+            .appendingPathComponent(batchID.uuidString)
+            .appendingPathComponent("journal.json")
+        try encoder.encode(journal).write(to: journalURL, options: .atomic)
+    }
+
+    private func expectRecoverableElderCapture(
+        context: ModelContext,
+        vault: CaptureVaultService,
+        batchID: UUID,
+        stagedAsset: StagedCaptureAsset,
+        expectedPatientID: UUID,
+        expectedMedicalRecordCount: Int
+    ) throws {
+        #expect(
+            try context.fetchCount(FetchDescriptor<MedicalRecord>())
+                == expectedMedicalRecordCount
+        )
+        #expect(try context.fetchCount(FetchDescriptor<ImportBatch>()) == 1)
+        #expect(try context.fetchCount(FetchDescriptor<CaptureDraft>()) == 1)
+        #expect(try context.fetchCount(FetchDescriptor<CapturePage>()) == 1)
+        let draft = try #require(
+            context.fetch(FetchDescriptor<CaptureDraft>()).first
+        )
+        #expect(draft.batchId == batchID)
+        #expect(draft.patientId == expectedPatientID)
+        let journal = try vault.journal(batchID: batchID)
+        #expect(journal.assets == [stagedAsset])
+        let originalURL = try vault.url(
+            for: stagedAsset.originalRelativePath
+        )
+        #expect(FileManager.default.fileExists(atPath: originalURL.path))
+    }
+
     private func medication(
         patientID: UUID,
         name: String

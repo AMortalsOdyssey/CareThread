@@ -7,6 +7,33 @@ enum AppearanceMode: String, CaseIterable, Codable, Identifiable {
 
     static let storageKey = "appearanceMode"
 
+    static var launchOverride: AppearanceMode? {
+        parseLaunchOverride(arguments: ProcessInfo.processInfo.arguments)
+    }
+
+    static func parseLaunchOverride(
+        arguments: [String]
+    ) -> AppearanceMode? {
+        #if DEBUG
+        guard let index = arguments.firstIndex(of: "-screenshotAppearance"),
+              arguments.indices.contains(index + 1) else {
+            return nil
+        }
+        return AppearanceMode(rawValue: arguments[index + 1])
+        #else
+        return nil
+        #endif
+    }
+
+    static func effective(
+        storedRawValue: String,
+        arguments: [String] = ProcessInfo.processInfo.arguments
+    ) -> AppearanceMode {
+        parseLaunchOverride(arguments: arguments)
+            ?? AppearanceMode(rawValue: storedRawValue)
+            ?? .system
+    }
+
     var id: String { rawValue }
 
     var displayName: String {

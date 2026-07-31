@@ -106,6 +106,12 @@ struct ElderDoctorBriefView: View {
         }
         .dynamicTypeSize(...ElderDynamicTypePolicy.maximum)
         .accessibilityIdentifier("elder.brief")
+        #if DEBUG
+        .screenshotReady(
+            .elderBrief,
+            when: input != nil && document?.hasExportableContent == true
+        )
+        #endif
     }
 
     private func briefContent(

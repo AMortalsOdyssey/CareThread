@@ -13,6 +13,9 @@ struct ElderRootView: View {
     @State private var showDoctorBrief = false
     @State private var showSwitchConfirmation = false
     @State private var recordsRefreshToken = 0
+    #if DEBUG
+    @State private var didApplyScreenshotRoute = false
+    #endif
 
     let onSwitchToStandard: () -> Void
 
@@ -197,5 +200,38 @@ struct ElderRootView: View {
         if ProcessInfo.processInfo.arguments.contains("-M9OpenBrief") {
             showDoctorBrief = true
         }
+        #if DEBUG
+        applyScreenshotRouteIfNeeded()
+        #endif
     }
+
+    #if DEBUG
+    @MainActor
+    private func applyScreenshotRouteIfNeeded() {
+        guard !didApplyScreenshotRoute,
+              let route = ScreenshotRoute.current,
+              route.isElder else {
+            return
+        }
+        didApplyScreenshotRoute = true
+        switch route {
+        case .elderToday:
+            selectedTab = 0
+            previousTab = 0
+        case .elderCaptureQuestion:
+            selectedTab = 0
+            previousTab = 0
+            showCapture = true
+        case .elderRecords:
+            selectedTab = 2
+            previousTab = 2
+        case .elderBrief:
+            selectedTab = 0
+            previousTab = 0
+            showDoctorBrief = true
+        default:
+            return
+        }
+    }
+    #endif
 }

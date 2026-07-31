@@ -71,6 +71,9 @@ struct CaptureFlowHost: View {
                         },
                         onContinueDraft: resumeLatestDraft
                     )
+                    #if DEBUG
+                    .screenshotReady(.captureSource)
+                    #endif
                 case .workbench:
                     CaptureWorkbenchView(
                         controller: controller,
@@ -100,6 +103,9 @@ struct CaptureFlowHost: View {
                             dismiss()
                         }
                     )
+                    #if DEBUG
+                    .screenshotReady(.captureConfirmation)
+                    #endif
                 case .completed:
                     CaptureCompletedView(count: controller.completedRecordCount) {
                         onSaved()

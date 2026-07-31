@@ -1,6 +1,8 @@
 import CoreGraphics
 import Foundation
+import PDFKit
 import Testing
+import XCTest
 @testable import CareThread
 
 @MainActor
@@ -119,10 +121,47 @@ struct VisitPreparationCardTests {
         #expect(result.byteCount > 4_096)
         let pdf = CGPDFDocument(result.fileURL as CFURL)
         #expect(pdf?.numberOfPages == 1)
+        let text = PDFDocument(url: result.fileURL)?.page(at: 0)?.string ?? ""
+        #expect(text.contains(CareThreadPDFBranding.productName))
+        #expect(text.replacingOccurrences(of: " ", with: "")
+            .contains("把家人的病程资料"))
+        #expect(text.replacingOccurrences(of: " ", with: "")
+            .contains("安全地串成一条线"))
+        #expect(text.contains("扫码访问官网"))
+        #expect(
+            decodedQRCode(from: result.fileURL)
+                == CareThreadPDFBranding.officialWebsiteURL.absoluteString
+        )
+    }
+
+    private func decodedQRCode(from fileURL: URL) -> String? {
+        guard let document = PDFDocument(url: fileURL),
+              let page = document.page(at: 0) else {
+            return nil
+        }
+        let image = page.thumbnail(
+            of: CGSize(width: 1_190, height: 1_684),
+            for: .mediaBox
+        )
+        guard let ciImage = CIImage(image: image),
+              let detector = CIDetector(
+                  ofType: CIDetectorTypeQRCode,
+                  context: CIContext(options: [
+                      .useSoftwareRenderer: true
+                  ]),
+                  options: [
+                      CIDetectorAccuracy: CIDetectorAccuracyHigh
+                  ]
+              ) else {
+            return nil
+        }
+        return detector.features(in: ciImage)
+            .compactMap { ($0 as? CIQRCodeFeature)?.messageString }
+            .first
     }
 
     @Test("超长资料按固定预算取舍并明确标出省略")
-    func truncatesWithExplicitAccounting() {
+    func truncatesWithExplicitAccounting() throws {
         let records = (0..<30).map { index in
             record(
                 id: fixedID(100 + index),
@@ -142,7 +181,10 @@ struct VisitPreparationCardTests {
                 birthDate: CTDate.make(1980, 1, 1),
                 gender: "未填写",
                 conditions: (0..<20).map { "虚构病种 \($0)" },
-                allergies: (0..<20).map { "虚构过敏 \($0)" },
+                allergies: (0..<20).map {
+                    "虚构过敏 \($0) "
+                        + String(repeating: "需要线下人工核对", count: 20)
+                },
                 histories: []
             ),
             records: records,
@@ -188,9 +230,22 @@ struct VisitPreparationCardTests {
                 document.omittedItemCount
             ).contains("\(document.omittedItemCount)")
         )
+
+        let directory = try TestSupport.temporaryDirectory()
+        let store = M7TemporaryExportStore(rootURL: directory)
+        let result = try VisitPreparationPDFService(store: store)
+            .export(document)
+        defer { store.remove(result.fileURL) }
+        #expect(result.pageCount == 1)
+        let text = PDFDocument(url: result.fileURL)?.page(at: 0)?.string ?? ""
+        #expect(text.contains("已省略"))
+        #expect(text.contains("\(document.omittedItemCount)"))
+        #expect(text.contains("由用户自行整理"))
+        #expect(text.contains("仅供就诊沟通参考"))
+        #expect(text.contains(CareThreadPDFBranding.productName))
     }
 
-    private func fullInput(
+    fileprivate func fullInput(
         includingForeignData: Bool = false
     ) -> BriefInput {
         var records = [
@@ -303,5 +358,27 @@ struct VisitPreparationCardTests {
                 10_000 + suffix
             )
         )!
+    }
+}
+
+/// Keeps one fictional one-page card inside xcresult for rendered layout QA.
+@MainActor
+final class VisitPreparationPDFVisualArtifactTests: XCTestCase {
+    func testCreatesFictionalVisitPreparationPDFVisualArtifact() throws {
+        let directory = try TestSupport.temporaryDirectory()
+        let store = M7TemporaryExportStore(rootURL: directory)
+        let document = VisitPreparationCardBuilder.build(
+            input: VisitPreparationCardTests().fullInput(),
+            contact: "虚构家属 000-0000",
+            generatedAt: CTDate.make(2026, 7, 31)
+        )
+        let result = try VisitPreparationPDFService(store: store)
+            .export(document)
+        defer { store.remove(result.fileURL) }
+
+        let attachment = XCTAttachment(contentsOfFile: result.fileURL)
+        attachment.name = "CareThread-visit-preparation-fictional.pdf"
+        attachment.lifetime = .keepAlways
+        add(attachment)
     }
 }

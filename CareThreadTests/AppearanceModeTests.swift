@@ -11,4 +11,45 @@ struct AppearanceModeTests {
         #expect(AppearanceMode.dark.colorScheme == .dark)
         #expect(AppearanceMode.storageKey == "appearanceMode")
     }
+
+    @Test("截图外观覆盖只影响本次解析且不改持久值")
+    func launchOverrideIsNonPersistent() {
+        let stored = AppearanceMode.dark.rawValue
+        #expect(
+            AppearanceMode.parseLaunchOverride(
+                arguments: [
+                    "CareThread",
+                    "-screenshotAppearance",
+                    "light"
+                ]
+            ) == .light
+        )
+        #expect(
+            AppearanceMode.effective(
+                storedRawValue: stored,
+                arguments: [
+                    "CareThread",
+                    "-screenshotAppearance",
+                    "light"
+                ]
+            ) == .light
+        )
+        #expect(stored == AppearanceMode.dark.rawValue)
+        #expect(
+            AppearanceMode.effective(
+                storedRawValue: stored,
+                arguments: ["CareThread"]
+            ) == .dark
+        )
+        #expect(
+            AppearanceMode.effective(
+                storedRawValue: stored,
+                arguments: [
+                    "CareThread",
+                    "-screenshotAppearance",
+                    "invalid"
+                ]
+            ) == .dark
+        )
+    }
 }

@@ -14,6 +14,11 @@ struct CaptureConfirmationView: View {
     @State private var showOverrideConfirmation = false
     @State private var showSaveError = false
     @State private var saveErrorMessage = Copy.Capture.saveFailure
+    @State private var isCheckingDuplicates = false
+    @State private var duplicateCheckID: UUID?
+    @State private var duplicateCheckTask: Task<Void, Never>?
+    @State private var duplicateMatch: CaptureDuplicateMatch?
+    @State private var pendingSave: PendingCaptureSave?
     @State private var explicitlySwitchedPatientID: UUID?
     @State private var selectedOriginalPage: M3CapturePageAsset?
     @FocusState private var textInputFocused: Bool
@@ -24,6 +29,7 @@ struct CaptureConfirmationView: View {
                 ProgressView()
             } else {
                 confirmationForm
+                    .disabled(isCheckingDuplicates)
             }
         }
         .navigationTitle(Copy.Capture.confirmation)
@@ -34,6 +40,7 @@ struct CaptureConfirmationView: View {
                     textInputFocused = false
                     onSaveDraft()
                 }
+                .disabled(isCheckingDuplicates)
                 .accessibilityIdentifier("m3.confirm.saveDraft")
             }
             ToolbarItemGroup(placement: .keyboard) {
@@ -49,7 +56,7 @@ struct CaptureConfirmationView: View {
         }
         .alert(Copy.Capture.overrideConfirmTitle, isPresented: $showOverrideConfirmation) {
             Button(Copy.Capture.confirmOverride, role: .destructive) {
-                saveCurrent(
+                beginSaveCurrent(
                     decision: .acceptedAfterNameRecognitionOverride,
                     assignedPatientID: controller.frozenPatientID,
                     overrideReason: Copy.Capture.overrideReason
@@ -58,6 +65,30 @@ struct CaptureConfirmationView: View {
             Button(Copy.Common.cancel, role: .cancel) {}
         } message: {
             Text(Copy.Capture.overrideConfirmBody)
+        }
+        .alert(item: $duplicateMatch) { match in
+            if match.isHardBlock {
+                return Alert(
+                    title: Text(Copy.Capture.duplicateExactTitle),
+                    message: Text(duplicateMessage(for: match)),
+                    dismissButton: .cancel(Text(Copy.Capture.returnToGrouping)) {
+                        pendingSave = nil
+                        controller.confirmations = []
+                        controller.groupingConfirmed = false
+                        controller.phase = .workbench
+                    }
+                )
+            }
+            return Alert(
+                title: Text(Copy.Capture.duplicatePossibleTitle),
+                message: Text(duplicateMessage(for: match)),
+                primaryButton: .destructive(Text(Copy.Capture.duplicateOverride)) {
+                    continueAfterDuplicateReview()
+                },
+                secondaryButton: .cancel {
+                    pendingSave = nil
+                }
+            )
         }
         .alert(Copy.Capture.saveFailure, isPresented: $showSaveError) {
             Button(Copy.Common.acknowledge, role: .cancel) {}
@@ -69,6 +100,12 @@ struct CaptureConfirmationView: View {
         }
         .onChange(of: controller.confirmations.first?.id) { _, _ in
             prepareEditableCollections()
+        }
+        .onDisappear {
+            duplicateCheckTask?.cancel()
+            duplicateCheckTask = nil
+            duplicateCheckID = nil
+            isCheckingDuplicates = false
         }
     }
 
@@ -306,18 +343,30 @@ struct CaptureConfirmationView: View {
     }
 
     private var saveButton: some View {
-        Button(Copy.Capture.save) {
+        Button {
             let decision: AssignmentDecision =
                 current.evidence?.outcome == .match
                 ? .acceptedMatch
                 : .acceptedWithoutNameEvidence
-            saveCurrent(
+            beginSaveCurrent(
                 decision: decision,
                 assignedPatientID: controller.frozenPatientID
             )
+        } label: {
+            HStack(spacing: CT.Space.s2) {
+                if isCheckingDuplicates {
+                    ProgressView()
+                        .tint(CT.Color.inkOnPrimary)
+                }
+                Text(
+                    isCheckingDuplicates
+                        ? Copy.Capture.checkingDuplicate
+                        : Copy.Capture.save
+                )
+            }
         }
         .buttonStyle(CTPrimaryButtonStyle())
-        .disabled(!canSaveContent)
+        .disabled(!canSaveContent || isCheckingDuplicates)
         .accessibilityHint(Copy.Capture.requiredFieldsHint)
         .accessibilityIdentifier("m3.confirm.save")
     }
@@ -417,7 +466,7 @@ struct CaptureConfirmationView: View {
                         : Copy.Capture.switchMemberAction(matching.displayName)
                 ) {
                     if explicitlySwitchedPatientID == matching.id {
-                        saveCurrent(
+                        beginSaveCurrent(
                             decision: .switchedMember,
                             assignedPatientID: matching.id
                         )
@@ -866,6 +915,126 @@ struct CaptureConfirmationView: View {
         }
     }
 
+    private func beginSaveCurrent(
+        decision: AssignmentDecision,
+        assignedPatientID: UUID,
+        overrideReason: String? = nil,
+        approvedDuplicate: CaptureDuplicateApprovalSignature? = nil
+    ) {
+        guard !isCheckingDuplicates else { return }
+        textInputFocused = false
+        let request = PendingCaptureSave(
+            decision: decision,
+            assignedPatientID: assignedPatientID,
+            overrideReason: overrideReason,
+            approvedDuplicate: approvedDuplicate
+        )
+        guard current.sourceType != .manual, !current.pages.isEmpty else {
+            saveCurrent(
+                decision: decision,
+                assignedPatientID: assignedPatientID,
+                overrideReason: overrideReason
+            )
+            return
+        }
+        let documentID = current.id
+        let pages = current.pages
+        let checkID = UUID()
+        duplicateCheckTask?.cancel()
+        duplicateCheckID = checkID
+        isCheckingDuplicates = true
+        duplicateCheckTask = Task { @MainActor in
+            do {
+                let match = try await CaptureDuplicateDetectionService(
+                    context: modelContext,
+                    vault: CaptureVaultService()
+                ).scan(
+                    patientID: assignedPatientID,
+                    pages: pages
+                )
+                guard duplicateCheckID == checkID,
+                      controller.confirmations.first?.id == documentID else {
+                    return
+                }
+                duplicateCheckID = nil
+                duplicateCheckTask = nil
+                isCheckingDuplicates = false
+                if let match {
+                    if !match.isHardBlock,
+                       request.approvedDuplicate == match.approvalSignature {
+                        saveCurrent(
+                            decision: request.decision,
+                            assignedPatientID: request.assignedPatientID,
+                            overrideReason: request.overrideReason
+                        )
+                        return
+                    }
+                    pendingSave = request.approving(match)
+                    duplicateMatch = match
+                } else {
+                    saveCurrent(
+                        decision: request.decision,
+                        assignedPatientID: request.assignedPatientID,
+                        overrideReason: request.overrideReason
+                    )
+                }
+            } catch {
+                guard duplicateCheckID == checkID else { return }
+                duplicateCheckID = nil
+                duplicateCheckTask = nil
+                isCheckingDuplicates = false
+                saveErrorMessage = Copy.Capture.duplicateCheckFailed
+                showSaveError = true
+            }
+        }
+    }
+
+    private func continueAfterDuplicateReview() {
+        guard let request = pendingSave else { return }
+        pendingSave = nil
+        AppLog.userAction.notice(
+            "User confirmed a visual or OCR duplicate suggestion was a false positive"
+        )
+        beginSaveCurrent(
+            decision: request.decision,
+            assignedPatientID: request.assignedPatientID,
+            overrideReason: request.overrideReason,
+            approvedDuplicate: request.approvedDuplicate
+        )
+    }
+
+    private func duplicateMessage(for match: CaptureDuplicateMatch) -> String {
+        let recordDescription: String?
+        if let title = match.existingRecordTitle,
+           let date = match.existingRecordDate {
+            recordDescription =
+                "\(DateFormatter.m3Date.string(from: date))的“\(title)”"
+        } else {
+            recordDescription = nil
+        }
+        let percent = Int((match.similarity * 100).rounded())
+        switch (match.evidence, match.scope) {
+        case (.exactFileHash, .currentImport):
+            return Copy.Capture.duplicateExactCurrentImport
+        case (.exactFileHash, .savedRecord):
+            return Copy.Capture.duplicateExactSavedRecord(
+                fileName: match.candidateDisplayName,
+                recordDescription: recordDescription ?? "已有记录"
+            )
+        case (.visualContentHash, _):
+            return Copy.Capture.duplicateVisualMessage(
+                fileName: match.candidateDisplayName,
+                recordDescription: recordDescription
+            )
+        case (.ocrContentOverlap, _):
+            return Copy.Capture.duplicateOCRMessage(
+                fileName: match.candidateDisplayName,
+                recordDescription: recordDescription,
+                similarityPercent: percent
+            )
+        }
+    }
+
     private func makeAttachments(
         pages: [M3CapturePageAsset],
         patientID: UUID,
@@ -873,15 +1042,41 @@ struct CaptureConfirmationView: View {
         fallbackSource: ImportSource
     ) throws -> (attachments: [Attachment], finalized: [FinalizedCaptureAsset]) {
         let vault = try CaptureVaultService()
-        let batchIDs = Set(pages.compactMap(\.batchID))
+        guard !pages.isEmpty else {
+            throw CaptureCommitError.invalidCaptureDocument
+        }
+        var expectedBatchByStagedID: [UUID: UUID] = [:]
+        for page in pages {
+            guard let stagedID = page.stagedAssetID,
+                  let batchID = page.batchID else {
+                throw CaptureCommitError.invalidCaptureDocument
+            }
+            if let existing = expectedBatchByStagedID[stagedID],
+               existing != batchID {
+                throw CaptureCommitError.invalidCaptureDocument
+            }
+            expectedBatchByStagedID[stagedID] = batchID
+        }
+        let batchIDs = Set(expectedBatchByStagedID.values)
         var stagedByID: [UUID: StagedCaptureAsset] = [:]
         var sourceByStagedID: [UUID: ImportSource] = [:]
         for batchID in batchIDs {
             let journal = try vault.journal(batchID: batchID)
-            journal.assets.forEach { stagedByID[$0.id] = $0 }
+            for staged in journal.assets
+            where expectedBatchByStagedID[staged.id] == batchID {
+                guard staged.batchID == batchID else {
+                    throw CaptureCommitError.invalidCaptureDocument
+                }
+                stagedByID[staged.id] = staged
+            }
+        }
+        guard Set(stagedByID.keys) == Set(expectedBatchByStagedID.keys) else {
+            throw CaptureCommitError.invalidCaptureDocument
         }
         for page in pages {
-            guard let stagedID = page.stagedAssetID else { continue }
+            guard let stagedID = page.stagedAssetID else {
+                throw CaptureCommitError.invalidCaptureDocument
+            }
             let source = page.captureSource?.importSource ?? fallbackSource
             if let existing = sourceByStagedID[stagedID], existing != source {
                 throw CaptureCommitError.invalidCaptureDocument
@@ -894,8 +1089,10 @@ struct CaptureConfirmationView: View {
         do {
             for page in pages.sorted(by: { $0.sourceOrder < $1.sourceOrder }) {
                 guard let stagedID = page.stagedAssetID,
-                      seen.insert(stagedID).inserted,
-                      let staged = stagedByID[stagedID] else { continue }
+                      let staged = stagedByID[stagedID] else {
+                    throw CaptureCommitError.invalidCaptureDocument
+                }
+                guard seen.insert(stagedID).inserted else { continue }
                 let final = try vault.finalize(
                     asset: staged,
                     patientID: patientID,
@@ -928,6 +1125,42 @@ struct CaptureConfirmationView: View {
             finalized.reversed().forEach(vault.rollbackFinalization)
             throw error
         }
+    }
+}
+
+private struct CaptureDuplicateApprovalSignature: Equatable {
+    let evidence: CaptureDuplicateEvidence
+    let scope: CaptureDuplicateScope
+    let candidateID: UUID
+    let otherCandidateID: UUID?
+    let existingRecordID: UUID?
+}
+
+private extension CaptureDuplicateMatch {
+    var approvalSignature: CaptureDuplicateApprovalSignature {
+        CaptureDuplicateApprovalSignature(
+            evidence: evidence,
+            scope: scope,
+            candidateID: candidateID,
+            otherCandidateID: otherCandidateID,
+            existingRecordID: existingRecordID
+        )
+    }
+}
+
+private struct PendingCaptureSave {
+    let decision: AssignmentDecision
+    let assignedPatientID: UUID
+    let overrideReason: String?
+    let approvedDuplicate: CaptureDuplicateApprovalSignature?
+
+    func approving(_ match: CaptureDuplicateMatch) -> Self {
+        Self(
+            decision: decision,
+            assignedPatientID: assignedPatientID,
+            overrideReason: overrideReason,
+            approvedDuplicate: match.approvalSignature
+        )
     }
 }
 

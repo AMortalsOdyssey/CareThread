@@ -96,6 +96,9 @@ struct ElderTodayView: View {
             Text(Copy.disclaimer)
         }
         .accessibilityIdentifier("elder.today")
+        #if DEBUG
+        .screenshotReady(.elderToday, when: !records.isEmpty)
+        #endif
     }
 
     private var dateHeader: some View {
