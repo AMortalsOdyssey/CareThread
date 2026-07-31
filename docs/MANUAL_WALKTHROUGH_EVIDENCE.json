@@ -16,7 +16,7 @@
       "evidence": [
         {
           "path": "docs/walkthrough/B1-B7-remediation.md",
-          "sha256": "419eff7fec6da619295a0fbc89201a8da50d51a350d9a2b1c7a986dcf5970f01"
+          "sha256": "69e21cd82a206917f16048d6b57620b52d1a9ab9d1b5595b5bda5fce3cf39f4e"
         }
       ]
     },
@@ -28,7 +28,7 @@
       "evidence": [
         {
           "path": "docs/walkthrough/B1-B7-remediation.md",
-          "sha256": "419eff7fec6da619295a0fbc89201a8da50d51a350d9a2b1c7a986dcf5970f01"
+          "sha256": "69e21cd82a206917f16048d6b57620b52d1a9ab9d1b5595b5bda5fce3cf39f4e"
         }
       ]
     },
@@ -40,7 +40,7 @@
       "evidence": [
         {
           "path": "docs/walkthrough/B1-B7-remediation.md",
-          "sha256": "419eff7fec6da619295a0fbc89201a8da50d51a350d9a2b1c7a986dcf5970f01"
+          "sha256": "69e21cd82a206917f16048d6b57620b52d1a9ab9d1b5595b5bda5fce3cf39f4e"
         }
       ]
     },
@@ -52,7 +52,7 @@
       "evidence": [
         {
           "path": "docs/walkthrough/B1-B7-remediation.md",
-          "sha256": "419eff7fec6da619295a0fbc89201a8da50d51a350d9a2b1c7a986dcf5970f01"
+          "sha256": "69e21cd82a206917f16048d6b57620b52d1a9ab9d1b5595b5bda5fce3cf39f4e"
         }
       ]
     },
@@ -64,7 +64,7 @@
       "evidence": [
         {
           "path": "docs/walkthrough/B1-B7-remediation.md",
-          "sha256": "419eff7fec6da619295a0fbc89201a8da50d51a350d9a2b1c7a986dcf5970f01"
+          "sha256": "69e21cd82a206917f16048d6b57620b52d1a9ab9d1b5595b5bda5fce3cf39f4e"
         }
       ]
     },
@@ -76,7 +76,7 @@
       "evidence": [
         {
           "path": "docs/walkthrough/B1-B7-remediation.md",
-          "sha256": "419eff7fec6da619295a0fbc89201a8da50d51a350d9a2b1c7a986dcf5970f01"
+          "sha256": "69e21cd82a206917f16048d6b57620b52d1a9ab9d1b5595b5bda5fce3cf39f4e"
         }
       ]
     },
@@ -88,7 +88,7 @@
       "evidence": [
         {
           "path": "docs/walkthrough/B1-B7-remediation.md",
-          "sha256": "419eff7fec6da619295a0fbc89201a8da50d51a350d9a2b1c7a986dcf5970f01"
+          "sha256": "69e21cd82a206917f16048d6b57620b52d1a9ab9d1b5595b5bda5fce3cf39f4e"
         }
       ]
     }
@@ -112,7 +112,7 @@
       "evidence": [
         {
           "path": "docs/walkthrough/DESIGN-02-spacing.md",
-          "sha256": "c8b6a5c67dde98e6618793200bf38b7f9606b0ef82cf2b76c93b32c2dce04e33"
+          "sha256": "7e0ef84684b5c7d59161255734d3d3746d56a86af4ab36904bf913a4ed799c1d"
         }
       ]
     },
@@ -123,7 +123,7 @@
       "evidence": [
         {
           "path": "docs/walkthrough/DESIGN-03-appearances.md",
-          "sha256": "db96cc4e31b8694acef1344fa67d2c243eed738d44cf218740d249bc83119efa"
+          "sha256": "7b686a2a39704f43544fafbf6e6a8b6110efeaa71f75d02ff5d01d82c629468f"
         }
       ]
     },
@@ -145,7 +145,7 @@
       "evidence": [
         {
           "path": "docs/walkthrough/DESIGN-05-copy.md",
-          "sha256": "44fc503071efd44dcab147177737e0c7242c689561dac141f5ab5c2e2315bab0"
+          "sha256": "b67f8c6160c31e982381ed41b6cad33c074250039de78eb5626b40829c552fe2"
         }
       ]
     },
@@ -156,7 +156,7 @@
       "evidence": [
         {
           "path": "docs/walkthrough/DESIGN-06-dynamic-type.md",
-          "sha256": "1615d2a8be610a58ca8862a8199c22deea653ee02fcb4be001e65d364cdd3ebf"
+          "sha256": "bc98d3493005e1b74ecb82e17662f21a60d7b591e519f607bb904a1f00a866cb"
         }
       ]
     },
@@ -167,7 +167,7 @@
       "evidence": [
         {
           "path": "docs/walkthrough/DESIGN-07-reduce-motion.md",
-          "sha256": "2cb9beb80359db8bc08d2ed2c6acea0810a0ab5f324ddec0f3f889f201a66968"
+          "sha256": "bfe172369d90869786083dfbb7242ac94e2fa2de5183e6dc4a03f26d15d02fc4"
         }
       ]
     },
@@ -178,7 +178,7 @@
       "evidence": [
         {
           "path": "docs/walkthrough/DESIGN-08-elder.md",
-          "sha256": "5abebdf85c1caea8d6f995f84400a1cb7099270c0bca7a851583e22de73e2a0d"
+          "sha256": "2ceff38dfe483569564ad5168b3d10b2785de7361e49f36cfed7deb920e5c4ce"
         }
       ]
     },
@@ -189,7 +189,7 @@
       "evidence": [
         {
           "path": "docs/walkthrough/B9-missing-original.md",
-          "sha256": "ce09e53eeaa4eeadf3d063d7d2cd3b8051a61c1b414d4ab75bfb68e1d06f9b46"
+          "sha256": "52b16b86680065f7c3da64c3979959c971d479e39fc26fd118f42f876ddc3be6"
         }
       ]
     },
@@ -233,7 +233,7 @@
       "evidence": [
         {
           "path": "docs/walkthrough/B23-draft-resume.md",
-          "sha256": "e65763afd9ee2bab55ffd3f48471d8d106ed37f24560b2374c70de9db28b7e4f"
+          "sha256": "b6f00b0175435ae3d8ce28450d30d6b87941abcf4a298bfbdd5ea0a37f928417"
         }
       ]
     }

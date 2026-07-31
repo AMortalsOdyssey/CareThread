@@ -4,6 +4,7 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 EVIDENCE="${1:-$ROOT_DIR/docs/MANUAL_WALKTHROUGH_EVIDENCE.json}"
 EXPECTED_IDS='["B16","B17","B18","B23","B9","DESIGN-01","DESIGN-02","DESIGN-03","DESIGN-04","DESIGN-05","DESIGN-06","DESIGN-07","DESIGN-08"]'
+EXPECTED_REMEDIATION_IDS='["B1","B2","B3","B4","B5","B6","B7"]'
 
 fail() {
   printf '[walkthrough] FAIL %s\n' "$1" >&2
@@ -15,7 +16,9 @@ command -v jq >/dev/null || fail "缺少 jq"
 [[ -s "$EVIDENCE" ]] || fail "缺少人工走查证据 docs/MANUAL_WALKTHROUGH_EVIDENCE.json"
 jq -e . "$EVIDENCE" >/dev/null || fail "走查证据不是有效 JSON"
 
-jq -e --argjson expected "$EXPECTED_IDS" '
+jq -e \
+  --argjson expected "$EXPECTED_IDS" \
+  --argjson expectedRemediation "$EXPECTED_REMEDIATION_IDS" '
   .schemaVersion == 1
   and (.sourceCommit | type == "string" and test("^[0-9a-f]{40}$"))
   and (.reviewedAtUTC | type == "string" and length > 0)
@@ -27,6 +30,20 @@ jq -e --argjson expected "$EXPECTED_IDS" '
   and all(
     .checks[];
     .status == "passed"
+    and (.notes | type == "string" and length > 0)
+    and (.evidence | type == "array" and length > 0)
+    and all(
+      .evidence[];
+      (.path | type == "string" and startswith("docs/walkthrough/"))
+      and (.sha256 | type == "string" and test("^[0-9a-f]{64}$"))
+    )
+  )
+  and (.reviewRemediation | type == "array" and length == 7)
+  and ([.reviewRemediation[].id] | sort == $expectedRemediation)
+  and all(
+    .reviewRemediation[];
+    .beforeStatus == "failed"
+    and .afterStatus == "passed"
     and (.notes | type == "string" and length > 0)
     and (.evidence | type == "array" and length > 0)
     and all(
@@ -54,7 +71,11 @@ while IFS=$'\t' read -r path expected_hash; do
   [[ "$actual_hash" == "$expected_hash" ]] ||
     fail "证据哈希不一致：$path"
 done < <(
-  jq -r '.checks[].evidence[] | [.path, .sha256] | @tsv' "$EVIDENCE" |
+  jq -r '
+    (.checks[].evidence[], .reviewRemediation[].evidence[])
+    | [.path, .sha256]
+    | @tsv
+  ' "$EVIDENCE" |
     LC_ALL=C sort -u
 )
 

@@ -1296,7 +1296,7 @@ struct CaptureDuplicateDetectionService {
         do {
             try sourceContext.save()
             AppLog.data.info(
-                "Refreshed \(results.count, privacy: .public) attachment derived artifacts"
+                "Refreshed \(results.count, privacy: .private) attachment derived artifacts"
             )
         } catch {
             sourceContext.rollback()

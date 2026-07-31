@@ -103,12 +103,20 @@ if rg -q '备份密码要求至少 12 位' website/privacy/index.html &&
 else
   fail "协议 Markdown、官网与 App 关键事实同源（正文红线冲突，需产品/法务统一）"
 fi
-if rg -n -i \
-  '<script|<(img|source)[^>]+src=["'"']https?://|<link[^>]+(stylesheet|preconnect|font)[^>]+href=["'"']https?://|@import[[:space:]]+url\(["'"']?https?://' \
-  website --glob '*.{html,css}'; then
+if rg -n -i --glob '*.{html,css}' \
+  -e '<script' \
+  -e '<(img|source)[^>]+src=["\x27]https?://' \
+  -e '<link[^>]+(stylesheet|preconnect|font)[^>]+href=["\x27]https?://' \
+  -e '@import[[:space:]]+url\(["\x27]?https?://' \
+  website; then
   fail "官网不得加载第三方脚本、字体、分析或追踪资源"
 else
-  pass "官网零第三方运行时资源"
+  remote_runtime_status=$?
+  if [[ "$remote_runtime_status" -eq 1 ]]; then
+    pass "官网零第三方运行时资源"
+  else
+    fail "官网第三方运行时资源扫描执行失败（rg 状态 ${remote_runtime_status}）"
+  fi
 fi
 
 milestone_failures=0
