@@ -4,14 +4,20 @@ import UniformTypeIdentifiers
 
 struct BackupRestoreView: View {
     @Environment(\.modelContext) private var modelContext
+    @Query(sort: \Patient.createdAt) private var patients: [Patient]
     let patientID: UUID
 
     @State private var exportAllMembers = true
+    @State private var showOptionalPassword = false
     @State private var backupPassword = ""
     @State private var importPassword = ""
     @State private var exportedPackage: BackupExportPackage?
     @State private var importPlan: BackupImportPlan?
+    @State private var selectedImportArchiveURL: URL?
+    @State private var selectedImportArchiveRoot: URL?
+    @State private var importNeedsPassword = false
     @State private var showFileImporter = false
+    @State private var showNearbySync = false
     @State private var showRestoreConfirmation = false
     @State private var isWorking = false
     @State private var errorMessage: String?
@@ -29,12 +35,19 @@ struct BackupRestoreView: View {
 
     var body: some View {
         List {
-            Section {
-                Label(BackupCopy.sensitive, systemImage: "exclamationmark.shield.fill")
-                    .font(CT.Font.footnote)
-                    .foregroundStyle(CT.Color.warningOnContainer)
+            Section(BackupCopy.transferTitle) {
+                Label(BackupCopy.transferDescription, systemImage: "iphone.gen3.radiowaves.left.and.right")
+                    .font(CT.Font.bodyReading)
+                    .foregroundStyle(CT.Color.inkSecondary)
+                Button {
+                    showNearbySync = true
+                } label: {
+                    Label(BackupCopy.openTransfer, systemImage: "arrow.left.arrow.right")
+                        .font(CT.Font.headline)
+                }
+                .foregroundStyle(CT.Color.primary)
+                .accessibilityIdentifier("m8.backup.transfer")
             }
-            .listRowBackground(CT.Color.warningContainer)
 
             Section(BackupCopy.exportTitle) {
                 Text(BackupCopy.exportDescription)
@@ -49,30 +62,56 @@ struct BackupRestoreView: View {
                 }
                 .pickerStyle(.segmented)
                 .accessibilityIdentifier("m8.backup.scope")
-                SecureField(BackupCopy.password, text: $backupPassword)
-                    .textContentType(.newPassword)
-                    .font(CT.Font.body)
-                    .accessibilityIdentifier("m8.backup.password")
-                Text(BackupCopy.passwordHint)
+                Label(BackupCopy.exportRisk, systemImage: "exclamationmark.shield.fill")
                     .font(CT.Font.footnote)
-                    .foregroundStyle(CT.Color.inkSecondary)
-                Button(BackupCopy.prepareEncryptedExport) {
-                    createExport()
+                    .foregroundStyle(CT.Color.warningOnContainer)
+                    .padding(.vertical, CT.Space.s2)
+                Button(BackupCopy.prepareExport) {
+                    createReadableExport()
                 }
                 .font(CT.Font.headline)
                 .foregroundStyle(CT.Color.primary)
                 .disabled(isWorking)
                 .accessibilityIdentifier("m8.backup.export")
-                Text(BackupCopy.readableWarning)
-                    .font(CT.Font.footnote)
-                    .foregroundStyle(CT.Color.warningOnContainer)
-                Button(BackupCopy.readableExport) {
-                    createReadableExport()
+
+                Button {
+                    showOptionalPassword.toggle()
+                } label: {
+                    HStack(spacing: CT.Space.s2) {
+                        Text(BackupCopy.optionalPassword)
+                        Spacer()
+                        Image(
+                            systemName: showOptionalPassword
+                                ? "chevron.up"
+                                : "chevron.down"
+                        )
+                    }
+                    .font(CT.Font.body)
+                    .foregroundStyle(CT.Color.inkPrimary)
+                    .contentShape(Rectangle())
                 }
-                .font(CT.Font.subhead.weight(.semibold))
-                .foregroundStyle(CT.Color.warningOnContainer)
-                .disabled(isWorking)
-                .accessibilityIdentifier("m8.backup.readableExport")
+                .buttonStyle(.plain)
+                .accessibilityValue(showOptionalPassword ? "已展开" : "已收起")
+                .accessibilityIdentifier("m8.backup.optionalPassword")
+                if showOptionalPassword {
+                    SecureField(BackupCopy.password, text: $backupPassword)
+                        .textContentType(.newPassword)
+                        .font(CT.Font.body)
+                        .accessibilityIdentifier("m8.backup.password")
+                    Text(BackupCopy.passwordHint)
+                        .font(CT.Font.footnote)
+                        .foregroundStyle(CT.Color.inkSecondary)
+                    Text(BackupCopy.passwordLossWarning)
+                        .font(CT.Font.footnote)
+                        .foregroundStyle(CT.Color.warningOnContainer)
+                    Button(BackupCopy.prepareEncryptedExport) {
+                        createEncryptedExport()
+                    }
+                    .font(CT.Font.subhead.weight(.semibold))
+                    .foregroundStyle(CT.Color.primary)
+                    .disabled(isWorking || backupPassword.count < 12)
+                    .accessibilityIdentifier("m8.backup.encryptedExport")
+                }
                 if let exportedPackage {
                     ShareLink(
                         item: exportedPackage.archiveURL,
@@ -98,10 +137,6 @@ struct BackupRestoreView: View {
                 Text(BackupCopy.importDescription)
                     .font(CT.Font.bodyReading)
                     .foregroundStyle(CT.Color.inkSecondary)
-                SecureField(BackupCopy.password, text: $importPassword)
-                    .textContentType(.password)
-                    .font(CT.Font.body)
-                    .accessibilityIdentifier("m8.backup.importPassword")
                 Button {
                     showFileImporter = true
                 } label: {
@@ -114,6 +149,22 @@ struct BackupRestoreView: View {
                 .foregroundStyle(CT.Color.primary)
                 .disabled(isWorking)
                 .accessibilityIdentifier("m8.backup.import")
+                if importNeedsPassword {
+                    SecureField(BackupCopy.password, text: $importPassword)
+                        .textContentType(.password)
+                        .font(CT.Font.body)
+                        .accessibilityIdentifier("m8.backup.importPassword")
+                    Text(BackupCopy.encryptedImport)
+                        .font(CT.Font.footnote)
+                        .foregroundStyle(CT.Color.inkSecondary)
+                    Button(BackupCopy.validateEncryptedImport) {
+                        preflightSelectedArchive()
+                    }
+                    .font(CT.Font.headline)
+                    .foregroundStyle(CT.Color.primary)
+                    .disabled(isWorking || importPassword.isEmpty)
+                    .accessibilityIdentifier("m8.backup.validateEncrypted")
+                }
                 if let plan = importPlan {
                     backupSummary(plan.preview)
                     Button(BackupCopy.restore, role: .destructive) {
@@ -133,7 +184,7 @@ struct BackupRestoreView: View {
                     .font(CT.Font.valueMono)
                     .accessibilityIdentifier("m8.backup.debug.count")
                     Button(BackupCopy.debugPrepare) {
-                        createExport(forceAll: true)
+                        createReadableExport(forceAll: true)
                     }
                     .accessibilityIdentifier("m8.backup.debug.export")
                     Button(BackupCopy.debugClear, role: .destructive) {
@@ -178,6 +229,12 @@ struct BackupRestoreView: View {
         .scrollContentBackground(.hidden)
         .background(CT.Color.bgBase)
         .navigationTitle(BackupCopy.navigationTitle)
+        .sheet(isPresented: $showNearbySync) {
+            NearbySyncFlowHost(
+                patients: patients,
+                selectedPatientID: patientID
+            )
+        }
         .fileImporter(
             isPresented: $showFileImporter,
             allowedContentTypes: [.zip, .data],
@@ -231,7 +288,7 @@ struct BackupRestoreView: View {
     }
 
     @MainActor
-    private func createExport(forceAll: Bool? = nil) {
+    private func createEncryptedExport(forceAll: Bool? = nil) {
         workTask?.cancel()
         discardExportedPackage()
         isWorking = true
@@ -258,7 +315,7 @@ struct BackupRestoreView: View {
                 CareActivityHistoryStore().recordBackup(
                     at: package.preview.exportedAt
                 )
-                successMessage = BackupCopy.exportTitle + "完成"
+                successMessage = "带口令的存档已生成"
             } catch is CancellationError {
                 AppLog.userAction.info("Backup export cancelled")
             } catch {
@@ -267,19 +324,19 @@ struct BackupRestoreView: View {
                     "Backup export UI failed; domain=\(failure.domain) code=\(failure.code)"
                 )
                 errorMessage = (error as? LocalizedError)?.errorDescription
-                    ?? "备份生成失败，请稍后重试。"
+                    ?? "带口令的存档生成失败，请稍后重试。"
             }
         }
     }
 
     @MainActor
-    private func createReadableExport() {
+    private func createReadableExport(forceAll: Bool? = nil) {
         workTask?.cancel()
         discardExportedPackage()
         isWorking = true
         errorMessage = nil
         successMessage = nil
-        let all = exportAllMembers
+        let all = forceAll ?? exportAllMembers
         workTask = Task { @MainActor in
             defer {
                 isWorking = false
@@ -299,12 +356,12 @@ struct BackupRestoreView: View {
                 CareActivityHistoryStore().recordBackup(
                     at: package.preview.exportedAt
                 )
-                successMessage = BackupCopy.readableExport + "完成"
+                successMessage = "存档已生成"
             } catch is CancellationError {
-                AppLog.userAction.info("Readable backup export cancelled")
+                AppLog.userAction.info("Backup archive export cancelled")
             } catch {
                 errorMessage = (error as? LocalizedError)?.errorDescription
-                    ?? "人读备份生成失败，请稍后重试。"
+                    ?? "存档生成失败，请稍后重试。"
             }
         }
     }
@@ -315,6 +372,7 @@ struct BackupRestoreView: View {
     ) {
         workTask?.cancel()
         discardImportPlan()
+        discardSelectedImportArchive()
         isWorking = true
         errorMessage = nil
         successMessage = nil
@@ -331,31 +389,83 @@ struct BackupRestoreView: View {
                 ?? "备份校验失败，当前资料没有改变。"
             return
         }
-        let password = importPassword
+        let secured = selectedURL.startAccessingSecurityScopedResource()
+        defer {
+            if secured { selectedURL.stopAccessingSecurityScopedResource() }
+        }
+        do {
+            let copy = try makeProtectedImportCopy(from: selectedURL)
+            selectedImportArchiveRoot = copy.root
+            selectedImportArchiveURL = copy.archive
+            importNeedsPassword = BackupEncryption.isEncryptedBackup(copy.archive)
+            isWorking = false
+            if importNeedsPassword && importPassword.isEmpty {
+                return
+            }
+            preflightSelectedArchive()
+        } catch {
+            isWorking = false
+            errorMessage = (error as? LocalizedError)?.errorDescription
+                ?? "存档校验失败，当前资料没有改变。"
+        }
+    }
+
+    @MainActor
+    private func preflightSelectedArchive() {
+        guard let selectedImportArchiveURL else { return }
+        workTask?.cancel()
+        discardImportPlan()
+        isWorking = true
+        errorMessage = nil
+        successMessage = nil
+        let password = importNeedsPassword ? importPassword : nil
         workTask = Task { @MainActor in
             defer {
                 isWorking = false
                 workTask = nil
-            }
-            let url = selectedURL
-            let secured = url.startAccessingSecurityScopedResource()
-            defer {
-                if secured { url.stopAccessingSecurityScopedResource() }
             }
             do {
                 let vault = try CaptureVaultService()
                 importPlan = try await BackupImporter(
                     context: modelContext,
                     vault: vault
-                ).preflight(archiveURL: url, password: password)
+                ).preflight(
+                    archiveURL: selectedImportArchiveURL,
+                    password: password
+                )
+                discardSelectedImportArchive()
             } catch is CancellationError {
                 AppLog.userAction.info("Backup preflight cancelled")
             } catch {
                 importPlan = nil
                 errorMessage = (error as? LocalizedError)?.errorDescription
-                    ?? "备份校验失败，当前资料没有改变。"
+                    ?? "存档校验失败，当前资料没有改变。"
             }
         }
+    }
+
+    private func makeProtectedImportCopy(
+        from source: URL
+    ) throws -> (root: URL, archive: URL) {
+        let root = FileManager.default.temporaryDirectory
+            .appendingPathComponent("CareThreadSelectedBackup", isDirectory: true)
+            .appendingPathComponent(UUID().uuidString.lowercased(), isDirectory: true)
+        try FileManager.default.createDirectory(
+            at: root,
+            withIntermediateDirectories: true,
+            attributes: [.protectionKey: FileProtectionType.complete]
+        )
+        var excludedRoot = root
+        var values = URLResourceValues()
+        values.isExcludedFromBackup = true
+        try excludedRoot.setResourceValues(values)
+        let archive = root.appendingPathComponent("selected-archive")
+        try FileManager.default.copyItem(at: source, to: archive)
+        try FileManager.default.setAttributes(
+            [.protectionKey: FileProtectionType.complete],
+            ofItemAtPath: archive.path
+        )
+        return (root, archive)
     }
 
     @MainActor
@@ -430,7 +540,7 @@ struct BackupRestoreView: View {
             let importer = BackupImporter(context: modelContext, vault: vault)
             let plan = try importer.preflight(
                 archiveURL: exportedPackage.archiveURL,
-                password: resolvedExportPassword
+                password: nil
             )
             _ = try importer.restore(plan: plan, userConfirmed: true)
             successMessage = BackupCopy.restored
@@ -460,6 +570,7 @@ struct BackupRestoreView: View {
     private func discardTransientArtifacts() {
         discardExportedPackage()
         discardImportPlan()
+        discardSelectedImportArchive()
     }
 
     private func discardExportedPackage() {
@@ -470,6 +581,16 @@ struct BackupRestoreView: View {
     private func discardImportPlan() {
         importPlan?.discard()
         importPlan = nil
+    }
+
+    private func discardSelectedImportArchive() {
+        if let selectedImportArchiveRoot {
+            try? FileManager.default.removeItem(at: selectedImportArchiveRoot)
+        }
+        selectedImportArchiveURL = nil
+        selectedImportArchiveRoot = nil
+        importNeedsPassword = false
+        importPassword = ""
     }
 
     private var resolvedExportPassword: String {

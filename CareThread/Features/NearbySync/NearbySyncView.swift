@@ -267,12 +267,20 @@ final class NearbySyncViewModel: ObservableObject {
 
 struct NearbySyncView: View {
     @StateObject private var model: NearbySyncViewModel
+    @EnvironmentObject private var appLockController: AppLockController
     @Environment(\.dismiss) private var dismiss
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var showAppLockOffer = false
+    private let appLockOfferStore: any AppLockTransferOfferStoring
 
-    init(model: @autoclosure @escaping () -> NearbySyncViewModel) {
+    init(
+        model: @autoclosure @escaping () -> NearbySyncViewModel,
+        appLockOfferStore: any AppLockTransferOfferStoring =
+            AppLockTransferOfferStore()
+    ) {
         _model = StateObject(wrappedValue: model())
+        self.appLockOfferStore = appLockOfferStore
     }
 
     var body: some View {
@@ -306,6 +314,37 @@ struct NearbySyncView: View {
                 model.background()
             }
         }
+        .onChange(of: model.phase) { _, phase in
+            considerAppLockOffer(for: phase)
+        }
+        .task {
+            considerAppLockOffer(for: model.phase)
+        }
+        .alert(
+            NearbySyncCopy.appLockOfferTitle,
+            isPresented: $showAppLockOffer
+        ) {
+            Button(NearbySyncCopy.enableAppLock) {
+                Task {
+                    _ = await appLockController.setEnabled(true)
+                }
+            }
+            Button(NearbySyncCopy.declineAppLock, role: .cancel) {}
+        } message: {
+            Text(NearbySyncCopy.appLockOfferMessage)
+        }
+    }
+
+    @MainActor
+    private func considerAppLockOffer(for phase: NearbySyncUIPhase) {
+        guard case .completed = phase else { return }
+        showAppLockOffer = AppLockTransferOfferPolicy.claimIfNeeded(
+            isReceiving: model.direction == .receive,
+            isAppLockEnabled: appLockController.isEnabled,
+            isBiometricAuthenticationAvailable:
+                appLockController.canOfferAfterTransfer,
+            store: appLockOfferStore
+        )
     }
 
     private var privacyHeader: some View {
@@ -623,6 +662,25 @@ private struct NearbySyncFlowHostContent: View {
         selectedPatientID: UUID?,
         onImportCompleted: @escaping @MainActor () -> Void
     ) {
+        #if DEBUG
+        if ProcessInfo.processInfo.arguments.contains(
+            "-M8NearbyReceiveComplete"
+        ) {
+            let debugModel = NearbySyncViewModel(
+                members: members,
+                startSend: { _ in },
+                startReceive: {},
+                pairingDecision: { _ in },
+                manifestDecision: { _ in },
+                cancel: {},
+                resume: {}
+            )
+            debugModel.direction = .receive
+            debugModel.complete("debug-receive-complete")
+            _model = StateObject(wrappedValue: debugModel)
+            return
+        }
+        #endif
         do {
             let controller = try NearbySyncFlowController.production(
                 context: context,

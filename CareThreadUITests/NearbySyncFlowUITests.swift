@@ -49,6 +49,55 @@ final class NearbySyncFlowUITests: XCTestCase {
         XCTAssertGreaterThanOrEqual(begin.frame.height, 44)
     }
 
+    func testReceiveCompletionOffersAppLockOnceAndDeclineDoesNotNag() {
+        let firstLaunch = launchCompletedReceive(resetOffer: true)
+        XCTAssertTrue(
+            firstLaunch.staticTexts[
+                "要在这台 iPhone 上也打开应用锁吗？"
+            ].waitForExistence(timeout: 10)
+        )
+        let evidence = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
+        evidence.name = "batch2-nearby-app-lock-offer"
+        evidence.lifetime = .keepAlways
+        add(evidence)
+        firstLaunch.buttons["暂不"].tap()
+        XCTAssertTrue(
+            element("nearbySync.completed", in: firstLaunch)
+                .waitForExistence(timeout: 5)
+        )
+        firstLaunch.terminate()
+
+        let secondLaunch = launchCompletedReceive(resetOffer: false)
+        XCTAssertTrue(
+            element("nearbySync.completed", in: secondLaunch)
+                .waitForExistence(timeout: 10)
+        )
+        XCTAssertFalse(
+            secondLaunch.staticTexts[
+                "要在这台 iPhone 上也打开应用锁吗？"
+            ].waitForExistence(timeout: 2)
+        )
+    }
+
+    private func launchCompletedReceive(
+        resetOffer: Bool
+    ) -> XCUIApplication {
+        let app = XCUIApplication()
+        app.launchArguments = [
+            "-uiTestMode",
+            "-displayMode", "standard",
+            "-M8ResetLock",
+            "-M8LockResult", "success",
+            "-M8NearbyReceiveComplete",
+            "-screenshotRoute", "nearby-sync"
+        ]
+        if resetOffer {
+            app.launchArguments.append("-M8ResetTransferOffer")
+        }
+        app.launch()
+        return app
+    }
+
     private func element(
         _ identifier: String,
         in app: XCUIApplication

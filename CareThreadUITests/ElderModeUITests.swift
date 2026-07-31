@@ -37,7 +37,18 @@ final class ElderModeUITests: XCTestCase {
             element("elder.settings", in: app)
                 .waitForExistence(timeout: 5)
         )
-        app.buttons["elder.settings.standard"].tap()
+        let systemLockNotice = element(
+            "elder.settings.systemLockNotice",
+            in: app
+        )
+        XCTAssertTrue(systemLockNotice.waitForExistence(timeout: 5))
+        XCTAssertEqual(
+            systemLockNotice.label,
+            "iOS 18 及以上还可以在桌面长按 CareThread 图标，选\"需要 Face ID\"，给它再加一道系统锁。"
+        )
+        let standardMode = app.buttons["elder.settings.standard"]
+        scrollUntilHittable(standardMode, in: app)
+        standardMode.tap()
         XCTAssertTrue(
             element("elder.mode.confirmation", in: app)
                 .waitForExistence(timeout: 5)

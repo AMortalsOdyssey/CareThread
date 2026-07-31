@@ -101,6 +101,19 @@ struct ElderSettingsView: View {
             }
             .padding(.vertical, CT.Space.s2)
 
+            Label(AppLockCopy.systemLockNotice, systemImage: "iphone.gen3")
+                .font(CT.Font.elderBody)
+                .foregroundStyle(CT.Color.inkSecondary)
+                .frame(
+                    maxWidth: .infinity,
+                    minHeight: CT.Size.elderListRowHeight,
+                    alignment: .leading
+                )
+                .padding(.vertical, CT.Space.s2)
+                .accessibilityElement(children: .combine)
+                .accessibilityLabel(AppLockCopy.systemLockNotice)
+                .accessibilityIdentifier("elder.settings.systemLockNotice")
+
             Button(action: onRequestStandardMode) {
                 Label(
                     Copy.Elder.switchStandard,

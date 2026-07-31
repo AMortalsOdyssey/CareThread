@@ -60,6 +60,15 @@ struct AppLockSettingsView: View {
                     .foregroundStyle(CT.Color.warningOnContainer)
             }
             .listRowBackground(CT.Color.warningContainer)
+
+            Section {
+                Label(AppLockCopy.systemLockNotice, systemImage: "iphone.gen3")
+                    .font(CT.Font.footnote)
+                    .foregroundStyle(CT.Color.inkSecondary)
+                    .accessibilityElement(children: .combine)
+                    .accessibilityLabel(AppLockCopy.systemLockNotice)
+                    .accessibilityIdentifier("m8.lock.systemNotice")
+            }
         }
         .listStyle(.insetGrouped)
         .scrollContentBackground(.hidden)

@@ -4,6 +4,7 @@ import LocalAuthentication
 
 protocol LocalAuthenticationAdapting {
     var isDeviceOwnerAuthenticationAvailable: Bool { get }
+    var isBiometricAuthenticationAvailable: Bool { get }
     func authenticate(reason: String) async throws -> Bool
 }
 
@@ -13,6 +14,15 @@ struct SystemLocalAuthenticationAdapter: LocalAuthenticationAdapting {
         var error: NSError?
         return context.canEvaluatePolicy(
             .deviceOwnerAuthentication,
+            error: &error
+        )
+    }
+
+    var isBiometricAuthenticationAvailable: Bool {
+        let context = LAContext()
+        var error: NSError?
+        return context.canEvaluatePolicy(
+            .deviceOwnerAuthenticationWithBiometrics,
             error: &error
         )
     }
@@ -44,6 +54,61 @@ final class AppLockPreferenceStore: AppLockPreferenceStoring {
     var isEnabled: Bool {
         get { defaults.bool(forKey: Self.enabledKey) }
         set { defaults.set(newValue, forKey: Self.enabledKey) }
+    }
+}
+
+protocol AppLockTransferOfferStoring: AnyObject {
+    var hasHandledOffer: Bool { get set }
+}
+
+final class AppLockTransferOfferStore: AppLockTransferOfferStoring {
+    static let handledKey = "carethread.appLock.transferOfferHandled"
+
+    private let defaults: UserDefaults
+
+    init(defaults: UserDefaults = .standard) {
+        self.defaults = defaults
+    }
+
+    var hasHandledOffer: Bool {
+        get { defaults.bool(forKey: Self.handledKey) }
+        set { defaults.set(newValue, forKey: Self.handledKey) }
+    }
+}
+
+enum AppLockTransferOfferPolicy {
+    static func shouldOffer(
+        isReceiving: Bool,
+        isAppLockEnabled: Bool,
+        isBiometricAuthenticationAvailable: Bool,
+        hasHandledOffer: Bool
+    ) -> Bool {
+        isReceiving
+            && !isAppLockEnabled
+            && isBiometricAuthenticationAvailable
+            && !hasHandledOffer
+    }
+
+    /// Claims the one-time offer before the UI presents it, so duplicate
+    /// completion events or an interrupted presentation cannot nag again.
+    @MainActor
+    static func claimIfNeeded(
+        isReceiving: Bool,
+        isAppLockEnabled: Bool,
+        isBiometricAuthenticationAvailable: Bool,
+        store: any AppLockTransferOfferStoring
+    ) -> Bool {
+        guard shouldOffer(
+            isReceiving: isReceiving,
+            isAppLockEnabled: isAppLockEnabled,
+            isBiometricAuthenticationAvailable:
+                isBiometricAuthenticationAvailable,
+            hasHandledOffer: store.hasHandledOffer
+        ) else {
+            return false
+        }
+        store.hasHandledOffer = true
+        return true
     }
 }
 
@@ -79,6 +144,10 @@ final class AppLockController: ObservableObject {
 
     var canEnable: Bool {
         authenticator.isDeviceOwnerAuthenticationAvailable
+    }
+
+    var canOfferAfterTransfer: Bool {
+        authenticator.isBiometricAuthenticationAvailable
     }
 
     func setEnabled(_ enabled: Bool) async -> Bool {
@@ -156,13 +225,16 @@ final class DebugLocalAuthenticationAdapter: LocalAuthenticationAdapting {
     }
 
     let isDeviceOwnerAuthenticationAvailable: Bool
+    let isBiometricAuthenticationAvailable: Bool
     private var results: [Result]
 
     init(
         available: Bool = true,
+        biometricAvailable: Bool? = nil,
         results: [Result] = [.success]
     ) {
         isDeviceOwnerAuthenticationAvailable = available
+        isBiometricAuthenticationAvailable = biometricAvailable ?? available
         self.results = results
     }
 
@@ -188,6 +260,11 @@ enum AppLockRuntime {
         if arguments.contains("-M8ResetLock") {
             UserDefaults.standard.removeObject(
                 forKey: AppLockPreferenceStore.enabledKey
+            )
+        }
+        if arguments.contains("-M8ResetTransferOffer") {
+            UserDefaults.standard.removeObject(
+                forKey: AppLockTransferOfferStore.handledKey
             )
         }
         let enabled = arguments.contains("-M8LockEnabled") ? true : nil

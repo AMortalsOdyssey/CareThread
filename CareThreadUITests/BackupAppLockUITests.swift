@@ -39,6 +39,63 @@ final class M8BackupAppLockUITests: XCTestCase {
         XCTAssertEqual(count.label, initial)
     }
 
+    func testDefaultArchiveNeedsNoPasswordAndOptionalEncryptionStaysAvailable() {
+        let app = XCUIApplication()
+        app.launchArguments = [
+            "-uiTestMode",
+            "-displayMode", "standard",
+            "-M8ResetLock",
+            "-M8OpenBackup"
+        ]
+        app.launch()
+
+        XCTAssertTrue(
+            app.descendants(matching: .any)["m8.backup.screen"]
+                .firstMatch
+                .waitForExistence(timeout: 10)
+        )
+        XCTAssertTrue(app.buttons["m8.backup.export"].exists)
+        XCTAssertFalse(app.secureTextFields["m8.backup.password"].exists)
+        keepScreenshot("batch2-backup-default")
+
+        let optionalPassword = app.descendants(matching: .any)[
+            "m8.backup.optionalPassword"
+        ].firstMatch
+        XCTAssertTrue(optionalPassword.waitForExistence(timeout: 5))
+        optionalPassword.tap()
+        let password = app.secureTextFields["m8.backup.password"]
+        XCTAssertTrue(reveal(password, in: app, maximumSwipes: 4))
+        XCTAssertTrue(
+            reveal(
+                app.buttons["m8.backup.encryptedExport"],
+                in: app,
+                maximumSwipes: 4
+            )
+        )
+        keepScreenshot("batch2-backup-optional-password")
+    }
+
+    func testBackupTransferCardOpensNearbyTransfer() {
+        let app = XCUIApplication()
+        app.launchArguments = [
+            "-uiTestMode",
+            "-displayMode", "standard",
+            "-M8ResetLock",
+            "-M8OpenBackup"
+        ]
+        app.launch()
+
+        XCTAssertTrue(
+            app.buttons["m8.backup.transfer"].waitForExistence(timeout: 10)
+        )
+        app.buttons["m8.backup.transfer"].tap()
+        XCTAssertTrue(
+            app.descendants(matching: .any)["nearbySync.root"]
+                .firstMatch
+                .waitForExistence(timeout: 10)
+        )
+    }
+
     func testLockFailureShowsRetryThenUnlocks() {
         let app = XCUIApplication()
         app.launchArguments = [
@@ -97,6 +154,28 @@ final class M8BackupAppLockUITests: XCTestCase {
         )
     }
 
+    func testStandardSettingsExplainTheSystemLevelLock() {
+        let app = XCUIApplication()
+        app.launchArguments = [
+            "-uiTestMode",
+            "-displayMode", "standard",
+            "-M8ResetLock",
+            "-M8LockResult", "success",
+            "-M8OpenAppLock"
+        ]
+        app.launch()
+
+        let notice = app.descendants(matching: .any)[
+            "m8.lock.systemNotice"
+        ].firstMatch
+        XCTAssertTrue(reveal(notice, in: app, maximumSwipes: 4))
+        XCTAssertEqual(
+            notice.label,
+            "iOS 18 及以上还可以在桌面长按 CareThread 图标，选\"需要 Face ID\"，给它再加一道系统锁。"
+        )
+        keepScreenshot("batch2-standard-system-lock-notice")
+    }
+
     private func reveal(
         _ element: XCUIElement,
         in app: XCUIApplication,
@@ -108,5 +187,12 @@ final class M8BackupAppLockUITests: XCTestCase {
             if element.waitForExistence(timeout: 1) { return true }
         }
         return false
+    }
+
+    private func keepScreenshot(_ name: String) {
+        let attachment = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
+        attachment.name = name
+        attachment.lifetime = .keepAlways
+        add(attachment)
     }
 }

@@ -667,6 +667,88 @@ struct M8BackupTests {
 
 @Suite(.serialized)
 struct M8AppLockTests {
+    @Test func systemLockNoticeMatchesTheApprovedCopy() {
+        #expect(
+            AppLockCopy.systemLockNotice
+                == "iOS 18 及以上还可以在桌面长按 CareThread 图标，选\"需要 Face ID\"，给它再加一道系统锁。"
+        )
+    }
+
+    @Test func transferOfferPolicyRequiresEveryLocalCondition() {
+        #expect(AppLockTransferOfferPolicy.shouldOffer(
+            isReceiving: true,
+            isAppLockEnabled: false,
+            isBiometricAuthenticationAvailable: true,
+            hasHandledOffer: false
+        ))
+        #expect(!AppLockTransferOfferPolicy.shouldOffer(
+            isReceiving: false,
+            isAppLockEnabled: false,
+            isBiometricAuthenticationAvailable: true,
+            hasHandledOffer: false
+        ))
+        #expect(!AppLockTransferOfferPolicy.shouldOffer(
+            isReceiving: true,
+            isAppLockEnabled: true,
+            isBiometricAuthenticationAvailable: true,
+            hasHandledOffer: false
+        ))
+        #expect(!AppLockTransferOfferPolicy.shouldOffer(
+            isReceiving: true,
+            isAppLockEnabled: false,
+            isBiometricAuthenticationAvailable: false,
+            hasHandledOffer: false
+        ))
+        #expect(!AppLockTransferOfferPolicy.shouldOffer(
+            isReceiving: true,
+            isAppLockEnabled: false,
+            isBiometricAuthenticationAvailable: true,
+            hasHandledOffer: true
+        ))
+    }
+
+    @MainActor
+    @Test func transferOfferIsPersistedBeforePresentationAndClaimedOnce() {
+        let store = M8TransferOfferStore()
+        #expect(AppLockTransferOfferPolicy.claimIfNeeded(
+            isReceiving: true,
+            isAppLockEnabled: false,
+            isBiometricAuthenticationAvailable: true,
+            store: store
+        ))
+        #expect(store.hasHandledOffer)
+        #expect(!AppLockTransferOfferPolicy.claimIfNeeded(
+            isReceiving: true,
+            isAppLockEnabled: false,
+            isBiometricAuthenticationAvailable: true,
+            store: store
+        ))
+    }
+
+    @Test func transferOfferStoreSurvivesReinitialization() throws {
+        let suite = "CareThreadTests.transferOffer.\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suite))
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let first = AppLockTransferOfferStore(defaults: defaults)
+        #expect(!first.hasHandledOffer)
+        first.hasHandledOffer = true
+        let reopened = AppLockTransferOfferStore(defaults: defaults)
+        #expect(reopened.hasHandledOffer)
+    }
+
+    @MainActor
+    @Test func passcodeOnlyDeviceCanEnableButDoesNotQualifyForTransferOffer() {
+        let controller = AppLockController(
+            authenticator: DebugLocalAuthenticationAdapter(
+                available: true,
+                biometricAvailable: false
+            ),
+            preferences: M8LockPreferences(false)
+        )
+        #expect(controller.canEnable)
+        #expect(!controller.canOfferAfterTransfer)
+    }
+
     @MainActor
     @Test func disabledPreferenceStartsWithoutLock() {
         let preferences = M8LockPreferences(false)
@@ -789,6 +871,10 @@ struct M8AppLockTests {
 private final class M8LockPreferences: AppLockPreferenceStoring {
     var isEnabled: Bool
     init(_ isEnabled: Bool) { self.isEnabled = isEnabled }
+}
+
+private final class M8TransferOfferStore: AppLockTransferOfferStoring {
+    var hasHandledOffer = false
 }
 
 @MainActor

@@ -24,6 +24,10 @@ enum NearbySyncCopy {
     static let resume = "继续上次迁移"
     static let done = "迁移完成"
     static let resultHelp = "原文件和资料已完成完整性校验。"
+    static let appLockOfferTitle = "要在这台 iPhone 上也打开应用锁吗？"
+    static let appLockOfferMessage = "打开后，查看这台 iPhone 上的健康资料前需要先通过系统认证。"
+    static let enableAppLock = "打开应用锁"
+    static let declineAppLock = "暂不"
     static let noMember = "请先选择一位成员。"
     static let unavailable = "无法准备本地迁移，请稍后重试。"
 }
