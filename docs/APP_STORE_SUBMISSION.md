@@ -2,18 +2,19 @@
 
 本页是提交人员的唯一操作清单。CareThread 当前定位为无账号、无云端、无互联网服务器、完全本地的个人就医资料整理工具，不是医疗服务或医疗器械。
 
-## 1. 发布前阻断项
+## 1. 当前发布状态与提交前必做项
 
-以下项目未关闭前，不得提交审核：
+法律正文与官网的发布阻断已解除，自动化门禁已通过：
 
-- **法律正文与当前备份行为不一致。** `docs/legal/PRIVACY_POLICY.md` 第 75–81 行及 `TERMS_OF_SERVICE.md` 第 59–66 行写的是“备份导出默认使用至少 12 位密码加密”；当前产品主路径则是默认导出明文存档、口令加密仅为折叠的可选项。两份正文已被本轮任务明确锁定，代码也不得回退。必须由产品负责人完成法律复核，形成新版本正文、更新“最后更新”日期与 `LegalAgreement.currentTermsVersion`，再重新跑法律页和版本变更测试。
-- **照片权限描述需要与系统选择器口径统一。** 当前录入使用 `PhotosPicker` 系统选择器读取用户明确选择的图片，没有调用 `PHPhotoLibrary.requestAuthorization` 请求整个照片库权限；隐私政策第 52–65 行和 `NSPhotoLibraryUsageDescription` 仍按“从相册导入时申请照片权限”表述。它没有扩大数据访问，但属于事实口径差异。下一次法律正文修订时应由产品/法务决定改成“通过系统照片选择器读取你明确选择的图片”，并在归档上确认实际权限行为；本轮不改已锁定正文。
-- **官网协议副本与锁定 Markdown 存在事实差异。** `website/privacy/index.html` 与 `website/terms/index.html` 使用当前“默认可读存档、口令可选”产品口径及 `founder@8xd.io`，锁定 Markdown 仍使用“默认口令加密”及 `jianghaibo@multiego.me`。本轮同时禁止改写官网正文和锁定 Markdown，因此自动化只冻结三处当前版本、防止单边漂移；正式提交审核前必须由产品/法务选定唯一正文并一次同步三处。
+- `docs/legal`、App 本地资源与官网两页已统一为 2026-08-01 版本：存档默认不加密、可选至少 12 位口令；PhotosPicker 只读取用户明确选择的项目；联系邮箱为 `jianghaibo@multiego.me`。
+- `LegalAgreement.currentTermsVersion` 已更新，旧版本用户只看到不可下滑关闭的变更摘要，不重跑首次引导。
+- 法律/权限单测 6/6、UI 3/3；最终 `Scripts/acceptance.sh` 退出 0，法律四文件哈希、关键事实、权限逐字与官网零运行时脚本门禁全部 PASS。
 - Cloudflare Pages 项目 `carethread` 以 `website/` 为站点根、无构建命令和环境变量；正式域名为：
   - 首页：`https://carethread.8xd.io/`
   - 隐私政策：`https://carethread.8xd.io/privacy`
   - 用户协议：`https://carethread.8xd.io/terms`
 - `CareThreadPDFBranding.officialWebsiteURL` 已指向上述首页，PDF 二维码说明已恢复为“扫码访问官网”；二维码载荷仍由离线 Core Image 生成，不会在导出时联网。
+- 正式提交前仍必须由用户完成真机清单：真机安装、双机换机、真实病历 OCR、大字版真人试用、锁屏/Face ID/通知/微信/48MP/内存压力，并最终确定上架地区路线。
 - 用 Archive 的 Privacy Report 再核对一次 App 本体和 ZIPFoundation 的隐私清单；不得只凭源码文件判断最终归档。
 
 重新部署官网时，从仓库根目录执行：
@@ -55,7 +56,7 @@ opencli wrangler pages deploy website \
 | 权限 | 用途说明 |
 | --- | --- |
 | 相机 | 拍摄纸质报告需要使用相机。照片只会保存在这台手机上。 |
-| 照片 | 从相册导入报告截图需要访问照片。所选照片只会保存在这台手机上。 |
+| 照片 | 通过系统照片选择器读取你明确选中的报告截图。所选照片只会保存在这台手机上。 |
 | 日历 | 只有在你主动选择“加入系统日历”时，CareThread 才会把复查安排写入日历。 |
 | Face ID | 用面容 ID 保护你的健康资料。 |
 | 本地网络 | 在你主动发起换机时，通过本地网络把所选家人的资料加密传到另一台 iPhone。 |

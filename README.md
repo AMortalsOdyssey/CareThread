@@ -2,7 +2,7 @@
 
 CareThread 是一款纯原生 iOS 本地病程资料整理工具。它把病历、处方、化验单、发票、用药和复查事项整理成按成员隔离的时间线，提供标准版与大字版两种完整交互模式。
 
-> 一期 M0–M9 与 Review 整改已完成；提交 `1c14406` 的上一轮模拟器总验收为全绿历史基线。第二轮新增能力的最新验证与残留以本文“本地构建与验证”和 `docs/PROGRESS.md` 为准。App 不提供诊断或治疗建议；当前代码不连接服务器、不上传病历，也不包含真实医疗测试数据。
+> 一期 M0–M9、Review 整改与第二轮新增能力均已完成；源码与证据基线 `261d8a3` 的最终验收全绿。App 不提供诊断或治疗建议；当前代码不连接互联网服务器、不上传病历，也不包含真实医疗测试数据。仍需真机完成的系统边界见 `docs/PROGRESS.md` 末尾。
 
 ## 一期功能地图
 
@@ -93,7 +93,7 @@ Benchmarks/OCRBench/run.sh
 
 `verify.sh` 负责构建与全部单元/UI 测试；`acceptance.sh` 还会校验提交轨迹、23 项边界映射、46 张生产导航截图、走查证据、依赖/联网/隐私红线和干净工作树。OCR 选型基准只使用程序生成的虚构资料；仓库外的用户照片只用于本机回归，仓库仅保留不可还原的聚合统计。最新计数与设备环境残留见 [实施进度](docs/PROGRESS.md)。
 
-源码与证据提交 `45136ea` 的最新全量基线为 Xcode 26.6、iPhone 17 / iOS 26.5：719/719 单元与集成测试、60/60 XCUITest，合计 779/779，失败 0、跳过 0。`acceptance.sh` 的其余门禁全部通过，只因锁定法律正文与官网正文存在真实语义差异而保留 1 项失败并关闭发布，详见[阻塞清单](docs/BLOCKERS.md)。
+源码与证据提交 `261d8a3` 的最终全量基线为 Xcode 26.6、iPhone 17 / iOS 26.5：720/720 单元与集成测试、60/60 XCUITest，合计 780/780，失败 0、跳过 0。`Scripts/acceptance.sh` 退出 0，M0–M9、23/23 边界、法律三处同源、权限逐字、零联网、依赖白名单、46 张截图与走查证据全部 PASS。`Scripts/device-sim-acceptance.sh` 在显式双模拟器下汇总 `PASS FAIL=0 RESIDUAL=4`；残留仅表示模拟器不能替代真机，详见[阻塞与边界](docs/BLOCKERS.md)。
 
 ## 里程碑
 
@@ -124,8 +124,8 @@ Benchmarks/OCRBench/run.sh
 - [贡献规则](CONTRIBUTING.md)：当前 issue-only 阶段与未来 DCO/CLA 要求
 - [品牌使用说明](TRADEMARKS.md)：MIT 代码许可与官方品牌身份的边界
 - [Privacy Manifest 复核](docs/PRIVACY_MANIFEST.md)：零收集声明与 required-reason API 对照
-- [隐私政策](docs/legal/PRIVACY_POLICY.md)与[用户协议](docs/legal/TERMS_OF_SERVICE.md)：App 离线内置正文源；公开站点副本的待同步事实差异见阻塞清单
-- [App Store 提交说明](docs/APP_STORE_SUBMISSION.md)：隐私 URL、问卷、权限用途、审核备注与发布阻断项
+- [隐私政策](docs/legal/PRIVACY_POLICY.md)与[用户协议](docs/legal/TERMS_OF_SERVICE.md)：App 离线内置正文源；官网副本与关键事实已同步锁定
+- [App Store 提交说明](docs/APP_STORE_SUBMISSION.md)：隐私 URL、问卷、权限用途、审核备注与真机提交前核对项
 - [实施进度](docs/PROGRESS.md)：里程碑状态与真机待验项
 - [实施日志](docs/IMPLEMENTATION_LOG.md)：阶段过程、验证命令和查漏记录
 - [阻塞与降级](docs/BLOCKERS.md)：只记录无法在当前环境闭环的事项
