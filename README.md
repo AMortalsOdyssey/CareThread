@@ -93,7 +93,7 @@ Benchmarks/OCRBench/run.sh
 
 `verify.sh` 负责构建与全部单元/UI 测试；`acceptance.sh` 还会校验提交轨迹、23 项边界映射、46 张生产导航截图、走查证据、依赖/联网/隐私红线和干净工作树。OCR 选型基准只使用程序生成的虚构资料；仓库外的用户照片只用于本机回归，仓库仅保留不可还原的聚合统计。最新计数与设备环境残留见 [实施进度](docs/PROGRESS.md)。
 
-源码提交 `6df1a1e`、截图证据提交 `3f229be` 的最终全量基线为 Xcode 26.6、iPhone 16 / iOS 26.5：720/720 单元与集成测试、60/60 XCUITest，合计 780/780，失败 0、跳过 0。`Scripts/acceptance.sh` 退出 0，M0–M9、23/23 边界、法律三处同源、权限逐字、零联网、依赖白名单、46 张截图与走查证据全部 PASS。Mac 解锁后的标准版/长辈版人工巡检已完成，并补齐“多份报告 × 每份多页 × 重复软提示 × 连续保存”的端到端 UI 回归；`Scripts/device-sim-acceptance.sh` 的既有显式双模拟器基线仍为 `PASS FAIL=0 RESIDUAL=4`。残留仅表示模拟器不能替代真机，详见[阻塞与边界](docs/BLOCKERS.md)。
+“长辈版”术语源码提交 `fcd299f`、截图证据提交 `8f1f384` 的最终全量基线为 Xcode 26.6、iPhone 16 / iOS 26.5：720/720 单元与集成测试、60/60 XCUITest，合计 780/780，失败 0、跳过 0。`Scripts/acceptance.sh` 退出 0，M0–M9、23/23 边界、法律三处同源、权限逐字、零联网、依赖白名单、46 张截图与走查证据全部 PASS。Mac 解锁后的标准版/长辈版人工巡检已完成，并补齐“多份报告 × 每份多页 × 重复软提示 × 连续保存”的端到端 UI 回归；`Scripts/device-sim-acceptance.sh` 的既有显式双模拟器基线仍为 `PASS FAIL=0 RESIDUAL=4`。残留仅表示模拟器不能替代真机，详见[阻塞与边界](docs/BLOCKERS.md)。
 
 ## 里程碑
 
