@@ -477,6 +477,27 @@ private enum RecordEditDraftError: Error {
     }
 }
 
+private enum RecordEditFocus: Hashable {
+    case title
+    case timezone
+    case hospital
+    case department
+    case doctor
+    case diseases
+    case age
+    case summary
+    case abnormalFlags
+    case structuredKey(UUID)
+    case structuredValue(UUID)
+    case measurementName(UUID)
+    case measurementNumeric(UUID)
+    case measurementUnit(UUID)
+    case measurementText(UUID)
+    case measurementReferenceLow(UUID)
+    case measurementReferenceHigh(UUID)
+    case measurementReferenceText(UUID)
+}
+
 /// Shared business-field editor used by both display modes. The elder flow
 /// deliberately reuses this mutation boundary so it cannot become a read-only
 /// projection with different validation or revision semantics.
@@ -490,7 +511,7 @@ struct RecordEditView: View {
     @State private var baseRevision: Int
     @State private var showError = false
     @State private var errorMessage = Copy.Capture.saveFailure
-    @FocusState private var numericFieldFocused: Bool
+    @FocusState private var focusedField: RecordEditFocus?
 
     init(record: MedicalRecord, onSaved: @escaping () -> Void) {
         self.record = record
@@ -542,6 +563,7 @@ struct RecordEditView: View {
                 }
                 Section(Copy.Capture.title) {
                     TextField(Copy.Capture.title, text: $draft.title)
+                        .focused($focusedField, equals: .title)
                         .accessibilityIdentifier("m3.edit.title")
                 }
                 Section(Copy.Capture.date) {
@@ -567,16 +589,21 @@ struct RecordEditView: View {
                     )
                     .textInputAutocapitalization(.never)
                     .autocorrectionDisabled()
+                    .focused($focusedField, equals: .timezone)
                     .accessibilityIdentifier("m3.edit.timezone")
                 }
                 Section(Copy.Records.related) {
                     TextField(Copy.Capture.hospital, text: $draft.hospital)
+                        .focused($focusedField, equals: .hospital)
                         .accessibilityIdentifier("m3.edit.hospital")
                     TextField(Copy.Capture.department, text: $draft.department)
+                        .focused($focusedField, equals: .department)
                         .accessibilityIdentifier("m3.edit.department")
                     TextField(Copy.Capture.doctor, text: $draft.doctor)
+                        .focused($focusedField, equals: .doctor)
                         .accessibilityIdentifier("m3.edit.doctor")
                     TextField(Copy.Capture.diseases, text: $draft.diseases)
+                        .focused($focusedField, equals: .diseases)
                         .accessibilityIdentifier("m3.edit.diseases")
                     Text(RecordEditCopy.listSeparatorHint)
                         .font(CT.Font.footnote)
@@ -593,12 +620,13 @@ struct RecordEditView: View {
                             text: $draft.ageAtEvent
                         )
                         .keyboardType(.numberPad)
-                        .focused($numericFieldFocused)
+                        .focused($focusedField, equals: .age)
                         .accessibilityIdentifier("m3.edit.age")
                     }
                 }
                 Section(Copy.Capture.summary) {
                     TextEditor(text: $draft.summary)
+                        .focused($focusedField, equals: .summary)
                         .frame(minHeight: CT.Size.recordCardMinHeight)
                         .accessibilityIdentifier("m3.edit.summary")
                 }
@@ -616,6 +644,7 @@ struct RecordEditView: View {
                         RecordEditCopy.abnormalFlags,
                         text: $draft.abnormalFlags
                     )
+                    .focused($focusedField, equals: .abnormalFlags)
                     .accessibilityIdentifier("m3.edit.abnormalFlags")
                     Text(RecordEditCopy.listSeparatorHint)
                         .font(CT.Font.footnote)
@@ -658,7 +687,7 @@ struct RecordEditView: View {
                 ToolbarItemGroup(placement: .keyboard) {
                     Spacer()
                     Button(Copy.Common.done) {
-                        numericFieldFocused = false
+                        focusedField = nil
                     }
                     .accessibilityIdentifier("m3.edit.keyboardDone")
                 }
@@ -678,6 +707,10 @@ struct RecordEditView: View {
             ForEach($draft.structuredFields) { $field in
                 VStack(alignment: .leading, spacing: CT.Space.s2) {
                     TextField(RecordEditCopy.fieldName, text: $field.key)
+                        .focused(
+                            $focusedField,
+                            equals: .structuredKey(field.id)
+                        )
                         .accessibilityIdentifier(
                             "m3.edit.field.key.\(field.id.uuidString)"
                         )
@@ -687,6 +720,10 @@ struct RecordEditView: View {
                         axis: .vertical
                     )
                     .lineLimit(1...4)
+                    .focused(
+                        $focusedField,
+                        equals: .structuredValue(field.id)
+                    )
                     .accessibilityIdentifier(
                         "m3.edit.field.value.\(field.id.uuidString)"
                     )
@@ -721,6 +758,10 @@ struct RecordEditView: View {
                         text: $measurement.displayName
                     )
                     .font(CT.Font.headline)
+                    .focused(
+                        $focusedField,
+                        equals: .measurementName(measurement.id)
+                    )
                     .accessibilityIdentifier(
                         "m3.edit.measurement.name.\(measurement.id.uuidString)"
                     )
@@ -730,13 +771,20 @@ struct RecordEditView: View {
                             text: $measurement.numericValue
                         )
                         .keyboardType(.decimalPad)
-                        .focused($numericFieldFocused)
+                        .focused(
+                            $focusedField,
+                            equals: .measurementNumeric(measurement.id)
+                        )
                         .accessibilityIdentifier(
                             "m3.edit.measurement.numeric.\(measurement.id.uuidString)"
                         )
                         TextField(
                             RecordEditCopy.unit,
                             text: $measurement.unit
+                        )
+                        .focused(
+                            $focusedField,
+                            equals: .measurementUnit(measurement.id)
                         )
                         .accessibilityIdentifier(
                             "m3.edit.measurement.unit.\(measurement.id.uuidString)"
@@ -745,6 +793,10 @@ struct RecordEditView: View {
                     TextField(
                         RecordEditCopy.textValue,
                         text: $measurement.textualValue
+                    )
+                    .focused(
+                        $focusedField,
+                        equals: .measurementText(measurement.id)
                     )
                     .accessibilityIdentifier(
                         "m3.edit.measurement.text.\(measurement.id.uuidString)"
@@ -755,17 +807,27 @@ struct RecordEditView: View {
                             text: $measurement.referenceLow
                         )
                         .keyboardType(.decimalPad)
-                        .focused($numericFieldFocused)
+                        .focused(
+                            $focusedField,
+                            equals: .measurementReferenceLow(measurement.id)
+                        )
                         TextField(
                             RecordEditCopy.referenceHigh,
                             text: $measurement.referenceHigh
                         )
                         .keyboardType(.decimalPad)
-                        .focused($numericFieldFocused)
+                        .focused(
+                            $focusedField,
+                            equals: .measurementReferenceHigh(measurement.id)
+                        )
                     }
                     TextField(
                         RecordEditCopy.referenceText,
                         text: $measurement.referenceText
+                    )
+                    .focused(
+                        $focusedField,
+                        equals: .measurementReferenceText(measurement.id)
                     )
                     Picker(
                         RecordEditCopy.flag,

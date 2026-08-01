@@ -39,17 +39,24 @@ final class RecordOrderFullEditUITests: XCTestCase {
         ).firstMatch
         scrollUntilHittable(fieldName, in: app)
         fieldName.clearAndType("UI虚构字段")
+        let textKeyboardDone = app.buttons["m3.edit.keyboardDone"]
+        XCTAssertTrue(textKeyboardDone.waitForExistence(timeout: 2))
+        textKeyboardDone.tap()
         let fieldValue = app.textFields.matching(
             identifierPrefix: "m3.edit.field.value."
         ).firstMatch
         scrollUntilHittable(fieldValue, in: app)
         fieldValue.clearAndType("UI虚构值")
+        XCTAssertTrue(textKeyboardDone.waitForExistence(timeout: 2))
+        textKeyboardDone.tap()
 
         let name = app.textFields.matching(
             identifierPrefix: "m3.edit.measurement.name."
         ).firstMatch
         scrollUntilHittable(name, in: app, attempts: 20)
         name.clearAndType("UI虚构指标")
+        XCTAssertTrue(textKeyboardDone.waitForExistence(timeout: 2))
+        textKeyboardDone.tap()
         let number = app.textFields.matching(
             identifierPrefix: "m3.edit.measurement.numeric."
         ).firstMatch

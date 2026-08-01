@@ -11,7 +11,7 @@ extension XCUIElement {
         file: StaticString = #filePath,
         line: UInt = #line
     ) {
-        ensureKeyboardFocus(file: file, line: line)
+        guard ensureKeyboardFocus(file: file, line: line) else { return }
         typeText(text)
     }
 
@@ -20,7 +20,7 @@ extension XCUIElement {
         file: StaticString = #filePath,
         line: UInt = #line
     ) {
-        ensureKeyboardFocus(file: file, line: line)
+        guard ensureKeyboardFocus(file: file, line: line) else { return }
         let existingCharacterCount = (value as? String)?.count ?? 0
         press(forDuration: 0.8)
         let application = XCUIApplication()
@@ -31,10 +31,10 @@ extension XCUIElement {
             : chineseSelectAll
         if selectAll.waitForExistence(timeout: 0.5) {
             selectAll.tap()
-            ensureKeyboardFocus(file: file, line: line)
+            guard ensureKeyboardFocus(file: file, line: line) else { return }
             typeText(XCUIKeyboardKey.delete.rawValue)
         } else if existingCharacterCount > 0 {
-            ensureKeyboardFocus(file: file, line: line)
+            guard ensureKeyboardFocus(file: file, line: line) else { return }
             typeText(
                 String(
                     repeating: XCUIKeyboardKey.delete.rawValue,
@@ -42,7 +42,7 @@ extension XCUIElement {
                 )
             )
         }
-        ensureKeyboardFocus(file: file, line: line)
+        guard ensureKeyboardFocus(file: file, line: line) else { return }
         typeText(text)
     }
 
@@ -51,7 +51,7 @@ extension XCUIElement {
         file: StaticString = #filePath,
         line: UInt = #line
     ) {
-        ensureKeyboardFocus(file: file, line: line)
+        guard ensureKeyboardFocus(file: file, line: line) else { return }
         let current = value as? String ?? ""
         if !current.isEmpty {
             typeText(
@@ -61,23 +61,32 @@ extension XCUIElement {
                 )
             )
         }
-        ensureKeyboardFocus(file: file, line: line)
+        guard ensureKeyboardFocus(file: file, line: line) else { return }
         typeText(text)
     }
 
     private func ensureKeyboardFocus(
         file: StaticString,
         line: UInt
-    ) {
-        for _ in 0..<3 {
+    ) -> Bool {
+        // A vertical-axis SwiftUI TextField can expose an accessibility
+        // scrollbar directly across its center. Varying the hit point keeps
+        // the retry bounded while avoiding three taps on the same child.
+        let verticalOffsets: [CGFloat] = [0.25, 0.5, 0.75]
+        for verticalOffset in verticalOffsets {
             if reportsKeyboardFocus {
-                return
+                return true
             }
-            tap()
-            let deadline = Date().addingTimeInterval(0.8)
+            coordinate(
+                withNormalizedOffset: CGVector(
+                    dx: 0.5,
+                    dy: verticalOffset
+                )
+            ).tap()
+            let deadline = Date().addingTimeInterval(1.0)
             while Date() < deadline {
                 if reportsKeyboardFocus {
-                    return
+                    return true
                 }
                 RunLoop.current.run(
                     mode: .default,
@@ -99,6 +108,7 @@ extension XCUIElement {
             file: file,
             line: line
         )
+        return false
     }
 
     /// `hasKeyboardFocus` is present in the XCTest accessibility snapshot but
