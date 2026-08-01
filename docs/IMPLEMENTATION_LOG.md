@@ -404,3 +404,5 @@
 - `testM3MultipleReportsWithMultiplePagesRequireExplicitRegroupConfirmation` 改用 UI 独立空库，保存第一份后等待进度确实变为 `第 2 / 2 份`，再保存第二份并等待完成页；软重复出现时测试必须找到并点击“确认不是重复，继续添加”，精确重复或预检失败仍不能绕过。第一次加强运行暴露旧断言只等待已存在进度控件、没有等待 label 变化；改为轮询真实成功状态后定向 UI 1/1 通过。
 - 定向验证：`CaptureDuplicateDetectorTests + CaptureCommitServiceTests + CaptureVaultServiceTests` 共 62/62，失败 0；覆盖重拍/重编码/旋转/裁边、OCR 重叠、成员隔离、journal 损坏失败关闭、提交原子性与 Vault 完整性。全量 `Scripts/verify.sh` 使用 iPhone 16 / iOS 26.5，`Verify.xcresult` 精确统计 720/720 单元与集成、60/60 UI，合计 780/780，失败 0、跳过 0；300 附件查重 median 241.96 ms、P95 252.13 ms。
 - 本轮人工操作留下的成员、手工病历、复查和草稿只存在于开发模拟器，且全部为虚构数据；UI 自动化继续使用进程级内存数据库和临时 Vault，未写入正式模拟器资料库。永久删除会触发确认，因此巡检未在未获单独确认时自动删除这些虚构记录。
+- 功能与过程提交 `6df1a1e` 推送后，在该干净源码上重新生成 23 路由 × Light/Dark 的 46 张生产导航截图；标准版 38 / 大字版 8、统一 1179×2556、SHA-256 唯一 46，manifest 绑定 `sourceCommit=6df1a1e` 且 `sourceTreeDirty=false`。录入来源与核对页双外观人工抽查无裁剪、空白、错误路由或 token 漂移，截图证据提交 `3f229be` 已推送。
+- 在干净且本地等于 `origin/main` 的 `3f229be` 原样运行 `Scripts/acceptance.sh`，退出码 0：720/720 单元与集成、60/60 UI，合计 780/780，失败 0、跳过 0；23/23 边界、M0–M9、法律三处同源、官网零第三方运行时、权限逐字、零联网、Nearby 网络边界、依赖白名单、隐私、46 图和走查全部 PASS。终验过程中未修改工作区，也未缩短、跳过或并行执行测试。
