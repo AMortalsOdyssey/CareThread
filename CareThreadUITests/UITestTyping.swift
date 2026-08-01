@@ -69,20 +69,25 @@ extension XCUIElement {
         file: StaticString,
         line: UInt
     ) -> Bool {
-        // A vertical-axis SwiftUI TextField can expose an accessibility
-        // scrollbar directly across its center. Varying the hit point keeps
-        // the retry bounded while avoiding three taps on the same child.
-        let verticalOffsets: [CGFloat] = [0.25, 0.5, 0.75]
-        for verticalOffset in verticalOffsets {
+        // Keep the first semantic tap so XCTest can scroll an ordinary field
+        // above the keyboard. A vertical-axis SwiftUI TextField can expose an
+        // accessibility scrollbar across its center, so only the bounded
+        // retries use off-centre hit points.
+        let retryOffsets: [CGFloat?] = [nil, 0.25, 0.75]
+        for verticalOffset in retryOffsets {
             if reportsKeyboardFocus {
                 return true
             }
-            coordinate(
-                withNormalizedOffset: CGVector(
-                    dx: 0.5,
-                    dy: verticalOffset
-                )
-            ).tap()
+            if let verticalOffset {
+                coordinate(
+                    withNormalizedOffset: CGVector(
+                        dx: 0.5,
+                        dy: verticalOffset
+                    )
+                ).tap()
+            } else {
+                tap()
+            }
             let deadline = Date().addingTimeInterval(1.0)
             while Date() < deadline {
                 if reportsKeyboardFocus {
