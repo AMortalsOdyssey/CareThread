@@ -210,7 +210,7 @@ final class ElderModeUITests: XCTestCase {
             scrollUntilHittable(field, in: app)
             XCTAssertTrue(
                 field.exists && field.isHittable,
-                "\(identifier) 在大字版更正资料页不可达"
+                "\(identifier) 在长辈版更正资料页不可达"
             )
         }
     }

@@ -96,7 +96,7 @@ actual_dark="$(jq '[.screenshots[] | select(.appearance == "dark")] | length' "$
 [[ "$actual_standard" == "$CARETHREAD_SCREENSHOT_STANDARD_COUNT" ]] ||
   fail "标准版清单数量不正确"
 [[ "$actual_elder" == "$CARETHREAD_SCREENSHOT_ELDER_COUNT" ]] ||
-  fail "大字版清单数量不正确"
+  fail "长辈版清单数量不正确"
 [[ "$actual_light" == "$CARETHREAD_SCREENSHOT_ROUTE_COUNT" ]] ||
   fail "浅色清单数量不正确"
 [[ "$actual_dark" == "$CARETHREAD_SCREENSHOT_ROUTE_COUNT" ]] ||

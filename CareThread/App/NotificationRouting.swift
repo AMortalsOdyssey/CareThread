@@ -283,7 +283,7 @@ struct CareThreadNotificationRoutingHost<Content: View>: View {
             content.title = kind == .medication
                 ? Copy.System.notificationMedicationTitle
                 : Copy.System.notificationFollowUpTitle
-            let modeText = mode == .elder ? "大字版" : "标准版"
+            let modeText = mode == .elder ? "长辈版" : "标准版"
             let kindText = kind == .medication ? "用药" : "复查"
             content.body = "虚构验收 · \(modeText) · \(kindText)"
             content.sound = .default

@@ -382,7 +382,7 @@ if xcodebuild "${device_xcodebuild_base[@]}" \
   -only-testing:CareThreadDeviceSimUITests/DeviceSimulatorAcceptanceUITests/testElderFollowUpNotificationArrivesAndRoutesToToday \
   >/tmp/carethread-device-notifications.log 2>&1; then
   xcresult_all_pass "$NOTIFICATION_RESULT" 4 \
-    "标准/大字版用药与复查通知真实到达、点击及落点"
+    "标准/长辈版用药与复查通知真实到达、点击及落点"
 else
   notification_route_errors="$(
     rg -c 'Notification tap did not foreground CareThread' \
@@ -615,7 +615,7 @@ else
   fi
 fi
 pass "换机可行性结论：Simulator 无 AWDL 点对点链路；协议、加密、配对码、断线与网络错误由本轮聚焦传输测试覆盖"
-boundary "真机双机 AWDL 发现、微信分享、锁屏通知观感、真实 Jetsam/发热和大字版真人试用不冒充模拟器结论"
+boundary "真机双机 AWDL 发现、微信分享、锁屏通知观感、真实 Jetsam/发热和长辈版真人试用不冒充模拟器结论"
 
 if [[ "$FAILURES" -eq 0 ]]; then
   printf 'SUMMARY PASS FAIL=0 RESIDUAL=%d\n' "$RESIDUALS"

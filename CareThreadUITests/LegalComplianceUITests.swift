@@ -32,7 +32,7 @@ final class LegalComplianceUITests: XCTestCase {
         XCTAssertTrue(element("standardRoot", in: app).waitForExistence(timeout: 8))
     }
 
-    func testStandardAndLargeTypeAboutExposeRequiredItems() {
+    func testStandardAndElderModeAboutExposeRequiredItems() {
         let standard = launch(mode: "standard")
         standard.tabBars.buttons["管理"].tap()
         XCTAssertTrue(element("m45.manage", in: standard).waitForExistence(timeout: 8))

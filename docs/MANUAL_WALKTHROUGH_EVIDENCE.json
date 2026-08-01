@@ -16,7 +16,7 @@
       "evidence": [
         {
           "path": "docs/walkthrough/B1-B7-remediation.md",
-          "sha256": "69e21cd82a206917f16048d6b57620b52d1a9ab9d1b5595b5bda5fce3cf39f4e"
+          "sha256": "c62143195f831cd0344ba60b8efb68359e6cf5e3c5c5f2f2082c5c02713a1f20"
         }
       ]
     },
@@ -28,7 +28,7 @@
       "evidence": [
         {
           "path": "docs/walkthrough/B1-B7-remediation.md",
-          "sha256": "69e21cd82a206917f16048d6b57620b52d1a9ab9d1b5595b5bda5fce3cf39f4e"
+          "sha256": "c62143195f831cd0344ba60b8efb68359e6cf5e3c5c5f2f2082c5c02713a1f20"
         }
       ]
     },
@@ -40,7 +40,7 @@
       "evidence": [
         {
           "path": "docs/walkthrough/B1-B7-remediation.md",
-          "sha256": "69e21cd82a206917f16048d6b57620b52d1a9ab9d1b5595b5bda5fce3cf39f4e"
+          "sha256": "c62143195f831cd0344ba60b8efb68359e6cf5e3c5c5f2f2082c5c02713a1f20"
         }
       ]
     },
@@ -52,7 +52,7 @@
       "evidence": [
         {
           "path": "docs/walkthrough/B1-B7-remediation.md",
-          "sha256": "69e21cd82a206917f16048d6b57620b52d1a9ab9d1b5595b5bda5fce3cf39f4e"
+          "sha256": "c62143195f831cd0344ba60b8efb68359e6cf5e3c5c5f2f2082c5c02713a1f20"
         }
       ]
     },
@@ -64,7 +64,7 @@
       "evidence": [
         {
           "path": "docs/walkthrough/B1-B7-remediation.md",
-          "sha256": "69e21cd82a206917f16048d6b57620b52d1a9ab9d1b5595b5bda5fce3cf39f4e"
+          "sha256": "c62143195f831cd0344ba60b8efb68359e6cf5e3c5c5f2f2082c5c02713a1f20"
         }
       ]
     },
@@ -76,7 +76,7 @@
       "evidence": [
         {
           "path": "docs/walkthrough/B1-B7-remediation.md",
-          "sha256": "69e21cd82a206917f16048d6b57620b52d1a9ab9d1b5595b5bda5fce3cf39f4e"
+          "sha256": "c62143195f831cd0344ba60b8efb68359e6cf5e3c5c5f2f2082c5c02713a1f20"
         }
       ]
     },
@@ -88,7 +88,7 @@
       "evidence": [
         {
           "path": "docs/walkthrough/B1-B7-remediation.md",
-          "sha256": "69e21cd82a206917f16048d6b57620b52d1a9ab9d1b5595b5bda5fce3cf39f4e"
+          "sha256": "c62143195f831cd0344ba60b8efb68359e6cf5e3c5c5f2f2082c5c02713a1f20"
         }
       ]
     }
@@ -108,11 +108,11 @@
     {
       "id": "DESIGN-02",
       "status": "passed",
-      "notes": "抽样 10 处间距并核对 4pt 网格和大字版触达尺寸。",
+      "notes": "抽样 10 处间距并核对 4pt 网格和长辈版触达尺寸。",
       "evidence": [
         {
           "path": "docs/walkthrough/DESIGN-02-spacing.md",
-          "sha256": "7e0ef84684b5c7d59161255734d3d3746d56a86af4ab36904bf913a4ed799c1d"
+          "sha256": "5612a2292c75b244e1fe99beb03c81a5728be47b06d296f593c19999bf035215"
         }
       ]
     },
@@ -123,7 +123,7 @@
       "evidence": [
         {
           "path": "docs/walkthrough/DESIGN-03-appearances.md",
-          "sha256": "7b686a2a39704f43544fafbf6e6a8b6110efeaa71f75d02ff5d01d82c629468f"
+          "sha256": "fe39bb5d30b351b0cecf771c7113bbb02defaf99c99b41496d34ebbcb07f15cd"
         }
       ]
     },
@@ -145,18 +145,18 @@
       "evidence": [
         {
           "path": "docs/walkthrough/DESIGN-05-copy.md",
-          "sha256": "b67f8c6160c31e982381ed41b6cad33c074250039de78eb5626b40829c552fe2"
+          "sha256": "b4f359ff86d3214410e1f27f14b434773a61eb1864f9608fab254df51dcfbb48"
         }
       ]
     },
     {
       "id": "DESIGN-06",
       "status": "passed",
-      "notes": "标准版 AX3 与大字版 AX2 的关键操作均保持可达可点。",
+      "notes": "标准版 AX3 与长辈版 AX2 的关键操作均保持可达可点。",
       "evidence": [
         {
           "path": "docs/walkthrough/DESIGN-06-dynamic-type.md",
-          "sha256": "bc98d3493005e1b74ecb82e17662f21a60d7b591e519f607bb904a1f00a866cb"
+          "sha256": "a98200ee4186918590157b4c4c23ee3a526fff2e8f34e03571cecc384745a177"
         }
       ]
     },
@@ -167,29 +167,29 @@
       "evidence": [
         {
           "path": "docs/walkthrough/DESIGN-07-reduce-motion.md",
-          "sha256": "bfe172369d90869786083dfbb7242ac94e2fa2de5183e6dc4a03f26d15d02fc4"
+          "sha256": "5c31290f76529094087b0c1fe628c7232fee259c9c54884d7eba946e3f180114"
         }
       ]
     },
     {
       "id": "DESIGN-08",
       "status": "passed",
-      "notes": "大字版三槽、显式按钮、60pt 主操作和关键流程均通过。",
+      "notes": "长辈版三槽、显式按钮、60pt 主操作和关键流程均通过。",
       "evidence": [
         {
           "path": "docs/walkthrough/DESIGN-08-elder.md",
-          "sha256": "2ceff38dfe483569564ad5168b3d10b2785de7361e49f36cfed7deb920e5c4ce"
+          "sha256": "abc22b89271f4a948f99089622daee834444e9a9fb2506488a68b43dd1914808"
         }
       ]
     },
     {
       "id": "B9",
       "status": "passed",
-      "notes": "原件缺失时标准版与大字版均显示错误和备份恢复入口。",
+      "notes": "原件缺失时标准版与长辈版均显示错误和备份恢复入口。",
       "evidence": [
         {
           "path": "docs/walkthrough/B9-missing-original.md",
-          "sha256": "52b16b86680065f7c3da64c3979959c971d479e39fc26fd118f42f876ddc3be6"
+          "sha256": "4510ea3974eefac02e0fe00b2920e358d418951ae6fef2cd5742146ba5bc5ba0"
         }
       ]
     },
@@ -229,11 +229,11 @@
     {
       "id": "B23",
       "status": "passed",
-      "notes": "标准版可恢复持久化草稿，大字版隐藏复杂草稿入口。",
+      "notes": "标准版可恢复持久化草稿，长辈版隐藏复杂草稿入口。",
       "evidence": [
         {
           "path": "docs/walkthrough/B23-draft-resume.md",
-          "sha256": "b6f00b0175435ae3d8ce28450d30d6b87941abcf4a298bfbdd5ea0a37f928417"
+          "sha256": "49c7bf7d9f3c6c26be21eab4d096376436c6b224e4a2103acd8c8b9ab6bb5c70"
         }
       ]
     }

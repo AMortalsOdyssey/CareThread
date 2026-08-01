@@ -46,6 +46,6 @@
 
 ## 本轮视觉结论
 
-- 46/46 PNG 均为 1179×2556，46 个唯一 SHA-256；标准版 38、大字版 8，Light/Dark 各 23。
-- 接触表逐屏检查通过：没有空白或错误路由，大字版四屏无裁剪，Sheet/Push/Tab 层级和选中状态合理。
+- 46/46 PNG 均为 1179×2556，46 个唯一 SHA-256；标准版 38、长辈版 8，Light/Dark 各 23。
+- 接触表逐屏检查通过：没有空白或错误路由，长辈版四屏无裁剪，Sheet/Push/Tab 层级和选中状态合理。
 - `Scripts/validate-screenshot-manifest.sh` 通过，manifest 的 `sourceTreeDirty=false`，并绑定生产源码提交、runtime、就绪标记与每图哈希。

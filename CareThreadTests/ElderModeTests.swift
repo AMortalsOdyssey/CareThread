@@ -19,7 +19,7 @@ struct ElderModeTests {
         #expect(value.listRowHeight == 52)
     }
 
-    @Test("大字版 token 覆盖标题正文与元信息")
+    @Test("长辈版 token 覆盖标题正文与元信息")
     func elderTypographyTokens() {
         let value = ElderTypographyValues.resolve(mode: .elder)
         #expect(value.display == 40)
@@ -28,7 +28,7 @@ struct ElderModeTests {
         #expect(value.footnote == 16)
     }
 
-    @Test("大字版按钮行高与触达满足规范")
+    @Test("长辈版按钮行高与触达满足规范")
     func elderComponentSizeTokens() {
         let value = ElderTypographyValues.resolve(mode: .elder)
         #expect(value.primaryButtonHeight == 60)
@@ -37,7 +37,7 @@ struct ElderModeTests {
         #expect(CT.Size.elderChoiceButtonHeight == 88)
     }
 
-    @Test("大字版应用内三档字号单调且正文不低于20")
+    @Test("长辈版应用内三档字号单调且正文不低于20")
     func elderFontScaleTokens() {
         let standard = ElderTypographyValues.resolve(
             mode: .elder,
@@ -148,7 +148,7 @@ struct ElderModeTests {
         )
     }
 
-    @Test("大字版不显示标准版草稿续录入口")
+    @Test("长辈版不显示标准版草稿续录入口")
     func elderHidesStandardDraftResume() {
         #expect(
             !ElderDraftVisibilityPolicy
@@ -160,7 +160,7 @@ struct ElderModeTests {
         )
     }
 
-    @Test("大字版用药通知使用直白命名空间")
+    @Test("长辈版用药通知使用直白命名空间")
     func elderMedicationNotificationCopy() {
         let value = ElderNotificationCopyBuilder.medication(
             name: "优甲乐",
@@ -170,7 +170,7 @@ struct ElderModeTests {
         #expect(value.body == "该吃药了：优甲乐 75µg（早上空腹）")
     }
 
-    @Test("大字版复查通知提醒带旧报告")
+    @Test("长辈版复查通知提醒带旧报告")
     func elderFollowUpNotificationCopy() {
         let value = ElderNotificationCopyBuilder.followUp(
             item: "甲状腺功能"
@@ -373,7 +373,7 @@ struct ElderModeTests {
         let staged = try vault.stagePhotoData(
             try #require(blank.pngData()),
             batchID: batchID,
-            displayName: "虚构大字版空白报告.png",
+            displayName: "虚构长辈版空白报告.png",
             preferredExtension: "png",
             uniformTypeIdentifier: "public.png"
         )
@@ -405,7 +405,7 @@ struct ElderModeTests {
         #expect(attributes[.immutable] as? Bool == true)
     }
 
-    @Test("大字版命中历史精确重复时保留可恢复草稿与原件")
+    @Test("长辈版命中历史精确重复时保留可恢复草稿与原件")
     func duplicateMatchRetainsRecoverableDraftAndStaging() async throws {
         let container = try TestSupport.container()
         let context = container.mainContext
@@ -503,7 +503,7 @@ struct ElderModeTests {
         )
     }
 
-    @Test("大字版重复检测异常时保留可恢复草稿与原件")
+    @Test("长辈版重复检测异常时保留可恢复草稿与原件")
     func duplicateDetectionFailureRetainsRecoverableDraftAndStaging()
         async throws {
         let container = try TestSupport.container()

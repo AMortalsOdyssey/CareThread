@@ -4,7 +4,7 @@ import Testing
 @testable import CareThread
 
 struct LocalAskPresentationTests {
-    @Test("标准版支持自由输入，大字版只显示四个固定问题")
+    @Test("标准版支持自由输入，长辈版只显示四个固定问题")
     func modePoliciesStaySeparated() {
         #expect(LocalAskPresentationPolicy.showsFreeText(in: .standard))
         #expect(!LocalAskPresentationPolicy.showsFreeText(in: .elder))

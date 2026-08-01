@@ -124,7 +124,7 @@ extension Copy {
 
     enum Manage {
         static let navigationTitle = "管理"
-        static let elderTitle = "大字版"
+        static let elderTitle = "长辈版"
         static let elderDescription = "字更大、只保留最常用的功能，资料完全一样"
         static let switchMode = "切换"
         static let medication = "用药与医嘱"

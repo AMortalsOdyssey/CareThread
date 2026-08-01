@@ -262,7 +262,7 @@ final class DeviceSimulatorAcceptanceUITests: XCTestCase {
         try exerciseNotification(
             mode: "elder",
             kind: "medication",
-            body: "虚构验收 · 大字版 · 用药",
+            body: "虚构验收 · 长辈版 · 用药",
             destination: "elder.today"
         )
     }
@@ -271,7 +271,7 @@ final class DeviceSimulatorAcceptanceUITests: XCTestCase {
         try exerciseNotification(
             mode: "elder",
             kind: "followUp",
-            body: "虚构验收 · 大字版 · 复查",
+            body: "虚构验收 · 长辈版 · 复查",
             destination: "elder.today"
         )
     }
@@ -280,7 +280,7 @@ final class DeviceSimulatorAcceptanceUITests: XCTestCase {
         try exerciseNotification(
             mode: "elder",
             kind: "followUp",
-            body: "虚构验收 · 大字版 · 复查",
+            body: "虚构验收 · 长辈版 · 复查",
             destination: "elder.today",
             terminateBeforeTap: true
         )

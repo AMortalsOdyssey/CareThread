@@ -80,7 +80,7 @@ struct ElderCaptureFlowView: View {
                     batchID: session.batchID,
                     vaultRootURL: session.vaultRootURL,
                     pageDisplayNames: (0..<50).map {
-                        "大字版报告第\($0 + 1)页.jpg"
+                        "长辈版报告第\($0 + 1)页.jpg"
                     }
                 ),
                 onComplete: { result in
@@ -415,7 +415,7 @@ struct ElderCaptureFlowView: View {
                     data,
                     vaultRootURL: vaultRootURL,
                     batchID: batchID,
-                    displayName: "大字版报告第\(index + 1)页."
+                    displayName: "长辈版报告第\(index + 1)页."
                         + (type.preferredFilenameExtension ?? "jpg"),
                     preferredExtension: type.preferredFilenameExtension ?? "jpg",
                     uniformTypeIdentifier: type.identifier
@@ -453,7 +453,7 @@ struct ElderCaptureFlowView: View {
                 batchID: batchID,
                 preferredExtension: "jpg",
                 uniformTypeIdentifier: UTType.jpeg.identifier,
-                displayName: { _ in "虚构大字版报告.jpg" },
+                displayName: { _ in "虚构长辈版报告.jpg" },
                 dataForPage: { _ in
                     let image = TextFixtureRenderer.image(
                         text: """

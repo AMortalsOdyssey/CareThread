@@ -198,7 +198,7 @@ struct CareThreadOnboardingView: View {
             )
             modeCard(
                 mode: .elder,
-                title: "长辈本人使用（大字简明）",
+                title: "长辈本人使用（简明易读）",
                 detail: "字更大，拍照和查看更简单",
                 systemImage: "textformat.size.larger"
             )

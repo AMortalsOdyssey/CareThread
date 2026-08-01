@@ -14,7 +14,7 @@
   - 隐私政策：`https://carethread.8xd.io/privacy`
   - 用户协议：`https://carethread.8xd.io/terms`
 - `CareThreadPDFBranding.officialWebsiteURL` 已指向上述首页，PDF 二维码说明已恢复为“扫码访问官网”；二维码载荷仍由离线 Core Image 生成，不会在导出时联网。
-- 正式提交前仍必须由用户完成真机清单：真机安装、双机换机、真实病历 OCR、大字版真人试用、锁屏/Face ID/通知/微信/48MP/内存压力，并最终确定上架地区路线。
+- 正式提交前仍必须由用户完成真机清单：真机安装、双机换机、真实病历 OCR、长辈版真人试用、锁屏/Face ID/通知/微信/48MP/内存压力，并最终确定上架地区路线。
 - 用 Archive 的 Privacy Report 再核对一次 App 本体和 ZIPFoundation 的隐私清单；不得只凭源码文件判断最终归档。
 
 重新部署官网时，从仓库根目录执行：
@@ -78,7 +78,7 @@ opencli wrangler pages deploy website \
 1. 首次启动阅读第三屏的三项说明，离线打开隐私政策和用户协议，点击“我已了解，开始使用”。
 2. 选择标准版，使用虚构样张完成本机 OCR、字段核对、原件查看与 PDF 导出。
 3. 在“管理 → 关于 CareThread”查看隐私政策、用户协议、医疗免责、版本、开源许可与反馈入口。
-4. 如需验证大字版，在“管理”切换；在“大字版 → 设置 → 关于与免责”查看同一内容。
+4. 如需验证长辈版，在“管理”切换；在“长辈版 → 设置 → 关于与免责”查看同一内容。
 5. 权限只在相应按钮触发后出现。拒绝相机或照片后可用文件/手动录入；拒绝通知或日历后计划仍保存；不开应用锁不影响使用；拒绝本地网络后仍可导出和导入存档。
 
 ## 7. 最终核对
@@ -87,5 +87,5 @@ opencli wrangler pages deploy website \
 - `acceptedTermsVersion` 在首次同意后写入；法律版本变化只弹变更摘要，不重跑整个引导。
 - `PrivacyInfo.xcprivacy` 仍为 `NSPrivacyTracking=false`、追踪域名空、收集数据类型空。
 - 启动过程没有系统权限弹窗；相机、照片、通知、日历、生物识别和本地网络各自只由用户动作触发。
-- About 标准版和大字版入口、可选官网外链、反馈邮箱 `jianghaibo@multiego.me`、版本号与 MIT/ZIPFoundation 许可均可见；协议正文始终读取 App 本地资源，官网链接不作为正文来源。
+- About 标准版和长辈版入口、可选官网外链、反馈邮箱 `jianghaibo@multiego.me`、版本号与 MIT/ZIPFoundation 许可均可见；协议正文始终读取 App 本地资源，官网链接不作为正文来源。
 - 零第三方依赖新增；运行时网络能力仍只有既有局域网换机传输。

@@ -712,9 +712,9 @@ if [[ "$elder_tests" -eq 4 ]] &&
   rg -q 'enum Elder|struct Elder' CareThread/DesignSystem \
     CareThread/Features --glob '*.swift' &&
   [[ "${#elder_screenshots[@]}" -eq "$CARETHREAD_SCREENSHOT_ELDER_COUNT" ]]; then
-  pass "大字版文案命名空间、启动截图、U13–U16 全绿"
+  pass "长辈版文案命名空间、启动截图、U13–U16 全绿"
 else
-  fail "大字版专项（U13–U16 $elder_tests/4）"
+  fail "长辈版专项（U13–U16 $elder_tests/4）"
 fi
 
 boundary_total=0
