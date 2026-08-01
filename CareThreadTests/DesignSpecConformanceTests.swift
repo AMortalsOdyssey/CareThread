@@ -124,6 +124,46 @@ struct DesignSpecConformanceTests {
         #expect(confirmation.contains("selectedOriginalPage = page"))
     }
 
+    @Test("原件入口收纳在详情尾部且不再展示缩略图墙")
+    func originalEntryUsesCompactDetailFooter() throws {
+        let detail = try sourceText(
+            "CareThread/Features/Records/RecordDetailView.swift"
+        )
+        let elderSource = try sourceText(
+            "CareThread/Features/Elder/ElderRecordsView.swift"
+        )
+
+        let settings = try #require(detail.range(of: "settingsSection"))
+        let original = try #require(detail.range(of: "originalsFooter"))
+        let delete = try #require(detail.range(of: "Button(role: .destructive)"))
+        #expect(settings.lowerBound < original.lowerBound)
+        #expect(original.lowerBound < delete.lowerBound)
+        #expect(!detail.contains("ScrollView(.horizontal)"))
+        #expect(!detail.contains("CT.Size.detailThumbnail"))
+
+        let elderDetailStart = try #require(
+            elderSource.range(of: "struct ElderRecordDetailView")
+        )
+        let elderDetail = String(elderSource[elderDetailStart.lowerBound...])
+        let pending = try #require(
+            elderDetail.range(of: "if record.reviewStatus == .pending")
+        )
+        let originalAction = try #require(
+            elderDetail.range(of: "showOriginal = true")
+        )
+        #expect(pending.lowerBound < originalAction.lowerBound)
+        let originalButton = try #require(
+            elderDetail.range(
+                of: "showOriginal = true",
+                range: originalAction.lowerBound..<elderDetail.endIndex
+            )
+        )
+        let followingSource = elderDetail[originalButton.lowerBound...]
+        #expect(
+            followingSource.contains(".buttonStyle(ElderSecondaryButtonStyle())")
+        )
+    }
+
     @Test("原件缺失时标准版与长辈版均提供备份恢复入口")
     func missingOriginalProvidesBackupRecoveryEntry() throws {
         let standard = try sourceText(

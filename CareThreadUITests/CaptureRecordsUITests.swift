@@ -78,6 +78,35 @@ final class M3CaptureRecordsUITests: XCTestCase {
         XCTAssertTrue(app.buttons["m3.source.fixture"].exists)
     }
 
+    func testM3CompactOriginalFooterStillOpensViewer() {
+        let app = launch(["-M3OpenRecords"])
+        XCTAssertTrue(
+            element("m3.records.library", in: app)
+                .waitForExistence(timeout: 10)
+        )
+        let record = app.descendants(matching: .any)
+            .matching(
+                NSPredicate(
+                    format: "identifier BEGINSWITH %@",
+                    "m3.records.row."
+                )
+            )
+            .firstMatch
+        XCTAssertTrue(record.waitForExistence(timeout: 8))
+        scrollUntilHittable(record, in: app)
+        record.tap()
+
+        let original = app.buttons["m3.detail.viewOriginal"]
+        XCTAssertTrue(original.waitForExistence(timeout: 5))
+        scrollUntilHittable(original, in: app, attempts: 16)
+        XCTAssertTrue(original.isHittable)
+        XCTAssertTrue((original.value as? String)?.hasSuffix("页") == true)
+        original.tap()
+        XCTAssertTrue(
+            element("m3.viewer", in: app).waitForExistence(timeout: 8)
+        )
+    }
+
     func testM3ManualEntrySavesWithoutOriginal() {
         let app = launch(["-M3OpenCapture"])
         XCTAssertTrue(app.buttons["m3.source.manual"].waitForExistence(timeout: 8))

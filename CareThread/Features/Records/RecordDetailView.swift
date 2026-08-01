@@ -58,7 +58,6 @@ struct RecordDetailView: View {
                             .textSelection(.enabled)
                     }
                 }
-                originalsSection
                 relatedSection
                 if let machine = record.machineExtraction {
                     detailSection(title: Copy.Records.machineSection) {
@@ -87,6 +86,7 @@ struct RecordDetailView: View {
                     .accessibilityElement(children: .contain)
                 }
                 settingsSection
+                originalsFooter
                 Button(role: .destructive) {
                     showDeleteConfirmation = true
                 } label: {
@@ -162,54 +162,50 @@ struct RecordDetailView: View {
     }
 
     @ViewBuilder
-    private var originalsSection: some View {
-        detailSection(title: Copy.Records.originals) {
-            if record.attachments.isEmpty {
-                Label(Copy.Records.noOriginal, systemImage: "doc.text")
-                    .font(CT.Font.subhead)
-                    .foregroundStyle(CT.Color.inkSecondary)
-            } else {
-                Button {
-                    selectedAttachment = record.attachments
-                        .sorted(by: { $0.pageIndex < $1.pageIndex })
-                        .first
-                } label: {
-                    Label(
-                        Copy.viewOriginal,
-                        systemImage: "doc.text.magnifyingglass"
-                    )
+    private var originalsFooter: some View {
+        Divider()
+        if record.attachments.isEmpty {
+            Label(Copy.Records.noOriginal, systemImage: "doc.text")
+                .font(CT.Font.footnote)
+                .foregroundStyle(CT.Color.inkTertiary)
+                .frame(
+                    maxWidth: .infinity,
+                    minHeight: CT.Size.secondaryButtonHeight,
+                    alignment: .leading
+                )
+                .accessibilityIdentifier("m3.detail.noOriginal")
+        } else {
+            Button {
+                selectedAttachment = record.attachments
+                    .sorted(by: { $0.pageIndex < $1.pageIndex })
+                    .first
+            } label: {
+                HStack(spacing: CT.Space.s2) {
+                    Image(systemName: "doc.text.magnifyingglass")
+                    Text(Copy.Records.originals)
+                        .foregroundStyle(CT.Color.inkSecondary)
+                    Text("\(record.attachments.count) \(Copy.Capture.page)")
+                        .foregroundStyle(CT.Color.inkTertiary)
+                    Spacer()
+                    Text(Copy.viewOriginal)
+                    Image(systemName: "chevron.right")
+                        .font(CT.Font.caption)
                 }
-                .buttonStyle(CTSecondaryButtonStyle())
-                .accessibilityIdentifier("m3.detail.viewOriginal")
-                ScrollView(.horizontal) {
-                    HStack(spacing: CT.Space.s3) {
-                        ForEach(record.attachments.sorted(by: { $0.pageIndex < $1.pageIndex }), id: \.id) { attachment in
-                            Button {
-                                selectedAttachment = attachment
-                            } label: {
-                                VStack(spacing: CT.Space.s1) {
-                                    ZStack {
-                                        RoundedRectangle(cornerRadius: CT.Radius.thumbnail)
-                                            .fill(CT.Color.bgInset)
-                                        Image(systemName: attachment.kind == .pdf ? "doc.richtext" : "photo")
-                                            .font(CT.Font.title3)
-                                            .foregroundStyle(CT.Color.primary)
-                                    }
-                                    .frame(
-                                        width: CT.Size.detailThumbnail,
-                                        height: CT.Size.detailThumbnail
-                                    )
-                                    Text("\(Copy.Capture.page) \(attachment.pageIndex + 1)")
-                                        .font(CT.Font.caption)
-                                        .foregroundStyle(CT.Color.inkSecondary)
-                                }
-                            }
-                            .accessibilityIdentifier("m3.detail.original.\(attachment.pageIndex)")
-                        }
-                    }
-                }
-                .scrollIndicators(.hidden)
+                .font(CT.Font.subhead)
+                .foregroundStyle(CT.Color.primary)
+                .frame(
+                    maxWidth: .infinity,
+                    minHeight: CT.Size.secondaryButtonHeight,
+                    alignment: .leading
+                )
+                .contentShape(Rectangle())
             }
+            .buttonStyle(.plain)
+            .accessibilityLabel(Copy.viewOriginal)
+            .accessibilityValue(
+                "\(record.attachments.count) \(Copy.Capture.page)"
+            )
+            .accessibilityIdentifier("m3.detail.viewOriginal")
         }
     }
 

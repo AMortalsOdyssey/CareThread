@@ -163,17 +163,6 @@ struct ElderRecordDetailView: View {
                     .foregroundStyle(CT.Color.inkPrimary)
                 }
                 Button {
-                    showOriginal = true
-                } label: {
-                    Label(
-                        Copy.Elder.viewOriginal,
-                        systemImage: "doc.richtext"
-                    )
-                }
-                .buttonStyle(ElderPrimaryButtonStyle())
-                .disabled(record.attachments.isEmpty)
-                .accessibilityIdentifier("elder.record.original")
-                Button {
                     showEdit = true
                 } label: {
                     Label(
@@ -197,6 +186,20 @@ struct ElderRecordDetailView: View {
                             )
                         )
                 }
+                Button {
+                    showOriginal = true
+                } label: {
+                    Label(
+                        Copy.Elder.viewOriginal,
+                        systemImage: "doc.richtext"
+                    )
+                }
+                .buttonStyle(ElderSecondaryButtonStyle())
+                .disabled(record.attachments.isEmpty)
+                .accessibilityValue(
+                    "\(record.attachments.count) \(Copy.Capture.page)"
+                )
+                .accessibilityIdentifier("elder.record.original")
             }
             .padding(CT.Space.elderScreen)
         }
