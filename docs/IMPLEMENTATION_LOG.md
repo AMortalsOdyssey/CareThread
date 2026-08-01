@@ -393,3 +393,14 @@
 - 提交 `7334a17` 将第一次尝试恢复为 XCTest 语义点击，以保留自动滚动到键盘上方的能力；只有未获焦时才使用 25%/75% 两个非中心坐标重试。成员档案 3 项与病历编辑 2 项在同一代码上连续三轮 15/15，三个独立 xcresult 均为 0 失败。
 - 因 UI 测试也属于截图源码指纹输入，基于干净源码 `7334a17` 重拍并校验 46 张生产导航截图，证据提交为 `e8df13c`：23 路由、标准版 38 / 大字版 8、浅色 23 / 深色 23、统一 1179×2556、46 个 SHA-256 唯一，`sourceTreeDirty=false`。
 - 最终在干净基线 `e8df13c` 原样运行 `Scripts/acceptance.sh`，退出码 0：720/720 单元与集成、60/60 UI，合计 780/780，失败 0、跳过 0；M0–M9、23/23 边界、46 图、法律/权限、零联网、Nearby 边界、依赖、隐私与走查全部 PASS。
+
+## 2026-08-01 / 第二轮落地批次 10：解锁后人工巡检与多页保存闭环
+
+- 先在非 `-uiTestMode` 的已安装 App 上逐屏操作标准版：外观浅色/深色/跟随系统、本地协议、About 官网外链与开源许可、成员新增与切换、备份和附近迁移、系统分享、手工记录新增编辑、搜索、筛选、复查与系统日历降级均能到达。随后切换大字版，核对三槽、设置、About 与离线协议，再恢复标准版和跟随系统。Safari 中官网 `/`、`/privacy`、`/terms` 均完成实际加载，样式与图片正常。
+- 成员巡检新增“虚构家人丁”并切回“我的档案”；病历与复查输入均使用虚构前缀。系统日历首次请求没有预先假定授权，选择“不允许”后 App 明确显示“复查计划仍保存在 CareThread 中”和系统设置入口，证明拒绝不会丢本地计划。Nearby 只核对单人/全部、发送/接收与本地隐私披露，没有把单模拟器页面当作无线迁移成功。
+- 四页调试样张完成 `4 页一组 → 2+2 → 合并 → 再次 2+2` 操作后，保存连续收到“重复检查没有完成”的失败关闭提示。追到 `CaptureDuplicateDetectionService.stagedAssets(for:)` 后确认：`M3CaptureFlowController.loadFixture` 只构造页级 OCR/姓名/分组元数据，没有 `stagedAssetID`、`batchID` 或 Vault journal；旧 UI 用例停在核对页，从未点击保存，因此没有覆盖这个调试端到端缺口。
+- 生产链路未降级。`CaptureFlowHost.loadFixture()` 仅在 DEBUG 使用：先构造原样元数据，再把每页渲染为有效 900×1200 PNG，通过 `M3CaptureFileStore.storeData` 建立 batch/journal/staging，并把 OCR、姓名、医院、日期、标题和续页建议复制到新的不可变页句柄。任何一步失败都丢弃整个批次、删除数据库批次行、清空 active batch 并回到来源页。
+- 调试样张拥有真实文件后，识别阶段仍明确使用样张既有虚构 OCR，避免 Vision 对渲染文本重新识别造成非确定性；真实相册、相机、文件路径不受这一分支影响。重复预检 catch 增加 `.private(mask: .hash)` 错误日志，既能区分失败阶段，又不输出 OCR、路径或健康正文。
+- `testM3MultipleReportsWithMultiplePagesRequireExplicitRegroupConfirmation` 改用 UI 独立空库，保存第一份后等待进度确实变为 `第 2 / 2 份`，再保存第二份并等待完成页；软重复出现时测试必须找到并点击“确认不是重复，继续添加”，精确重复或预检失败仍不能绕过。第一次加强运行暴露旧断言只等待已存在进度控件、没有等待 label 变化；改为轮询真实成功状态后定向 UI 1/1 通过。
+- 定向验证：`CaptureDuplicateDetectorTests + CaptureCommitServiceTests + CaptureVaultServiceTests` 共 62/62，失败 0；覆盖重拍/重编码/旋转/裁边、OCR 重叠、成员隔离、journal 损坏失败关闭、提交原子性与 Vault 完整性。全量 `Scripts/verify.sh` 使用 iPhone 16 / iOS 26.5，`Verify.xcresult` 精确统计 720/720 单元与集成、60/60 UI，合计 780/780，失败 0、跳过 0；300 附件查重 median 241.96 ms、P95 252.13 ms。
+- 本轮人工操作留下的成员、手工病历、复查和草稿只存在于开发模拟器，且全部为虚构数据；UI 自动化继续使用进程级内存数据库和临时 Vault，未写入正式模拟器资料库。永久删除会触发确认，因此巡检未在未获单独确认时自动删除这些虚构记录。

@@ -61,14 +61,7 @@ struct CaptureFlowHost: View {
                             showFileImporter = true
                         },
                         onManual: controller.beginManual,
-                        onFixture: {
-                            controller.loadFixture(
-                                mismatch: ProcessInfo.processInfo.arguments.contains("-M3NameMismatch"),
-                                ambiguous: ProcessInfo.processInfo.arguments.contains(
-                                    "-M3AmbiguousNames"
-                                )
-                            )
-                        },
+                        onFixture: loadFixture,
                         onContinueDraft: resumeLatestDraft
                     )
                     #if DEBUG
@@ -278,8 +271,61 @@ struct CaptureFlowHost: View {
         case .manual:
             controller.beginManual()
         case .fixture:
-            controller.loadFixture(mismatch: false)
+            loadFixture()
         }
+    }
+
+    @MainActor
+    private func loadFixture() {
+#if DEBUG
+        controller.loadFixture(
+            mismatch: ProcessInfo.processInfo.arguments.contains("-M3NameMismatch"),
+            ambiguous: ProcessInfo.processInfo.arguments.contains(
+                "-M3AmbiguousNames"
+            )
+        )
+        do {
+            let batchID = try ensureImportBatch(source: .fixture)
+            controller.documents = try controller.documents.map { document in
+                M3CaptureDocument(
+                    id: document.id,
+                    pages: try document.pages.map { page in
+                        var staged = try M3CaptureFileStore.storeData(
+                            fixturePageData(for: page),
+                            fileExtension: "png",
+                            batchID: batchID,
+                            sourceOrder: page.sourceOrder,
+                            displayName: page.displayName,
+                            captureSource: .fixture
+                        )
+                        staged.ocrText = page.ocrText
+                        staged.detectedNames = page.detectedNames
+                        staged.suggestedHospital = page.suggestedHospital
+                        staged.suggestedDate = page.suggestedDate
+                        staged.suggestedTitle = page.suggestedTitle
+                        staged.machineExtraction = page.machineExtraction
+                        staged.isSuggestedContinuation =
+                            page.isSuggestedContinuation
+                        return staged
+                    }
+                )
+            }
+        } catch {
+            AppLog.vault.error(
+                "Fixture staging failed; duplicate preflight would be incomplete"
+            )
+            if let batchID = controller.activeBatchID {
+                try? CaptureVaultService().discardBatch(batchID)
+                if let batch = try? fetchBatch(id: batchID) {
+                    modelContext.delete(batch)
+                    try? modelContext.save()
+                }
+                controller.activeBatchID = nil
+            }
+            controller.errorMessage = Copy.Capture.importFailure
+            controller.phase = .sources
+        }
+#endif
     }
 
     private var hasSavedDraft: Bool {
@@ -605,7 +651,8 @@ struct CaptureFlowHost: View {
                 try Task.checkCancellation()
                 let page = controller.documents[documentIndex].pages[pageIndex]
                 let output: M3RecognitionOutput
-                if page.relativePath == nil, let existingText = page.ocrText {
+                if (page.captureSource == .fixture || page.relativePath == nil),
+                   let existingText = page.ocrText {
                     output = try await M3CaptureRecognitionPipeline.outputForExistingText(
                         existingText,
                         detectedNames: page.detectedNames
@@ -898,6 +945,39 @@ struct CaptureFlowHost: View {
     }
 
 #if DEBUG
+    private func fixturePageData(for page: M3CapturePageAsset) throws -> Data {
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = 1
+        format.opaque = true
+        let size = CGSize(width: 900, height: 1_200)
+        let image = UIGraphicsImageRenderer(
+            size: size,
+            format: format
+        ).image { context in
+            UIColor.white.setFill()
+            context.fill(CGRect(origin: .zero, size: size))
+            let text = ([page.displayName, page.ocrText ?? ""])
+                .filter { !$0.isEmpty }
+                .joined(separator: "\n\n")
+            let paragraph = NSMutableParagraphStyle()
+            paragraph.lineSpacing = 12
+            NSAttributedString(
+                string: text,
+                attributes: [
+                    .font: UIFont.systemFont(ofSize: 34),
+                    .foregroundColor: UIColor.black,
+                    .paragraphStyle: paragraph
+                ]
+            ).draw(
+                in: CGRect(x: 64, y: 64, width: 772, height: 1_072)
+            )
+        }
+        guard let data = image.pngData() else {
+            throw CaptureBulkImportError.imageEncodingFailed
+        }
+        return data
+    }
+
     private func blankOCRFixtureData() throws -> Data {
         let format = UIGraphicsImageRendererFormat()
         format.scale = 1

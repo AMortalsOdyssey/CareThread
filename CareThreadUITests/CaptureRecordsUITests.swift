@@ -180,7 +180,7 @@ final class M3CaptureRecordsUITests: XCTestCase {
     }
 
     func testM3MultipleReportsWithMultiplePagesRequireExplicitRegroupConfirmation() {
-        let app = launch(["-M3OpenCapture"])
+        let app = launch(["-M3OpenCapture", "-uiTestEmpty"])
         XCTAssertTrue(app.buttons["m3.source.fixture"].waitForExistence(timeout: 8))
         app.buttons["m3.source.fixture"].tap()
 
@@ -196,6 +196,33 @@ final class M3CaptureRecordsUITests: XCTestCase {
         let progress = element("m3.confirm.progress", in: app)
         XCTAssertTrue(progress.waitForExistence(timeout: 5))
         XCTAssertEqual(progress.label, "第 1 / 2 份")
+
+        let firstSave = app.buttons["m3.confirm.save"]
+        scrollUntilHittable(firstSave, in: app)
+        firstSave.tap()
+        XCTAssertTrue(
+            waitForCaptureSaveResult(
+                in: app,
+                timeout: 20,
+                success: { progress.label == "第 2 / 2 份" }
+            ),
+            "第一份虚构多页报告应通过重复检查并进入下一份；若视觉近似，只能经用户明确确认后继续"
+        )
+        XCTAssertEqual(progress.label, "第 2 / 2 份")
+
+        let secondSave = app.buttons["m3.confirm.save"]
+        scrollUntilHittable(secondSave, in: app)
+        secondSave.tap()
+        XCTAssertTrue(
+            waitForCaptureSaveResult(
+                in: app,
+                timeout: 20,
+                success: {
+                    element("m3.capture.completed", in: app).exists
+                }
+            ),
+            "第二份虚构多页报告应完成保存，不能因测试夹具缺少 Vault 原件而失败关闭"
+        )
     }
 
     func testM3NameMismatchBlocksDirectSaveAndRequiresTwoStepOverride() {
@@ -286,6 +313,23 @@ final class M3CaptureRecordsUITests: XCTestCase {
 
     private func element(_ identifier: String, in app: XCUIApplication) -> XCUIElement {
         app.descendants(matching: .any)[identifier]
+    }
+
+    private func waitForCaptureSaveResult(
+        in app: XCUIApplication,
+        timeout: TimeInterval,
+        success: () -> Bool
+    ) -> Bool {
+        let deadline = Date().addingTimeInterval(timeout)
+        let duplicateOverride = app.buttons["确认不是重复，继续添加"]
+        while Date() < deadline {
+            if success() { return true }
+            if duplicateOverride.exists && duplicateOverride.isHittable {
+                duplicateOverride.tap()
+            }
+            RunLoop.current.run(until: Date().addingTimeInterval(0.2))
+        }
+        return success()
     }
 
     private func dismissKeyboard(

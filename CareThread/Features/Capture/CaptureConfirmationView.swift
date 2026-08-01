@@ -1008,6 +1008,9 @@ struct CaptureConfirmationView: View {
                 duplicateCheckID = nil
                 duplicateCheckTask = nil
                 isCheckingDuplicates = false
+                AppLog.data.error(
+                    "Capture duplicate preflight failed: \(String(describing: error), privacy: .private(mask: .hash))"
+                )
                 saveErrorMessage = Copy.Capture.duplicateCheckFailed
                 showSaveError = true
             }
