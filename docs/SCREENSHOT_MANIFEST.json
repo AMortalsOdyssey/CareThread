@@ -1,10 +1,10 @@
 {
   "schemaVersion": 2,
   "generator": "Scripts/screenshots.sh",
-  "generatedAtUTC": "2026-08-03T08:41:22Z",
-  "sourceCommit": "c3abae4f1891f3ef3da8c454ba7c846b83f866ba",
+  "generatedAtUTC": "2026-08-03T10:36:49Z",
+  "sourceCommit": "c96e0e2ded833e47ebbcebd6ad435f8757e827b9",
   "sourceTreeDirty": false,
-  "sourceFingerprint": "7c14443144718fb3ffbd94ea424c8f8ff6c972391efdfd2eb88a68bf8c5143ab",
+  "sourceFingerprint": "3bde84397d2aad5351a53995053f83fc5b18a8e596b6ace1d3dadf9c17dd511b",
   "screenshotScriptSHA256": "6318ac57d367f5895cbe1593d7e311479747d89553ef4d09ce2042f7a9a7f633",
   "deviceName": "iPhone 16",
   "osVersion": "26.5",
@@ -36,7 +36,7 @@
       "resolvedAppearance": "light",
       "width": 1179,
       "height": 2556,
-      "sha256": "827d776ee5f9065138e2361bf7b2075751a6f65580ded85805a99ab0d45d8b88"
+      "sha256": "ddc82911a42519a548bae1a342466818155867ffabdc73ca2074b02a628341e6"
     },
     {
       "file": "docs/screenshots/01-onboarding-dark.png",
@@ -52,7 +52,7 @@
       "resolvedAppearance": "dark",
       "width": 1179,
       "height": 2556,
-      "sha256": "9f4d7bfb21e1e261c003bb75a8cc1f073dd89157f6a16e51c1d2f9e40d91de39"
+      "sha256": "118630e2cadd02fc11c2d6125d094c455044c125fab99f78d46cc4272756927d"
     },
     {
       "file": "docs/screenshots/02-home-light.png",
@@ -68,7 +68,7 @@
       "resolvedAppearance": "light",
       "width": 1179,
       "height": 2556,
-      "sha256": "5414966116ab9041d14aa5b3736dc51eb4addc0344d11360142e3a72445b0539"
+      "sha256": "a7a3923b0cd8acca282fd4846a859d517316d9e86a4d563eeebe523b7794e4ae"
     },
     {
       "file": "docs/screenshots/02-home-dark.png",
@@ -84,7 +84,7 @@
       "resolvedAppearance": "dark",
       "width": 1179,
       "height": 2556,
-      "sha256": "e7a9637b5dfbd8fdfe1b89f74790f0b43547152b2eb7bceb05e93c9239b330a2"
+      "sha256": "7d8cd3875e96c0adaf2b10547cd868c7e5ee83975b190a09b1e6baa1fb0bf92c"
     },
     {
       "file": "docs/screenshots/03-capture-source-light.png",
@@ -100,7 +100,7 @@
       "resolvedAppearance": "light",
       "width": 1179,
       "height": 2556,
-      "sha256": "452328af44bae529ff7e62b5992ceef2be7e626a55c37f241d8ec00ab498acc1"
+      "sha256": "6634ef15baac7a9240e89c22c91bb08a1908996f098af1a405124befc2526012"
     },
     {
       "file": "docs/screenshots/03-capture-source-dark.png",
@@ -116,7 +116,7 @@
       "resolvedAppearance": "dark",
       "width": 1179,
       "height": 2556,
-      "sha256": "8bdf6243df1477c121679cd33ea06ae4db52ff779a92ac06bc68ea96906a0ae5"
+      "sha256": "983895c5b077a281e3085aa95c837334d32da4880c13b56e11d6bb3a64e16c4f"
     },
     {
       "file": "docs/screenshots/04-capture-confirmation-light.png",
@@ -132,7 +132,7 @@
       "resolvedAppearance": "light",
       "width": 1179,
       "height": 2556,
-      "sha256": "f8f78410a673d01c0320c2b8490e10e1da820099c363dd8d49dd94b42969b611"
+      "sha256": "4f1072dc2138ba5114f6e3fca45f38e1b466e981bc9bb315c9880e8c32c43fd9"
     },
     {
       "file": "docs/screenshots/04-capture-confirmation-dark.png",
@@ -148,7 +148,7 @@
       "resolvedAppearance": "dark",
       "width": 1179,
       "height": 2556,
-      "sha256": "dd2494ee295a7a4e130b4eb05e5a74fd15c1df3e8a894c7006b056b048841e64"
+      "sha256": "048adfe4eeaa6299171dff3f3bd216c6f6be838c904e78bd8d0962fdc7887a17"
     },
     {
       "file": "docs/screenshots/05-records-light.png",
@@ -164,7 +164,7 @@
       "resolvedAppearance": "light",
       "width": 1179,
       "height": 2556,
-      "sha256": "42f9059108324db193e3ce5e8af47025c49049dced5fe4094a2884801969ab49"
+      "sha256": "db083537dedeabcebe11f1d2fe6ad460a051c451b3a53db8f8f4205f973934cc"
     },
     {
       "file": "docs/screenshots/05-records-dark.png",
@@ -180,7 +180,7 @@
       "resolvedAppearance": "dark",
       "width": 1179,
       "height": 2556,
-      "sha256": "1e837e1f08f1fddca90c47a79ae3f9694ec7c1e7632f7f5926ff73b18c9d8033"
+      "sha256": "7da20ffd8482787827efe2a2e475ca8b47d7a19452def0d0dfea3510f502badb"
     },
     {
       "file": "docs/screenshots/06-record-detail-light.png",
@@ -196,7 +196,7 @@
       "resolvedAppearance": "light",
       "width": 1179,
       "height": 2556,
-      "sha256": "0a55388d8713704f1f9447d8a3a715d5ead1da8863ee9bf83ad59660dc534f23"
+      "sha256": "991a2a42d312088e3ae55e997ebed4ed0613cf5b75916cbadec99fb18373ca4e"
     },
     {
       "file": "docs/screenshots/06-record-detail-dark.png",
@@ -212,7 +212,7 @@
       "resolvedAppearance": "dark",
       "width": 1179,
       "height": 2556,
-      "sha256": "cf1955e0edbb9940d512aebe4b0337abd20957e56b688c1da124a20bdec94f29"
+      "sha256": "735dd17c6aba4ebe4b9356ff22c404d06e70cdcd6761e77346deeca5607e4997"
     },
     {
       "file": "docs/screenshots/07-original-ocr-light.png",
@@ -228,7 +228,7 @@
       "resolvedAppearance": "light",
       "width": 1179,
       "height": 2556,
-      "sha256": "0ea82af161f21ef59602653919cd1702e08101e6ffa597db2fe1a0caf87c245d"
+      "sha256": "300de12a212068b300e8b333e78d16a3acfcbf9d459e58aa03899cf3a6897112"
     },
     {
       "file": "docs/screenshots/07-original-ocr-dark.png",
@@ -244,7 +244,7 @@
       "resolvedAppearance": "dark",
       "width": 1179,
       "height": 2556,
-      "sha256": "acf1b7ec0f397be0cb54a88ea1ef91f7a68159b8592a7733d029f63053b4f607"
+      "sha256": "68d2b7a51c8abf04e6dc8ef34c89ab9e7d5ff142c3e434604ff6e37dd1789e52"
     },
     {
       "file": "docs/screenshots/08-medications-light.png",
@@ -260,7 +260,7 @@
       "resolvedAppearance": "light",
       "width": 1179,
       "height": 2556,
-      "sha256": "c97d5fcdec7827b73a6f89517a77725d1b3018d41a0745167656b3395ff71286"
+      "sha256": "1fc5ee0f591e04311cd3254bef1f592359150b5bdadfed4b0356b0a0efe30cad"
     },
     {
       "file": "docs/screenshots/08-medications-dark.png",
@@ -276,7 +276,7 @@
       "resolvedAppearance": "dark",
       "width": 1179,
       "height": 2556,
-      "sha256": "10bb8470d944be33a303b4a03fc278d0fe7778d55ec374756015790c02641b36"
+      "sha256": "ecb2c99d86949c8320cde58b5252c02a87e36fc1513c5a910e5efd07877e3bcb"
     },
     {
       "file": "docs/screenshots/09-followups-light.png",
@@ -292,7 +292,7 @@
       "resolvedAppearance": "light",
       "width": 1179,
       "height": 2556,
-      "sha256": "f614304954754d6a6394ca8f87806df16585134755f44a5535097ed46a75931a"
+      "sha256": "345f240e7e52d6282345c8270e9d3fa8a0bc7b01fb04c0e59f5adfea60d5efc6"
     },
     {
       "file": "docs/screenshots/09-followups-dark.png",
@@ -308,7 +308,7 @@
       "resolvedAppearance": "dark",
       "width": 1179,
       "height": 2556,
-      "sha256": "9c9b233166df82bf0afbaa73857f72d8af320b50896953eb46e78cdf3eb67712"
+      "sha256": "1c164ab60f377295373a63f9eb07fc98d2484fc79f67f740f5506cd267023a74"
     },
     {
       "file": "docs/screenshots/10-timeline-light.png",
@@ -324,7 +324,7 @@
       "resolvedAppearance": "light",
       "width": 1179,
       "height": 2556,
-      "sha256": "4de72177681914cb3211bcc347c9d548cbd07906e024e18e26bd5187729ed178"
+      "sha256": "a0b5c8d96fbcb3d5a663d83a5455a3e9a8b38b828267edde7c795b021e56df91"
     },
     {
       "file": "docs/screenshots/10-timeline-dark.png",
@@ -340,7 +340,7 @@
       "resolvedAppearance": "dark",
       "width": 1179,
       "height": 2556,
-      "sha256": "8d86d62aa848a5f5595a52ab6ac9a9fa756cf8199e07735da77cbe388b3189ec"
+      "sha256": "2f452bf1d8872536828dcd123c481fb157875b7bcb6e3046ea11c5f10c2ad32b"
     },
     {
       "file": "docs/screenshots/11-brief-light.png",
@@ -356,7 +356,7 @@
       "resolvedAppearance": "light",
       "width": 1179,
       "height": 2556,
-      "sha256": "b52c60b799c5ac885124b80dff9afc5d5e430a37e7d90b865e93817c96bdff40"
+      "sha256": "f6b531bd21875192d98b009c9a1f8141a5e9b03fb1eab69ec69b3f5a033a2427"
     },
     {
       "file": "docs/screenshots/11-brief-dark.png",
@@ -372,7 +372,7 @@
       "resolvedAppearance": "dark",
       "width": 1179,
       "height": 2556,
-      "sha256": "a6409f44ba5efaa8bd9143e9bc5e0fce3a5ec24397cf629baad095457ba45b87"
+      "sha256": "04b124c956455bdef6fc734e1554b269eb623f5c2dae768e240d9cc4c0ffd242"
     },
     {
       "file": "docs/screenshots/12-manage-light.png",
@@ -388,7 +388,7 @@
       "resolvedAppearance": "light",
       "width": 1179,
       "height": 2556,
-      "sha256": "8bb33948b85b5ca38c5513206fdbf502372b417b8058c8d083f825a09b10a0fa"
+      "sha256": "8bb44664cccbedfa02eabb1ff3c5aa7420d0e50aed3684feee3d5687f0fd5bf5"
     },
     {
       "file": "docs/screenshots/12-manage-dark.png",
@@ -404,7 +404,7 @@
       "resolvedAppearance": "dark",
       "width": 1179,
       "height": 2556,
-      "sha256": "0bd89a1c6c5679cf93802a186ad7a740e955ac1128efc0e94587de2a20498af0"
+      "sha256": "5f6908098e49ff973ec3d310ed7782f876e473f3fdf075c832c4a649c808734f"
     },
     {
       "file": "docs/screenshots/13-backup-light.png",
@@ -420,7 +420,7 @@
       "resolvedAppearance": "light",
       "width": 1179,
       "height": 2556,
-      "sha256": "34a5b11576db82d95a78b72f6ee7d3b65edf275e3bf282538a4e3efbf1561b08"
+      "sha256": "892498f9d56312ff2797db929c8d728f6cc5654033f2347f60c7dd35ef9584e7"
     },
     {
       "file": "docs/screenshots/13-backup-dark.png",
@@ -436,7 +436,7 @@
       "resolvedAppearance": "dark",
       "width": 1179,
       "height": 2556,
-      "sha256": "b1294be21deff3b54cb064a564c2519f9b74afa0e991917f2b4b4bb1a159feb0"
+      "sha256": "5efe01c0cbecb59907293ce5d6ef5879693814323c91badca7d8f87b0cc2e807"
     },
     {
       "file": "docs/screenshots/14-lock-light.png",
@@ -452,7 +452,7 @@
       "resolvedAppearance": "light",
       "width": 1179,
       "height": 2556,
-      "sha256": "dcc425d1f930f9a85c446262102fb5220fb62ba4f63541ade15aaf24cb1a57a8"
+      "sha256": "8f22a7e63415ce54a8d9417f5cdd7f9281016409a07f1f38787983df45313650"
     },
     {
       "file": "docs/screenshots/14-lock-dark.png",
@@ -468,7 +468,7 @@
       "resolvedAppearance": "dark",
       "width": 1179,
       "height": 2556,
-      "sha256": "171cb766f84e79aca4e8a43b659414c655bb6203a4b5dcf3611fb00946cdf98c"
+      "sha256": "0b53b52d34030ee47c6f6d841180faa3545a47a89df98a4eb93c2475178f94c5"
     },
     {
       "file": "docs/screenshots/15-elder-today-light.png",
@@ -484,7 +484,7 @@
       "resolvedAppearance": "light",
       "width": 1179,
       "height": 2556,
-      "sha256": "d39e90575340e68e8f26f31874213b029ce3713aa4f91a4a1c13c7b91265a8ad"
+      "sha256": "5152245593363d7d7816eb08efbcf04124e21646bbdc10d2c293645933711452"
     },
     {
       "file": "docs/screenshots/15-elder-today-dark.png",
@@ -500,7 +500,7 @@
       "resolvedAppearance": "dark",
       "width": 1179,
       "height": 2556,
-      "sha256": "17d2849ed5914e07bdc6c8536c6036d91642b3492096b6bdcd2a89ae83f468ff"
+      "sha256": "740956efc9b21cb9b1d1d4d7e345b2a1f7f00ccd0b95d2b1ea8c069637da4adb"
     },
     {
       "file": "docs/screenshots/16-elder-capture-question-light.png",
@@ -516,7 +516,7 @@
       "resolvedAppearance": "light",
       "width": 1179,
       "height": 2556,
-      "sha256": "4c036d6aa21888baad796e552aca5f0019bc4b778b455e62ab6f331a54458e80"
+      "sha256": "560c4df4b7e138cf34b41ffcbb46c60b0eaa0684a3fcfc120118f8572b11aace"
     },
     {
       "file": "docs/screenshots/16-elder-capture-question-dark.png",
@@ -532,7 +532,7 @@
       "resolvedAppearance": "dark",
       "width": 1179,
       "height": 2556,
-      "sha256": "879878267dfa6f69253bd5c5aa6b34f089d37c2d704df32c4057d84dc35b9442"
+      "sha256": "c1b68faffb25439d8022d94947d5da1b2a899fbcf5247055f1e03f9eee53e382"
     },
     {
       "file": "docs/screenshots/17-elder-records-light.png",
@@ -548,7 +548,7 @@
       "resolvedAppearance": "light",
       "width": 1179,
       "height": 2556,
-      "sha256": "81b8e1324691c7627067dad8d7666e3dd9a51a8637ed9a8cf5fae0f00156af30"
+      "sha256": "ee10da33e5ab67ac375dd4ec186d922ecfe69c5f99a2211d29b79f34e5dde9e0"
     },
     {
       "file": "docs/screenshots/17-elder-records-dark.png",
@@ -564,7 +564,7 @@
       "resolvedAppearance": "dark",
       "width": 1179,
       "height": 2556,
-      "sha256": "bdb715937fe3df962cc7350c890553c74b6af15f402601a1e1970e2964461c7e"
+      "sha256": "c2e117022a6139d19ca1e93babf8478f89456205953d6188ec8e5f979e5a701b"
     },
     {
       "file": "docs/screenshots/18-elder-brief-light.png",
@@ -580,7 +580,7 @@
       "resolvedAppearance": "light",
       "width": 1179,
       "height": 2556,
-      "sha256": "4fa268ab298534441f114b8266c9f258de53f6eb07a186e5e8861690ddcfcf51"
+      "sha256": "25a60c857b6f29745c1be7a7a3422fca150ff02566efcea1238538bde47bb4f3"
     },
     {
       "file": "docs/screenshots/18-elder-brief-dark.png",
@@ -596,7 +596,7 @@
       "resolvedAppearance": "dark",
       "width": 1179,
       "height": 2556,
-      "sha256": "d6711102549e479419ca761b02a7116814e7672ef2b7bcadb61daa770c51ef6e"
+      "sha256": "a7a62b8a6cfd4f018f4bb401776ee0bc96c305dd0b2ac86b33f944fe2f4d8adb"
     },
     {
       "file": "docs/screenshots/19-member-management-light.png",
@@ -612,7 +612,7 @@
       "resolvedAppearance": "light",
       "width": 1179,
       "height": 2556,
-      "sha256": "1f2a130c9e98af74295592b66dea79cf23b4d84bcb1dbb38e4ab7039fbac43f3"
+      "sha256": "e926d6b7b6dcf18b96a79b3eb5eafbe855e25ba8e8fe530799b6948cc51504f1"
     },
     {
       "file": "docs/screenshots/19-member-management-dark.png",
@@ -628,7 +628,7 @@
       "resolvedAppearance": "dark",
       "width": 1179,
       "height": 2556,
-      "sha256": "87da2a1bf6b19a16e0de4a763877d78afe44c84d75eed053cbf221648967694b"
+      "sha256": "02f0f26b2a6ddf12f3c2aadaa76793d86daf26de8e764b1cf391a32aab1c83e7"
     },
     {
       "file": "docs/screenshots/20-comparison-light.png",
@@ -644,7 +644,7 @@
       "resolvedAppearance": "light",
       "width": 1179,
       "height": 2556,
-      "sha256": "f96d5eeafae7574e4391017eb0802e028b7cd33c4dd5c74d607e5c583f7e32dc"
+      "sha256": "48db84ee8e2588e835ad3fedbf6edcd725e32fb301f90b327e95e8709f50552b"
     },
     {
       "file": "docs/screenshots/20-comparison-dark.png",
@@ -660,7 +660,7 @@
       "resolvedAppearance": "dark",
       "width": 1179,
       "height": 2556,
-      "sha256": "675ba1d90a7da83530706912057873f40b2e609594f61af6c9b1474c8970e9cb"
+      "sha256": "c83ce0453ce0d0054adbbb3495eb7a4b6befe4046bcce7b33a25ad916a533d54"
     },
     {
       "file": "docs/screenshots/21-export-light.png",
@@ -676,7 +676,7 @@
       "resolvedAppearance": "light",
       "width": 1179,
       "height": 2556,
-      "sha256": "be4c328137a6e6437cf0c1bca1a13ddb97c1a8327ce910f2b2e0e67f651dbf12"
+      "sha256": "1cac46e839a6bef78217f7ba2ba875a336a1034959e62007ff33af8df42390f2"
     },
     {
       "file": "docs/screenshots/21-export-dark.png",
@@ -692,7 +692,7 @@
       "resolvedAppearance": "dark",
       "width": 1179,
       "height": 2556,
-      "sha256": "1e23d9f2c57823876688b65b2aed5cb4432557438d9ac97498068c737840aad7"
+      "sha256": "3fc928a75bb19648d74d8fb5f2a30be9b1a0d2d149776cc6d38c9a3b7a98b389"
     },
     {
       "file": "docs/screenshots/22-nearby-sync-light.png",
@@ -708,7 +708,7 @@
       "resolvedAppearance": "light",
       "width": 1179,
       "height": 2556,
-      "sha256": "bd33d3a46f23bcc61e29dabac4ad3077cd4a7f24b27f99226c1f73ebed78a613"
+      "sha256": "0c1c1daa01a4df54d7cb1e9fd9665333ade3da27408423f0bc2acf09744ef3fc"
     },
     {
       "file": "docs/screenshots/22-nearby-sync-dark.png",
@@ -724,7 +724,7 @@
       "resolvedAppearance": "dark",
       "width": 1179,
       "height": 2556,
-      "sha256": "1bf1657a46dff17016e2239917bcda95f9b6d8a524df6a55dec525453abdf536"
+      "sha256": "5b79da71a992502747ec6a13f1ecf1d2de5f7822c2ed026582d62278462aed81"
     },
     {
       "file": "docs/screenshots/23-more-light.png",
@@ -740,7 +740,7 @@
       "resolvedAppearance": "light",
       "width": 1179,
       "height": 2556,
-      "sha256": "35be38433d060f5856337e939ddcaf9e22df4ec7d8173f01271d6e0abf5a55e5"
+      "sha256": "9a32b6dcc917e91158f6d80e6fa4ef476953b4d539822c26a8d21091f13ac011"
     },
     {
       "file": "docs/screenshots/23-more-dark.png",
@@ -756,7 +756,7 @@
       "resolvedAppearance": "dark",
       "width": 1179,
       "height": 2556,
-      "sha256": "e07fc335f3402b19d7a4aebf8053b878dc1a8e4f92314cf4f37ba107c552f9c2"
+      "sha256": "98609d689fd09c56c75eb6693bbfe176e6ff95b3f5cffb65ecd2ba3733e7e2f5"
     }
   ]
 }
