@@ -5,7 +5,7 @@ struct AboutCareThreadView: View {
     let usesLargeType: Bool
     @State private var didCopyFeedbackAddress = false
 
-    private let feedbackAddress = "jianghaibo@multiego.me"
+    private let feedbackAddress = "founder@8xd.io"
 
     var body: some View {
         List {

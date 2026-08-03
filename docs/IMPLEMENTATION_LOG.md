@@ -378,7 +378,7 @@
 
 ## 2026-08-01 / 第二轮落地批次 8：法律、官网与最终收口
 
-- 用户解除正文冲突后，以产品实际代码为唯一事实基线统一 2026-08-01 法律版本：默认可读 ZIP、可选至少 12 位口令的 AES-256-GCM 存档、口令无找回、PhotosPicker 仅获明确选择项目、联系邮箱 `jianghaibo@multiego.me`。App 仍直接打包 `docs/legal`，没有 WebView、URLSession 或远程正文回退。
+- 用户解除正文冲突后，以产品实际代码为唯一事实基线统一法律版本；2026-08-03 联系邮箱更新为 `founder@8xd.io`。默认可读 ZIP、可选至少 12 位口令的 AES-256-GCM 存档、口令无找回、PhotosPicker 仅获明确选择项目。App 仍直接打包 `docs/legal`，没有 WebView、URLSession 或远程正文回退。
 - `LegalAgreement.currentTermsVersion` 与变更摘要同步；新增四法律表面同源测试和失败关闭脚本门禁。聚焦测试 6/6、UI 3/3，覆盖首次引导离线全文、标准版/长辈版 About 和版本变化摘要。
 - Cloudflare Pages 重新部署后只读核验发现邮箱混淆自动注入同源解码脚本。未改可见官网设计或文案，仅用局部 `email_off` 标记关闭 5 个邮箱片段的转换，并新增 mailto/起止标记等量门禁。再次部署后，三条正式路径最终 HTTPS 200，CSS/Logo 200；线上 HTML 与去除构建标记后的仓库正文哈希一致，且无脚本或 `cdn-cgi` 片段。
 - 第一次全终验确认 720/720 单元与集成、60/60 UI、23/23 边界均通过，只暴露 Info.plist 照片用途验收常量仍是旧句。修复只更新精确期望值，未放宽逐字门禁；因 `Scripts/` 属于截图指纹输入，重新生成并验证 46 张证据图。
@@ -424,3 +424,11 @@
 - 新增 `DesignSpecConformanceTests` 源码门禁，防止标准版缩略图墙或中段入口回归，并锁定长辈版的尾部次要操作；新增 `CaptureRecordsUITests.testM3CompactOriginalFooterStillOpensViewer`，验证列表到详情、滚动尾部、页数和查看器完整链路。定向结果：规范测试 8/8、UI 1/1。
 - 功能提交 `536611f` 推送后，从该干净源码重新生成 46 张生产导航截图；标准版 38 / 长辈版 8、Light/Dark 各 23、1179×2556、46 个唯一 SHA-256，manifest 绑定 `sourceCommit=536611f` 且 `sourceTreeDirty=false`。截图证据提交 `58a8d60` 已推送。
 - 全量 `Scripts/verify.sh` 为 721/721 单元与集成、61/61 UI，合计 782/782，失败 0、跳过 0。之后 `Scripts/acceptance.sh` 在干净工作树再次独立执行完整测试并得到同样的 782/782；23/23 边界、M0–M9、法律三处同源、官网零脚本、零联网、Nearby 网络边界、依赖白名单、隐私、46 图与走查全部 PASS，最终退出码 0。
+
+## 2026-08-03 / 第二轮落地批次 13：8xd.io 身份、联系邮箱与真机安装
+
+- 先只读核对 Cloudflare Email Routing：域 `8xd.io` 为 Enabled，`founder@8xd.io` 规则 Active，并指向账户中的 Gmail 目标；未改路由、未发测试信。
+- 使用 `io.8xd.carethread` 统一主 App、测试 targets、日志、Nearby 队列、备份格式和自动化脚本；验收门禁要求所有技术命名空间文件包含新标识，并拒绝任意非 8xd.io 的 `.carethread` 命名空间。
+- 联系邮箱同步到 App About、两份 Markdown 法律源、官网两页、站点 README、上架清单与合规测试。按三处同源约束同步把协议日期/版本更新为 `2026-08-03`，重算四份 SHA-256；本地协议仍由资源 Bundle 加载。
+- `xcodegen generate` 和 shell 语法检查通过；法律/权限 6 项与设计规范 8 项合计 14/14 通过。真机 Debug 包使用 Apple Development / Personal Team 自动签名，签名标识为 `2P22T863H9.io.8xd.carethread`，在 iPhone 15 Pro Max / iOS 26.4 安装并由 `devicectl` 成功启动。
+- 完整测试、截图重绑、线上重新部署与最终提交证据在后续同批追加，不提前写为通过。

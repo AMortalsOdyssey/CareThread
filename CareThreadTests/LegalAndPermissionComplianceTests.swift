@@ -5,7 +5,8 @@ import Testing
 struct LegalAndPermissionComplianceTests {
     @Test("引导同意版本与协议更新提示策略稳定")
     func agreementVersionPolicy() {
-        #expect(LegalAgreement.currentTermsVersion == "2026-08-01")
+        #expect(LegalAgreement.currentTermsVersion == "2026-08-03")
+        #expect(LegalAgreement.currentChangeSummary.contains("founder@8xd.io"))
         #expect(LegalAgreement.currentChangeSummary.contains("默认不加密"))
         #expect(LegalAgreement.currentChangeSummary.contains("至少 12 位口令"))
         #expect(LegalAgreement.currentChangeSummary.contains("明确选择的项目"))
@@ -118,11 +119,11 @@ struct LegalAndPermissionComplianceTests {
                 contentsOf: repositoryRoot.appendingPathComponent(relativePath),
                 encoding: .utf8
             )
-            #expect(content.contains("最后更新：2026-08-01"))
+            #expect(content.contains("最后更新：2026-08-03"))
             #expect(content.contains("导出存档默认不加密"))
             #expect(content.contains("至少 12 位的口令"))
             #expect(content.contains("口令丢失即无法解开该文件"))
-            #expect(content.contains("jianghaibo@multiego.me"))
+            #expect(content.contains("founder@8xd.io"))
         }
 
         for relativePath in [

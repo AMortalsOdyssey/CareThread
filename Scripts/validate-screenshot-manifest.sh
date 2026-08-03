@@ -5,7 +5,7 @@ ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 MANIFEST="${1:-$ROOT_DIR/docs/SCREENSHOT_MANIFEST.json}"
 EXPECTED_DEVICE="iPhone 16"
 EXPECTED_OS_VERSION="26.5"
-EXPECTED_BUNDLE="me.multiego.carethread"
+EXPECTED_BUNDLE="io.8xd.carethread"
 source "$ROOT_DIR/Scripts/screenshot-routes.sh"
 routes=("${CARETHREAD_SCREENSHOT_ROUTES[@]}")
 

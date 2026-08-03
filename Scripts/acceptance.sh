@@ -73,21 +73,21 @@ check_sha256() {
 # fourth copy. The paired source/site hashes make any unilateral edit fail until
 # all legal surfaces are deliberately reviewed and the contract is updated.
 check_sha256 docs/legal/PRIVACY_POLICY.md \
-  9435f48571bde3c56312434652a7a80f7c3648aeaa510f62529d4058bfba89da
+  003a5bbbb35a617ce0f46253430418b231bfe8edbc7b849f86168b7a8c7f4c5f
 check_sha256 docs/legal/TERMS_OF_SERVICE.md \
-  a045562ee39ab7df36f43218c24cc303f7d6137bb8672735c13f8827cb4d2e0e
+  e564992155a823371725ad37ad1eb08ac09f38a71caf99c27f2b5f4e13175bcf
 check_sha256 website/privacy/index.html \
-  681c0b891e636ccee3999669a5d76607507bfbcb6d3b1157d5dfbf5a7ccb6ad6
+  1a65c4f2afc064a9f23af01009f205f000fccab4611d94ca4b132a718a71eeab
 check_sha256 website/terms/index.html \
-  58e38ecce22daf48e1c866897d547defc6fbe88bccfd14081016762a8d16bfe2
+  79460909b2994c9bd9d16a7fa168e143163a529fac2d3f7d3ee7340ec693d841
 if [[ "$legal_source_integrity" -eq 1 ]] &&
   rg -q 'path: docs/legal/PRIVACY_POLICY\.md' project.yml &&
   rg -q 'path: docs/legal/TERMS_OF_SERVICE\.md' project.yml &&
-  rg -q '最后更新：2026-08-01' docs/legal/PRIVACY_POLICY.md &&
-  rg -q '最后更新：2026-08-01' docs/legal/TERMS_OF_SERVICE.md &&
-  rg -q '最后更新：2026-08-01' website/privacy/index.html &&
-  rg -q '最后更新：2026-08-01' website/terms/index.html &&
-  rg -q 'currentTermsVersion = "2026-08-01"' \
+  rg -q '最后更新：2026-08-03' docs/legal/PRIVACY_POLICY.md &&
+  rg -q '最后更新：2026-08-03' docs/legal/TERMS_OF_SERVICE.md &&
+  rg -q '最后更新：2026-08-03' website/privacy/index.html &&
+  rg -q '最后更新：2026-08-03' website/terms/index.html &&
+  rg -q 'currentTermsVersion = "2026-08-03"' \
     CareThread/Core/Legal/LegalDocuments.swift; then
   pass "协议源、官网副本与 App 本地资源分别锁定"
 else
@@ -119,7 +119,7 @@ privacy_surfaces=(
 if all_files_contain '导出存档默认不加密' "${legal_surfaces[@]}" &&
   all_files_contain '至少 12 位的口令' "${legal_surfaces[@]}" &&
   all_files_contain '口令丢失即无法解开该文件' "${legal_surfaces[@]}" &&
-  all_files_contain 'jianghaibo@multiego\.me' "${legal_surfaces[@]}" &&
+  all_files_contain 'founder@8xd\.io' "${legal_surfaces[@]}" &&
   all_files_contain '只读取你明确选择的项目，不请求整个照片库权限' \
     "${privacy_surfaces[@]}" &&
   all_files_contain '通过系统照片选择器读取你明确选中的报告截图' \
@@ -128,6 +128,36 @@ if all_files_contain '导出存档默认不加密' "${legal_surfaces[@]}" &&
 else
   fail "协议 Markdown、官网与 App 关键事实同源"
 fi
+
+product_namespace_files=(
+  project.yml
+  Scripts/device-sim-acceptance.sh
+  Scripts/screenshots.sh
+  Scripts/validate-screenshot-manifest.sh
+  docs/SCREENSHOT_MANIFEST.json
+  CareThread/Core/Services/AppLog.swift
+  CareThread/Core/Services/Backup/BackupModels.swift
+  CareThread/Core/Services/NearbyTransfer/NearbyNetworkTransport.swift
+)
+if all_files_contain 'io\.8xd\.carethread' "${product_namespace_files[@]}"; then
+  if unexpected_namespace_hits="$(
+    rg -n '\.carethread' "${product_namespace_files[@]}" |
+      rg -v 'io\.8xd\.carethread'
+  )"; then
+    printf '%s\n' "$unexpected_namespace_hits"
+    fail "产品技术命名空间不得残留非 8xd.io Bundle ID"
+  else
+    namespace_status=$?
+    if [[ "$namespace_status" -eq 1 ]]; then
+      pass "Bundle ID、备份格式、日志与验收脚本统一为 io.8xd.carethread"
+    else
+      fail "产品技术命名空间扫描执行失败（rg 状态 ${namespace_status}）"
+    fi
+  fi
+else
+  fail "产品技术命名空间未完整统一为 io.8xd.carethread"
+fi
+
 if rg -n -i --glob '*.{html,css}' \
   -e '<script' \
   -e '<(img|source)[^>]+src=["\x27]https?://' \

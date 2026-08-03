@@ -188,7 +188,7 @@
 ## 2026-08-01 第二轮落地 · 批次 8 法律、官网与最终收口
 
 - 状态：完成。法律同源实现提交 `cdffa20`、Cloudflare 线上零脚本修复 `d8c7d03`、权限逐字门禁同步 `a1a1ee3` 与最终截图证据 `261d8a3` 均已推送公开仓库 `main`。
-- 唯一法律版本更新为 2026-08-01：`docs/legal` 继续作为 App 直接打包的本地正文源；导出存档默认不加密，可选至少 12 位口令；PhotosPicker 只读取用户明确选择的项目，不请求整个照片库权限；App、官网与 About 联系邮箱统一为 `jianghaibo@multiego.me`。`LegalAgreement.currentTermsVersion` 与变更摘要同步更新。
+- 唯一法律版本后续更新为 2026-08-03：`docs/legal` 继续作为 App 直接打包的本地正文源；导出存档默认不加密，可选至少 12 位口令；PhotosPicker 只读取用户明确选择的项目，不请求整个照片库权限；App、官网与 About 联系邮箱统一为 `founder@8xd.io`。`LegalAgreement.currentTermsVersion` 与变更摘要同步更新。
 - 法律聚焦回归为 6/6 单元与合规测试、3/3 UI：首次引导飞行模式等价地读取内置全文，标准版/长辈版 About 入口可达，版本变化只显示摘要、不重跑引导。验收脚本同时锁定四文件 SHA-256、最后更新日期、备份/口令/找回/联系邮箱、PhotosPicker 边界与 Info.plist 精确文案，任一处漂移均失败关闭。
 - 官网重新部署到 Cloudflare Pages 项目 `carethread`，正式域名仍为 `https://carethread.8xd.io/`；`/` 最终 HTTPS 200，`/privacy` 与 `/terms` 规范到尾斜杠后最终 HTTPS 200，CSS 与 Logo 均 200。线上核验发现 Cloudflare 会因邮箱自动注入解码脚本，已对 5 个 `mailto` 片段加入不可见的 `email_off` 构建标记；线上 HTML 与去除标记后的仓库文件哈希逐一相同，且无 `<script>`、`cdn-cgi` 或邮箱解码器。
 - PDF 品牌钩子继续以 `https://carethread.8xd.io/` 和“扫码访问官网”为唯一载荷/文案；全量 PDF 测试从成品页栅格化后离线解码验证，没有在 App 内增加网络读取。官网只是 About 的可选系统浏览器外链，协议正文仍完全离线。
@@ -233,6 +233,14 @@
 - 新增源码规范测试，锁定标准版“相关信息 → 原件尾部入口 → 删除”和长辈版待处理提示之后的次要入口；新增 UI 端到端用例，从记录列表进入详情、滚动到尾部、核对页数并打开原件查看器。定向验证为规范测试 8/8、UI 1/1。
 - 代码与测试提交 `536611f` 已推送公开 `main`。以该干净源码重拍并验证 23 路由 × Light/Dark 共 46 张生产截图：标准版 38 / 长辈版 8、统一 1179×2556、46 个 SHA-256 唯一，manifest `sourceTreeDirty=false`；证据提交 `58a8d60` 已推送。
 - 完整 `Scripts/verify.sh` 退出码 0：721/721 单元与集成、61/61 UI，合计 782/782，失败 0、跳过 0。随后 `Scripts/acceptance.sh` 在干净工作树独立重跑同一完整测试并再次 782/782 全绿，23/23 边界及 M0–M9、法律同源、官网零脚本、权限、零联网、Nearby 边界、依赖、隐私、46 图和走查全部 PASS，末行 `PASS CareThread 最终验收（全部检查通过）`。
+
+## 2026-08-03 第二轮落地 · 批次 13 8xd.io 身份统一与真机安装
+
+- 状态：源码与真机安装完成，截图和全量终验进入证据批次。产品 Bundle ID、测试 Bundle ID、日志 subsystem、附近迁移队列、备份格式标识和自动化脚本已从旧命名空间统一为 `io.8xd.carethread`；验收增加正向全文件覆盖与非 8xd.io 标识失败关闭门禁。
+- App、`docs/legal`、官网隐私/协议页、About、上架清单和文档联系方式统一为 `founder@8xd.io`。法律三处同源版本更新为 `2026-08-03`，四份正文/网页哈希重新锁定；协议仍直接打包本地 Markdown，不引入网络正文。
+- Cloudflare 控制台完成只读核验：`8xd.io` Email Routing 为 Enabled，`founder@8xd.io` 规则为 Active，目标为已验证的 Gmail 地址；本轮没有修改路由或擅自发送测试邮件。
+- 聚焦回归 14/14：法律与权限 6/6、设计规范 8/8；签名产物通过 `codesign --verify --deep --strict`。使用 Personal Team `2P22T863H9` 将 `io.8xd.carethread` 安装到已连接 iPhone 15 Pro Max / iOS 26.4，`devicectl` 返回安装成功并成功启动。
+- 下一证据步骤：基于本批干净源码重拍 46 张截图，重新运行 `verify.sh` 与 `acceptance.sh`，部署官网协议页并核验线上三路径，结果将追加到本节。
 
 ## GitHub 公开发布
 

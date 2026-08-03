@@ -245,7 +245,7 @@ final class NearbyBrowserBridge: @unchecked Sendable {
 
     private let browser: NWBrowser
     private let continuation: AsyncStream<NearbyBrowserEvent>.Continuation
-    private let queue = DispatchQueue(label: "me.multiego.carethread.nearby.browser")
+    private let queue = DispatchQueue(label: "io.8xd.carethread.nearby.browser")
     private let lock = NSLock()
     private var started = false
     private var stopped = false
@@ -361,7 +361,7 @@ final class NearbyListenerBridge: @unchecked Sendable {
     private let listener: NWListener
     private let continuation: AsyncStream<NearbyListenerEvent>.Continuation
     private let admission = NearbyAdmissionController()
-    private let queue = DispatchQueue(label: "me.multiego.carethread.nearby.listener")
+    private let queue = DispatchQueue(label: "io.8xd.carethread.nearby.listener")
     private let lock = NSLock()
     private var started = false
     private var stopped = false
@@ -470,7 +470,7 @@ final class NetworkNearbyByteTransport: NearbyByteTransport, @unchecked Sendable
     private let incomingContinuation: AsyncStream<Data>.Continuation
     private let lifecycleContinuation: AsyncStream<NearbyTransportLifecycleEvent>.Continuation
     private let sendGate = BoundedSendGate(maximumWaiters: 8)
-    private let queue = DispatchQueue(label: "me.multiego.carethread.nearby.connection")
+    private let queue = DispatchQueue(label: "io.8xd.carethread.nearby.connection")
     private let lock = NSLock()
     private var wireParser = IncrementalNearbyWireParser()
     private var started = false
@@ -837,7 +837,7 @@ final class NearbyAdmissionLease: @unchecked Sendable {
 
 private enum NearbyTransferLogger {
     static let transport = Logger(
-        subsystem: "me.multiego.carethread",
+        subsystem: "io.8xd.carethread",
         category: "nearby-transfer"
     )
 }

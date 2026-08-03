@@ -73,9 +73,9 @@ struct LegalDocumentLoader {
 
 enum LegalAgreement {
     static let acceptedTermsVersionKey = "carethread.acceptedTermsVersion"
-    static let currentTermsVersion = "2026-08-01"
+    static let currentTermsVersion = "2026-08-03"
     static let currentChangeSummary =
-        "本次统一了导出存档与照片选择器说明：存档默认不加密，可选至少 12 位口令；相册仅读取你明确选择的项目。资料仍只保存在本机，CareThread 不提供医学判断。"
+        "本次将联系邮箱更新为 founder@8xd.io。存档默认不加密，可选至少 12 位口令；相册仅读取你明确选择的项目。资料仍只保存在本机，CareThread 不提供医学判断。"
 
     static func requiresUpdateNotice(
         onboardingCompleted: Bool,

@@ -6,7 +6,7 @@
 
 法律正文与官网的发布阻断已解除，自动化门禁已通过：
 
-- `docs/legal`、App 本地资源与官网两页已统一为 2026-08-01 版本：存档默认不加密、可选至少 12 位口令；PhotosPicker 只读取用户明确选择的项目；联系邮箱为 `jianghaibo@multiego.me`。
+- `docs/legal`、App 本地资源与官网两页已统一为 2026-08-03 版本：存档默认不加密、可选至少 12 位口令；PhotosPicker 只读取用户明确选择的项目；联系邮箱为 `founder@8xd.io`。
 - `LegalAgreement.currentTermsVersion` 已更新，旧版本用户只看到不可下滑关闭的变更摘要，不重跑首次引导。
 - 法律/权限单测 6/6、UI 3/3；最终 `Scripts/acceptance.sh` 退出 0，法律四文件哈希、关键事实、权限逐字与官网零运行时脚本门禁全部 PASS。
 - Cloudflare Pages 项目 `carethread` 以 `website/` 为站点根、无构建命令和环境变量；正式域名为：
@@ -87,5 +87,5 @@ opencli wrangler pages deploy website \
 - `acceptedTermsVersion` 在首次同意后写入；法律版本变化只弹变更摘要，不重跑整个引导。
 - `PrivacyInfo.xcprivacy` 仍为 `NSPrivacyTracking=false`、追踪域名空、收集数据类型空。
 - 启动过程没有系统权限弹窗；相机、照片、通知、日历、生物识别和本地网络各自只由用户动作触发。
-- About 标准版和长辈版入口、可选官网外链、反馈邮箱 `jianghaibo@multiego.me`、版本号与 MIT/ZIPFoundation 许可均可见；协议正文始终读取 App 本地资源，官网链接不作为正文来源。
+- About 标准版和长辈版入口、可选官网外链、反馈邮箱 `founder@8xd.io`、版本号与 MIT/ZIPFoundation 许可均可见；协议正文始终读取 App 本地资源，官网链接不作为正文来源。
 - 零第三方依赖新增；运行时网络能力仍只有既有局域网换机传输。

@@ -57,7 +57,7 @@ struct BackupFileEntry: Codable, Equatable, Sendable {
 }
 
 struct BackupManifest: Codable, Equatable, Sendable {
-    static let formatIdentifier = "me.multiego.carethread.backup"
+    static let formatIdentifier = "io.8xd.carethread.backup"
     static let formatVersion = 1
     static let schemaVersion = "1.0.0"
 

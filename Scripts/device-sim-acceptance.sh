@@ -2,7 +2,7 @@
 set -uo pipefail
 
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
-BUNDLE_ID="me.multiego.carethread"
+BUNDLE_ID="io.8xd.carethread"
 DERIVED_DATA="$ROOT_DIR/DerivedData/DeviceSimAcceptance"
 ARTIFACT_DIR="$DERIVED_DATA/Artifacts"
 SOURCE_PACKAGES="$ROOT_DIR/DerivedData/SourcePackages"
