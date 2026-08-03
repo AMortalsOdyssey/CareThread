@@ -240,12 +240,24 @@
 - App、`docs/legal`、官网隐私/协议页、About、上架清单和文档联系方式统一为 `founder@8xd.io`。法律三处同源版本更新为 `2026-08-03`，四份正文/网页哈希重新锁定；协议仍直接打包本地 Markdown，不引入网络正文。
 - Cloudflare 控制台完成只读核验：`8xd.io` Email Routing 为 Enabled，`founder@8xd.io` 规则为 Active，目标为已验证的 Gmail 地址；本轮没有修改路由或擅自发送测试邮件。
 - 聚焦回归 14/14：法律与权限 6/6、设计规范 8/8；签名产物通过 `codesign --verify --deep --strict`。使用 Personal Team `2P22T863H9` 将 `io.8xd.carethread` 安装到已连接 iPhone 15 Pro Max / iOS 26.4，`devicectl` 返回安装成功并成功启动。
-- 下一证据步骤：基于本批干净源码重拍 46 张截图，重新运行 `verify.sh` 与 `acceptance.sh`，部署官网协议页并核验线上三路径，结果将追加到本节。
+- 当时待执行的截图重绑、全量终验与线上复核均已在后续批次 14 完成；此处保留阶段边界，不倒填为提前通过。
+
+## 2026-08-03 第二轮落地 · 批次 14 搜索权限专项与最终收尾
+
+- 记录页搜索链路已逐层核对：`RecordLibraryView` 的 `.searchable` 只驱动 `M3RecordLibraryService` 查询本机 SwiftData `ModelContext`，关键词仅在标题、结论、医院、科室、医生、病种与本地 OCR 文本中匹配，不创建 URLSession、浏览器或 Network.framework 对象。
+- 生产代码唯一的 `import Network` 位于 `NearbyTransfer/NearbyNetworkTransport.swift`。Bonjour `.local`、点对点发现和本地网络权限只会在用户进入换机流程并明确点击开始发送/接收后，由 `NearbySyncViewModel.begin()` 触发浏览器或监听器 `start()`；打开记录页或点击搜索框没有到该调用链的路径。iOS 的“本地网络”权限不是互联网访问权限，结合调用边界，先前弹窗最可能是此前主动启动附近换机后的系统延迟呈现；若当时从未点击开始匹配，则该具体时序仍未在本轮复现，文档不把推测冒充已复现根因。
+- 新增 `CareThreadUITests.testRecordSearchStaysLocalAndNeverRequestsLocalNetwork`：从标准版进入记录页，输入“甲状腺”，断言本地虚构记录命中，并同时监视 App 与 SpringBoard 两侧是否出现 Info.plist 中“主动发起换机”的本地网络权限文案。定向 1/1 与两轮完整测试均通过；没有为了掩盖问题删除权限声明，也没有把 NearbyTransfer 的合法能力移出产品。
+- 独立 `Scripts/verify.sh` 退出码 0，`Verify.xcresult` 精确统计 721/721 单元与集成、62/62 UI，合计 783/783，失败 0、跳过 0。第一次 `Scripts/acceptance.sh` 的 783/783 测试、23/23 边界与其余门禁全部通过，但如实因新增 UI 源码改变截图 `sourceFingerprint` 而以 1 项失败退出。
+- 基于干净搜索防回归提交 `c96e0e2` 用 iPhone 16 / iOS 26.5 重新生成 23 条生产路由 × Light/Dark 的 46 张截图；标准版 38 / 长辈版 8、统一 1179×2556、46 个 SHA-256 唯一，`sourceTreeDirty=false`。`validate-screenshot-manifest.sh` 通过，证据提交 `c6c8801` 已推送公开 `main`。
+- 在干净且已推送的 `c6c8801` 上再次原样运行 `Scripts/acceptance.sh`，退出码 0，末行 `PASS CareThread 最终验收（全部检查通过）`：721/721 单元与集成、62/62 UI、23/23 边界、M0–M9、法律三处同源、官网零第三方运行时、权限逐字、零联网、Nearby 网络边界、依赖白名单、隐私、46 图与走查全部 PASS。
+- 官网 `https://carethread.8xd.io/`、`/privacy/`、`/terms/` 已在线复核为 HTTPS 200，样式、Logo 与页面图片正常，三页没有第三方脚本、字体、分析或追踪；PDF 二维码继续指向该正式域名。Cloudflare Email Routing 中 `founder@8xd.io` 为 Active，目标是账户内已验证的 Gmail 地址，本轮未公开目标地址、未修改路由、未发测试邮件。
+- 真机完成范围：Personal Team 签名包已安装到 iPhone 15 Pro Max / iOS 26.4，普通 App 冷启动成功且进程存活。真机 XCTest 先后尝试较大选集、单条搜索 UI、单组单元测试及重启 Xcode 后的单条搜索 UI，均在任何测试方法执行前被 CoreDevice/Mercury 1001 `connection invalidated` 中断；这是 Xcode 26.6 与真机测试远程会话的传输层阻塞，不记作 App 用例失败，也不记作真机通过。手机在普通启动验证完成后可断开。
+- 本批源码、证据和测试已经收口；剩余项目只是真机/真人人工验收，不阻塞当前模拟器自动化与仓库发布基线。
 
 ## GitHub 公开发布
 
 - 仓库：[AMortalsOdyssey/CareThread](https://github.com/AMortalsOdyssey/CareThread)，可见性已复核为 `PUBLIC`，默认分支 `main`。
-- AMO GitHub CLI 授权已恢复，M0–M9、OCR、调研、MIT 策略与第二轮各批次均已分阶段提交。当前界面源码为 `536611f`、截图与验收证据基线为 `58a8d60`；术语源码 `fcd299f` 与截图 `8f1f384`、多页保存源码 `6df1a1e` 与截图 `3f229be`、法律同源、官网零脚本及权限逐字门禁均位于其祖先链，历史走查源提交 `57b28a6` 仍为当前祖先。
+- M0–M9、OCR、调研、MIT 策略与第二轮各批次均已分阶段提交公开 `main`。当前搜索权限防回归源码为 `c96e0e2`、截图与终验证据基线为 `c6c8801`；原件入口、术语、多页保存、法律同源、官网零脚本及权限逐字门禁均位于其祖先链，历史走查源提交 `57b28a6` 仍为当前祖先。Git push 已成功；本轮结束时 GitHub CLI 本地 token 状态异常不影响已完成的 HTTPS push，但后续使用 `gh` API 前应重新登录 AMO 账号。
 - M0–M9 轨迹：`75ea563`、`c232394`、`7db611a`、`40450bd`、`70c534a`、`b95e493`、`61bddaf`、`cba6a36`、`5709ce2`、`f6c3361`。
 - 当前 Public 仓库按用户决定采用 MIT License；MIT 允许商业复用和再分发，不能作为防套壳手段。
 - 已完成唯一发展路线：MIT 本地核心先免费开源建立信任，达到 12 个月门槛后官方 App Store 版本一次性买断，达到 24/36 个月指标后再准备并执行产品资产出售。品牌、商标、官方发行、权利链和质量证据形成交易价值；用户健康数据与个人开发者账号不进入出售包。
@@ -253,6 +265,7 @@
 
 ## 真机验收（开发完成后由用户执行）
 
+- [x] Personal Team 签名、真机安装、普通冷启动与进程存活
 - [ ] VisionKit 相机扫描、自动裁边与多页连拍
 - [ ] 真机 Face ID 解锁、失败回调/重试与冷启动/回前台 60 秒锁定；锁屏后文件保护读取
 - [ ] 真机锁屏通知的视觉、标准版/长辈版四类点击落点，以及完整照片库权限状态
