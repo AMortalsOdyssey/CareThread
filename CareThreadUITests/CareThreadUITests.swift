@@ -1,6 +1,65 @@
 import XCTest
 
 final class CareThreadUITests: XCTestCase {
+    func testRecordSearchStaysLocalAndNeverRequestsLocalNetwork() {
+        let app = XCUIApplication()
+        app.launchArguments = [
+            "-uiTestMode",
+            "-displayMode", "standard"
+        ]
+        app.launch()
+
+        XCTAssertTrue(
+            element("standardRoot", in: app).waitForExistence(timeout: 8)
+        )
+        app.tabBars.buttons["记录"].tap()
+        XCTAssertTrue(
+            element("m3.records.library", in: app)
+                .waitForExistence(timeout: 8)
+        )
+
+        let search = app.searchFields.firstMatch
+        XCTAssertTrue(search.waitForExistence(timeout: 5))
+        search.focusAndType("甲状腺")
+        XCTAssertTrue(
+            app.staticTexts["甲状腺功能五项"]
+                .waitForExistence(timeout: 8)
+        )
+
+        // Local-network access belongs exclusively to the user-initiated
+        // Nearby Transfer flow. Focusing or typing in the local record search
+        // must never surface that authorization prompt, even asynchronously.
+        let permissionCopy = NSPredicate(
+            format: "label CONTAINS %@",
+            "主动发起换机"
+        )
+        let appPermissionText = app.staticTexts.matching(permissionCopy)
+            .firstMatch
+        let springboard = XCUIApplication(
+            bundleIdentifier: "com.apple.springboard"
+        )
+        let systemPermissionText = springboard.staticTexts
+            .matching(permissionCopy)
+            .firstMatch
+        let appPrompt = XCTNSPredicateExpectation(
+            predicate: NSPredicate(format: "exists == true"),
+            object: appPermissionText
+        )
+        appPrompt.isInverted = true
+        let systemPrompt = XCTNSPredicateExpectation(
+            predicate: NSPredicate(format: "exists == true"),
+            object: systemPermissionText
+        )
+        systemPrompt.isInverted = true
+        XCTAssertEqual(
+            XCTWaiter.wait(
+                for: [appPrompt, systemPrompt],
+                timeout: 2
+            ),
+            .completed
+        )
+    }
+
     func testB1EmptyDatabaseShowsEveryStandardTabEmptyState() {
         let app = XCUIApplication()
         app.launchArguments = [
